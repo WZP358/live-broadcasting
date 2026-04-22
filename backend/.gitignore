@@ -1,0 +1,44 @@
+HELP.md
+target/
+.mvn/
+!**/src/main/**
+!**/src/test/**
+.mvnw
+.mvnw.cmd
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### VS Code ###
+.vscode/
+
+###
+*.crt
+application.yml
+application-dev.yml
+application-prod.yml
+
+.DS_Store
+log-live*.log
+～./
+conf/docker/

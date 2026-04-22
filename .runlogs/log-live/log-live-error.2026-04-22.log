@@ -1,0 +1,1314 @@
+2026-04-22 12:37:16.722    INFO  cn.imhtb.live.AntLiveApplication - Starting AntLiveApplication using Java 17.0.17 on LAPTOP-R1L0BICR with PID 73640 (D:\code\live\backend\target\classes started by Lenovo in D:\code\live)
+2026-04-22 12:37:16.723    INFO  cn.imhtb.live.AntLiveApplication - No active profile set, falling back to default profiles: default
+2026-04-22 12:37:23.484    INFO  cn.imhtb.live.modules.server.netty.WebSocketServer - websocket server start success, port : 10022
+2026-04-22 12:37:24.506    INFO  cn.imhtb.live.AntLiveApplication - Started AntLiveApplication in 8.129 seconds (JVM running for 9.066)
+2026-04-22 12:37:24.507    INFO  cn.imhtb.live.start.MinioStart - minio init skipped, incomplete config = MinioConfig(endpoint=null, ip=null, port=null, accessKey=null, secretKey=null, bucketName=null, relative=false)
+2026-04-22 12:38:53.457    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-21T19:23:43Z. Current time: 2026-04-22T12:38:53Z, a difference of 62110457 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 12:38:53.457    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-21T19:23:43Z. Current time: 2026-04-22T12:38:53Z, a difference of 62110457 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 12:38:53.683    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-21T19:23:43Z. Current time: 2026-04-22T12:38:53Z, a difference of 62110683 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 12:38:53.683    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-21T19:23:43Z. Current time: 2026-04-22T12:38:53Z, a difference of 62110683 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 12:39:04.164    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-21T19:23:43Z. Current time: 2026-04-22T12:39:04Z, a difference of 62121164 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 12:39:04.164    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-21T19:23:43Z. Current time: 2026-04-22T12:39:04Z, a difference of 62121164 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 12:39:15.205    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-21T19:23:43Z. Current time: 2026-04-22T12:39:15Z, a difference of 62132205 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 12:39:15.205    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-21T19:23:43Z. Current time: 2026-04-22T12:39:15Z, a difference of 62132205 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 12:39:16.470    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-21T19:23:43Z. Current time: 2026-04-22T12:39:16Z, a difference of 62133470 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 12:39:16.470    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-21T19:23:43Z. Current time: 2026-04-22T12:39:16Z, a difference of 62133470 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 12:39:16.491    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-21T19:23:43Z. Current time: 2026-04-22T12:39:16Z, a difference of 62133491 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 12:39:16.491    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-21T19:23:43Z. Current time: 2026-04-22T12:39:16Z, a difference of 62133491 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 12:39:34.176    ERROR cn.imhtb.live.common.exception.AntLiveExceptionHandler - catch service exception
+org.springframework.jdbc.BadSqlGrammarException: 
+### Error querying database.  Cause: java.sql.SQLSyntaxErrorException: Table 'ant-live.message' doesn't exist
+### The error may exist in cn/imhtb/live/mappers/MessageMapper.java (best guess)
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+### SQL: SELECT COUNT( * ) AS total FROM message
+### Cause: java.sql.SQLSyntaxErrorException: Table 'ant-live.message' doesn't exist
+; bad SQL grammar []; nested exception is java.sql.SQLSyntaxErrorException: Table 'ant-live.message' doesn't exist
+	at org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator.doTranslate(SQLErrorCodeSQLExceptionTranslator.java:239)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:70)
+	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:92)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:439)
+	at jdk.proxy2/jdk.proxy2.$Proxy107.selectOne(Unknown Source)
+	at org.mybatis.spring.SqlSessionTemplate.selectOne(SqlSessionTemplate.java:160)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperMethod.execute(MybatisMapperMethod.java:87)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy$PlainMethodInvoker.invoke(MybatisMapperProxy.java:152)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy.invoke(MybatisMapperProxy.java:89)
+	at jdk.proxy2/jdk.proxy2.$Proxy171.selectCount(Unknown Source)
+	at cn.imhtb.live.modules.system.service.dashboard.MessageCountMetricCollector.collect(MessageCountMetricCollector.java:21)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:921)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:682)
+	at cn.imhtb.live.modules.system.service.impl.SystemDashboardServiceImpl.getSummary(SystemDashboardServiceImpl.java:21)
+	at cn.imhtb.live.modules.system.controller.SystemDashboardController.getSummary(SystemDashboardController.java:24)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:150)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:895)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:808)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1067)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:963)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:655)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:764)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:227)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:111)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:327)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:115)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:121)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:115)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:126)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:149)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at cn.imhtb.live.common.filter.JwtAuthorizationFilter.doFilterInternal(JwtAuthorizationFilter.java:49)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:218)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:212)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:103)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:89)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:110)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:80)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:55)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:211)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:183)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:354)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:267)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:197)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:540)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:135)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:357)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:382)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:895)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1732)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+Caused by: java.sql.SQLSyntaxErrorException: Table 'ant-live.message' doesn't exist
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:953)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.execute(ClientPreparedStatement.java:371)
+	at com.alibaba.druid.pool.DruidPooledPreparedStatement.execute(DruidPooledPreparedStatement.java:483)
+	at org.apache.ibatis.executor.statement.PreparedStatementHandler.query(PreparedStatementHandler.java:65)
+	at org.apache.ibatis.executor.statement.RoutingStatementHandler.query(RoutingStatementHandler.java:80)
+	at jdk.internal.reflect.GeneratedMethodAccessor122.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:61)
+	at jdk.proxy2/jdk.proxy2.$Proxy253.query(Unknown Source)
+	at org.apache.ibatis.executor.SimpleExecutor.doQuery(SimpleExecutor.java:65)
+	at org.apache.ibatis.executor.BaseExecutor.queryFromDatabase(BaseExecutor.java:336)
+	at org.apache.ibatis.executor.BaseExecutor.query(BaseExecutor.java:158)
+	at org.apache.ibatis.executor.CachingExecutor.query(CachingExecutor.java:110)
+	at com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor.intercept(MybatisPlusInterceptor.java:81)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59)
+	at jdk.proxy2/jdk.proxy2.$Proxy252.query(Unknown Source)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:154)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:147)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:142)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectOne(DefaultSqlSession.java:75)
+	at jdk.internal.reflect.GeneratedMethodAccessor128.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:425)
+	... 113 common frames omitted
+2026-04-22 12:40:03.578    ERROR cn.imhtb.live.common.exception.AntLiveExceptionHandler - catch service exception
+org.springframework.jdbc.BadSqlGrammarException: 
+### Error querying database.  Cause: java.sql.SQLSyntaxErrorException: Unknown column 'nickname' in 'where clause'
+### The error may exist in cn/imhtb/live/mappers/UserMapper.java (best guess)
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+### SQL: SELECT COUNT(*) AS total FROM user WHERE ((username LIKE ?) AND (nickname LIKE ?))
+### Cause: java.sql.SQLSyntaxErrorException: Unknown column 'nickname' in 'where clause'
+; bad SQL grammar []; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'nickname' in 'where clause'
+	at org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator.doTranslate(SQLErrorCodeSQLExceptionTranslator.java:239)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:70)
+	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:92)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:439)
+	at jdk.proxy2/jdk.proxy2.$Proxy107.selectList(Unknown Source)
+	at org.mybatis.spring.SqlSessionTemplate.selectList(SqlSessionTemplate.java:224)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperMethod.executeForMany(MybatisMapperMethod.java:164)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperMethod.execute(MybatisMapperMethod.java:77)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy$PlainMethodInvoker.invoke(MybatisMapperProxy.java:152)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy.invoke(MybatisMapperProxy.java:89)
+	at jdk.proxy2/jdk.proxy2.$Proxy110.selectList(Unknown Source)
+	at com.baomidou.mybatisplus.core.mapper.BaseMapper.selectPage(BaseMapper.java:432)
+	at java.base/java.lang.invoke.MethodHandle.invokeWithArguments(MethodHandle.java:732)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy$DefaultMethodInvoker.invoke(MybatisMapperProxy.java:166)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy.invoke(MybatisMapperProxy.java:89)
+	at jdk.proxy2/jdk.proxy2.$Proxy110.selectPage(Unknown Source)
+	at com.baomidou.mybatisplus.extension.service.IService.page(IService.java:449)
+	at cn.imhtb.live.modules.infra.service.impl.BaseServiceImpl.page(BaseServiceImpl.java:54)
+	at cn.imhtb.live.modules.infra.service.impl.BaseServiceImpl$$FastClassBySpringCGLIB$$62c02ff7.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:689)
+	at cn.imhtb.live.modules.system.service.impl.SystemUserServiceImpl$$EnhancerBySpringCGLIB$$b896240d.page(<generated>)
+	at cn.imhtb.live.modules.infra.controller.AbstractBaseController.page(AbstractBaseController.java:44)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:150)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:895)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:808)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1067)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:963)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:655)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:764)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:227)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:111)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:327)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:115)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:121)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:115)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:126)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:149)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at cn.imhtb.live.common.filter.JwtAuthorizationFilter.doFilterInternal(JwtAuthorizationFilter.java:49)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:218)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:212)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:103)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:89)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:110)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:80)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:55)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:211)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:183)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:354)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:267)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:197)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:540)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:135)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:357)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:382)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:895)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1732)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+Caused by: java.sql.SQLSyntaxErrorException: Unknown column 'nickname' in 'where clause'
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:953)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.execute(ClientPreparedStatement.java:371)
+	at com.alibaba.druid.pool.DruidPooledPreparedStatement.execute(DruidPooledPreparedStatement.java:483)
+	at org.apache.ibatis.executor.statement.PreparedStatementHandler.query(PreparedStatementHandler.java:65)
+	at org.apache.ibatis.executor.statement.RoutingStatementHandler.query(RoutingStatementHandler.java:80)
+	at jdk.internal.reflect.GeneratedMethodAccessor122.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:61)
+	at jdk.proxy2/jdk.proxy2.$Proxy253.query(Unknown Source)
+	at org.apache.ibatis.executor.SimpleExecutor.doQuery(SimpleExecutor.java:65)
+	at org.apache.ibatis.executor.BaseExecutor.queryFromDatabase(BaseExecutor.java:336)
+	at org.apache.ibatis.executor.BaseExecutor.query(BaseExecutor.java:158)
+	at org.apache.ibatis.executor.CachingExecutor.query(CachingExecutor.java:110)
+	at com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor.willDoQuery(PaginationInnerInterceptor.java:135)
+	at com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor.intercept(MybatisPlusInterceptor.java:75)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59)
+	at jdk.proxy2/jdk.proxy2.$Proxy252.query(Unknown Source)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:154)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:147)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:142)
+	at jdk.internal.reflect.GeneratedMethodAccessor131.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:425)
+	... 116 common frames omitted
+2026-04-22 12:40:06.073    ERROR cn.imhtb.live.common.exception.AntLiveExceptionHandler - catch service exception
+org.springframework.jdbc.BadSqlGrammarException: 
+### Error querying database.  Cause: java.sql.SQLSyntaxErrorException: Table 'ant-live.message' doesn't exist
+### The error may exist in cn/imhtb/live/mappers/MessageMapper.java (best guess)
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+### SQL: SELECT COUNT( * ) AS total FROM message
+### Cause: java.sql.SQLSyntaxErrorException: Table 'ant-live.message' doesn't exist
+; bad SQL grammar []; nested exception is java.sql.SQLSyntaxErrorException: Table 'ant-live.message' doesn't exist
+	at org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator.doTranslate(SQLErrorCodeSQLExceptionTranslator.java:239)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:70)
+	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:92)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:439)
+	at jdk.proxy2/jdk.proxy2.$Proxy107.selectOne(Unknown Source)
+	at org.mybatis.spring.SqlSessionTemplate.selectOne(SqlSessionTemplate.java:160)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperMethod.execute(MybatisMapperMethod.java:87)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy$PlainMethodInvoker.invoke(MybatisMapperProxy.java:152)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy.invoke(MybatisMapperProxy.java:89)
+	at jdk.proxy2/jdk.proxy2.$Proxy171.selectCount(Unknown Source)
+	at cn.imhtb.live.modules.system.service.dashboard.MessageCountMetricCollector.collect(MessageCountMetricCollector.java:21)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:921)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:682)
+	at cn.imhtb.live.modules.system.service.impl.SystemDashboardServiceImpl.getSummary(SystemDashboardServiceImpl.java:21)
+	at cn.imhtb.live.modules.system.controller.SystemDashboardController.getSummary(SystemDashboardController.java:24)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:150)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:895)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:808)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1067)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:963)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:655)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:764)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:227)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:111)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:327)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:115)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:121)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:115)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:126)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:149)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at cn.imhtb.live.common.filter.JwtAuthorizationFilter.doFilterInternal(JwtAuthorizationFilter.java:49)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:218)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:212)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:103)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:89)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:110)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:80)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:55)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:211)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:183)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:354)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:267)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:197)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:540)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:135)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:357)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:382)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:895)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1732)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+Caused by: java.sql.SQLSyntaxErrorException: Table 'ant-live.message' doesn't exist
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:953)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.execute(ClientPreparedStatement.java:371)
+	at com.alibaba.druid.pool.DruidPooledPreparedStatement.execute(DruidPooledPreparedStatement.java:483)
+	at org.apache.ibatis.executor.statement.PreparedStatementHandler.query(PreparedStatementHandler.java:65)
+	at org.apache.ibatis.executor.statement.RoutingStatementHandler.query(RoutingStatementHandler.java:80)
+	at jdk.internal.reflect.GeneratedMethodAccessor122.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:61)
+	at jdk.proxy2/jdk.proxy2.$Proxy253.query(Unknown Source)
+	at org.apache.ibatis.executor.SimpleExecutor.doQuery(SimpleExecutor.java:65)
+	at org.apache.ibatis.executor.BaseExecutor.queryFromDatabase(BaseExecutor.java:336)
+	at org.apache.ibatis.executor.BaseExecutor.query(BaseExecutor.java:158)
+	at org.apache.ibatis.executor.CachingExecutor.query(CachingExecutor.java:110)
+	at com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor.intercept(MybatisPlusInterceptor.java:81)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59)
+	at jdk.proxy2/jdk.proxy2.$Proxy252.query(Unknown Source)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:154)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:147)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:142)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectOne(DefaultSqlSession.java:75)
+	at jdk.internal.reflect.GeneratedMethodAccessor128.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:425)
+	... 113 common frames omitted
+2026-04-22 12:40:26.523    ERROR cn.imhtb.live.common.exception.AntLiveExceptionHandler - catch service exception
+org.springframework.jdbc.BadSqlGrammarException: 
+### Error querying database.  Cause: java.sql.SQLSyntaxErrorException: Table 'ant-live.message' doesn't exist
+### The error may exist in cn/imhtb/live/mappers/MessageMapper.java (best guess)
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+### SQL: SELECT COUNT( * ) AS total FROM message
+### Cause: java.sql.SQLSyntaxErrorException: Table 'ant-live.message' doesn't exist
+; bad SQL grammar []; nested exception is java.sql.SQLSyntaxErrorException: Table 'ant-live.message' doesn't exist
+	at org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator.doTranslate(SQLErrorCodeSQLExceptionTranslator.java:239)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:70)
+	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:92)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:439)
+	at jdk.proxy2/jdk.proxy2.$Proxy107.selectOne(Unknown Source)
+	at org.mybatis.spring.SqlSessionTemplate.selectOne(SqlSessionTemplate.java:160)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperMethod.execute(MybatisMapperMethod.java:87)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy$PlainMethodInvoker.invoke(MybatisMapperProxy.java:152)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy.invoke(MybatisMapperProxy.java:89)
+	at jdk.proxy2/jdk.proxy2.$Proxy171.selectCount(Unknown Source)
+	at cn.imhtb.live.modules.system.service.dashboard.MessageCountMetricCollector.collect(MessageCountMetricCollector.java:21)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:921)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:682)
+	at cn.imhtb.live.modules.system.service.impl.SystemDashboardServiceImpl.getSummary(SystemDashboardServiceImpl.java:21)
+	at cn.imhtb.live.modules.system.controller.SystemDashboardController.getSummary(SystemDashboardController.java:24)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:150)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:895)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:808)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1067)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:963)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:655)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:764)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:227)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:111)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:327)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:115)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:121)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:115)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:126)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:149)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at cn.imhtb.live.common.filter.JwtAuthorizationFilter.doFilterInternal(JwtAuthorizationFilter.java:49)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:218)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:212)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:103)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:89)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:110)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:80)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:55)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:211)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:183)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:354)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:267)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:197)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:540)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:135)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:357)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:382)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:895)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1732)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+Caused by: java.sql.SQLSyntaxErrorException: Table 'ant-live.message' doesn't exist
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:953)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.execute(ClientPreparedStatement.java:371)
+	at com.alibaba.druid.pool.DruidPooledPreparedStatement.execute(DruidPooledPreparedStatement.java:483)
+	at org.apache.ibatis.executor.statement.PreparedStatementHandler.query(PreparedStatementHandler.java:65)
+	at org.apache.ibatis.executor.statement.RoutingStatementHandler.query(RoutingStatementHandler.java:80)
+	at jdk.internal.reflect.GeneratedMethodAccessor122.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:61)
+	at jdk.proxy2/jdk.proxy2.$Proxy253.query(Unknown Source)
+	at org.apache.ibatis.executor.SimpleExecutor.doQuery(SimpleExecutor.java:65)
+	at org.apache.ibatis.executor.BaseExecutor.queryFromDatabase(BaseExecutor.java:336)
+	at org.apache.ibatis.executor.BaseExecutor.query(BaseExecutor.java:158)
+	at org.apache.ibatis.executor.CachingExecutor.query(CachingExecutor.java:110)
+	at com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor.intercept(MybatisPlusInterceptor.java:81)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59)
+	at jdk.proxy2/jdk.proxy2.$Proxy252.query(Unknown Source)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:154)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:147)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:142)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectOne(DefaultSqlSession.java:75)
+	at jdk.internal.reflect.GeneratedMethodAccessor128.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:425)
+	... 113 common frames omitted
+2026-04-22 12:40:59.902    INFO  cn.imhtb.live.modules.user.service.impl.UserServiceImpl - user register info, userId = 10020
+2026-04-22 12:41:19.260    ERROR cn.imhtb.live.common.exception.AntLiveExceptionHandler - catch service exception
+java.lang.RuntimeException: 获取直播间信息失败
+	at cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl.getLiveStatus(LalLiveServiceImpl.java:140)
+	at cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl$$FastClassBySpringCGLIB$$483dd64f.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:689)
+	at cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl$$EnhancerBySpringCGLIB$$aa27a49.getLiveStatus(<generated>)
+	at cn.imhtb.live.modules.live.controller.AntLiveController.getLiveStatus(AntLiveController.java:54)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:150)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:895)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:808)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1067)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:963)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:655)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:764)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:227)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:111)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:327)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:115)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:121)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:115)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:126)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:149)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at cn.imhtb.live.common.filter.JwtAuthorizationFilter.doFilterInternal(JwtAuthorizationFilter.java:49)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:218)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:212)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:103)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:89)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:110)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:80)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:55)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:211)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:183)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:354)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:267)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:197)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:540)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:135)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:357)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:382)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:895)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1732)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+2026-04-22 12:46:51.593    ERROR cn.imhtb.live.common.exception.AntLiveExceptionHandler - catch service exception
+java.lang.RuntimeException: 获取直播间信息失败
+	at cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl.getLiveStatus(LalLiveServiceImpl.java:140)
+	at cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl$$FastClassBySpringCGLIB$$483dd64f.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:689)
+	at cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl$$EnhancerBySpringCGLIB$$aa27a49.getLiveStatus(<generated>)
+	at cn.imhtb.live.modules.live.controller.AntLiveController.getLiveStatus(AntLiveController.java:54)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:150)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:895)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:808)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1067)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:963)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:655)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:764)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:227)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:111)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:327)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:115)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:121)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:115)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:126)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:149)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at cn.imhtb.live.common.filter.JwtAuthorizationFilter.doFilterInternal(JwtAuthorizationFilter.java:49)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:218)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:212)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:103)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:89)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:110)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:80)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:55)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:211)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:183)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:354)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:267)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:197)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:540)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:135)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:357)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:382)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:895)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1732)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+2026-04-22 12:46:56.520    ERROR cn.imhtb.live.common.exception.AntLiveExceptionHandler - catch service exception
+java.lang.RuntimeException: 获取直播间信息失败
+	at cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl.getLiveStatus(LalLiveServiceImpl.java:140)
+	at cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl$$FastClassBySpringCGLIB$$483dd64f.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:689)
+	at cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl$$EnhancerBySpringCGLIB$$aa27a49.getLiveStatus(<generated>)
+	at cn.imhtb.live.modules.live.controller.AntLiveController.getLiveStatus(AntLiveController.java:54)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:150)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:895)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:808)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1067)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:963)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:655)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:764)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:227)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:111)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:327)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:115)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:121)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:115)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:126)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:149)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at cn.imhtb.live.common.filter.JwtAuthorizationFilter.doFilterInternal(JwtAuthorizationFilter.java:49)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:218)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:212)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:103)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:89)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:110)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:80)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:55)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:211)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:183)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:354)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:267)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:197)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:540)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:135)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:357)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:382)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:895)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1732)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+2026-04-22 12:50:13.217    ERROR cn.imhtb.live.common.exception.AntLiveExceptionHandler - catch service exception
+java.lang.RuntimeException: 获取直播间信息失败
+	at cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl.getLiveStatus(LalLiveServiceImpl.java:140)
+	at cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl$$FastClassBySpringCGLIB$$483dd64f.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:689)
+	at cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl$$EnhancerBySpringCGLIB$$aa27a49.getLiveStatus(<generated>)
+	at cn.imhtb.live.modules.live.controller.AntLiveController.getLiveStatus(AntLiveController.java:54)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:150)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:895)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:808)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1067)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:963)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:655)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:764)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:227)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:111)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:327)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:115)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:121)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:115)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:126)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:149)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at cn.imhtb.live.common.filter.JwtAuthorizationFilter.doFilterInternal(JwtAuthorizationFilter.java:49)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:218)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:212)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:103)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:89)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:110)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:80)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:55)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:211)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:183)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:354)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:267)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:197)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:540)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:135)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:357)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:382)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:895)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1732)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+2026-04-22 13:13:50.723    INFO  cn.imhtb.live.AntLiveApplication - Starting AntLiveApplication using Java 17.0.17 on LAPTOP-R1L0BICR with PID 82092 (D:\code\live\backend\target\classes started by Lenovo in D:\code\live)
+2026-04-22 13:13:50.725    INFO  cn.imhtb.live.AntLiveApplication - No active profile set, falling back to default profiles: default
+2026-04-22 13:13:56.998    INFO  cn.imhtb.live.modules.server.netty.WebSocketServer - websocket server start success, port : 10022
+2026-04-22 13:13:58.022    INFO  cn.imhtb.live.AntLiveApplication - Started AntLiveApplication in 7.613 seconds (JVM running for 8.763)
+2026-04-22 13:13:58.023    INFO  cn.imhtb.live.start.MinioStart - minio init skipped, incomplete config = MinioConfig(endpoint=null, ip=null, port=null, accessKey=null, secretKey=null, bucketName=null, relative=false)
+2026-04-22 13:18:59.022    WARN  cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl - room is unavailable for userId = 10020, returning default live status
+2026-04-22 13:22:15.650    WARN  cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl - room is unavailable for userId = 10020, returning default live status
+2026-04-22 13:23:37.110    INFO  cn.imhtb.live.AntLiveApplication - Starting AntLiveApplication using Java 17.0.17 on LAPTOP-R1L0BICR with PID 51800 (D:\code\live\backend\target\classes started by Lenovo in D:\code\live)
+2026-04-22 13:23:37.112    INFO  cn.imhtb.live.AntLiveApplication - No active profile set, falling back to default profiles: default
+2026-04-22 13:40:14.296    INFO  cn.imhtb.live.AntLiveApplication - Starting AntLiveApplication using Java 17.0.17 on LAPTOP-R1L0BICR with PID 49996 (D:\code\live\backend\target\classes started by Lenovo in D:\code\live)
+2026-04-22 13:40:14.298    INFO  cn.imhtb.live.AntLiveApplication - No active profile set, falling back to default profiles: default
+2026-04-22 13:40:18.696    INFO  cn.imhtb.live.modules.server.netty.WebSocketServer - websocket server start success, port : 10022
+2026-04-22 13:40:19.626    INFO  cn.imhtb.live.AntLiveApplication - Started AntLiveApplication in 5.598 seconds (JVM running for 6.322)
+2026-04-22 13:40:19.626    INFO  cn.imhtb.live.start.MinioStart - minio init skipped, incomplete config = MinioConfig(endpoint=null, ip=null, port=null, accessKey=null, secretKey=null, bucketName=null, relative=false)
+2026-04-22 13:40:36.236    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 449e2ffd WebSocket 握手完成
+2026-04-22 13:40:45.902    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:40:45.903    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - d7ad4d36 WebSocket 握手完成
+2026-04-22 13:40:45.932    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - a075793d WebSocket 握手完成
+2026-04-22 13:40:45.941    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 13:40:48.436    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:40:48.436    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - fb949e33 WebSocket 握手完成
+2026-04-22 13:40:48.441    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 13:40:48.454    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 5fbf7414 WebSocket 握手完成
+2026-04-22 13:41:08.933    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:41:08.934    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 37913e5d WebSocket 握手完成
+2026-04-22 13:41:08.941    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 13:41:08.958    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - a44e48da WebSocket 握手完成
+2026-04-22 13:45:04.454    INFO  cn.imhtb.live.AntLiveApplication - Starting AntLiveApplication using Java 17.0.17 on LAPTOP-R1L0BICR with PID 32216 (D:\code\live\backend\target\classes started by Lenovo in D:\code\live)
+2026-04-22 13:45:04.456    INFO  cn.imhtb.live.AntLiveApplication - No active profile set, falling back to default profiles: default
+2026-04-22 13:45:07.921    INFO  cn.imhtb.live.modules.server.netty.WebSocketServer - websocket server start success, port : 10022
+2026-04-22 13:45:08.368    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:45:08.380    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 81d88458 WebSocket 握手完成
+2026-04-22 13:45:09.149    INFO  cn.imhtb.live.AntLiveApplication - Started AntLiveApplication in 4.968 seconds (JVM running for 5.789)
+2026-04-22 13:45:09.151    INFO  cn.imhtb.live.start.MinioStart - minio init skipped, incomplete config = MinioConfig(endpoint=null, ip=null, port=null, accessKey=null, secretKey=null, bucketName=null, relative=false)
+2026-04-22 13:45:13.500    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 6c9f4248 WebSocket 握手完成
+2026-04-22 13:45:47.210    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:45:47.211    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 14648cc0 WebSocket 握手完成
+2026-04-22 13:45:47.237    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - c6c59176 WebSocket 握手完成
+2026-04-22 13:45:47.241    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 13:45:52.309    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:45:52.309    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 67396132 WebSocket 握手完成
+2026-04-22 13:45:52.316    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 13:45:52.332    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - d6c0cc42 WebSocket 握手完成
+2026-04-22 13:46:50.302    INFO  cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl - initiative stop live, roomId = 17, userId = 10020
+2026-04-22 13:46:51.770    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 5306abae WebSocket 握手完成
+2026-04-22 13:47:39.178    WARN  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 67396132 读空闲超时 30 秒，主动关闭连接
+2026-04-22 13:48:45.036    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - d32500ba WebSocket 握手完成
+2026-04-22 13:48:55.241    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:48:55.241    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 65476d69 WebSocket 握手完成
+2026-04-22 13:48:55.254    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 13:48:55.297    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 76a255ff WebSocket 握手完成
+2026-04-22 13:48:59.283    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:48:59.285    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - a56938fe WebSocket 握手完成
+2026-04-22 13:48:59.290    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 13:48:59.300    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 9bbda1eb WebSocket 握手完成
+2026-04-22 13:49:53.477    INFO  cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl - initiative stop live, roomId = 17, userId = 10020
+2026-04-22 13:50:32.928    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 8e28887b WebSocket 握手完成
+2026-04-22 13:50:40.126    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:50:40.126    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - e2bf30cd WebSocket 握手完成
+2026-04-22 13:50:40.133    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 13:50:40.154    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 61fe33ff WebSocket 握手完成
+2026-04-22 13:51:06.700    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:51:06.700    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 396d43f6 WebSocket 握手完成
+2026-04-22 13:51:06.712    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 13:51:06.749    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 98eaf55c WebSocket 握手完成
+2026-04-22 13:51:12.890    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:51:12.890    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 47619ce8 WebSocket 握手完成
+2026-04-22 13:51:12.897    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 13:51:12.915    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - dd010e47 WebSocket 握手完成
+2026-04-22 13:51:45.190    INFO  cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl - initiative stop live, roomId = 17, userId = 10020
+2026-04-22 13:52:26.939    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - f327d275 WebSocket 握手完成
+2026-04-22 13:53:02.696    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 6b8bad24 WebSocket 握手完成
+2026-04-22 13:53:16.803    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:53:16.804    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 6743d403 WebSocket 握手完成
+2026-04-22 13:53:16.817    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 13:53:16.860    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 7b329d26 WebSocket 握手完成
+2026-04-22 13:53:23.975    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:53:23.975    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 53f9204e WebSocket 握手完成
+2026-04-22 13:53:23.983    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 13:53:24.000    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - ed5ec9e1 WebSocket 握手完成
+2026-04-22 13:54:09.593    INFO  cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl - initiative stop live, roomId = 17, userId = 10020
+2026-04-22 13:56:54.486    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 4e44e57d WebSocket 握手完成
+2026-04-22 13:57:10.917    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:57:10.917    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 560956cb WebSocket 握手完成
+2026-04-22 13:57:10.930    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 13:57:10.956    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - cadd4796 WebSocket 握手完成
+2026-04-22 13:58:36.453    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - f315909f WebSocket 握手完成
+2026-04-22 13:58:42.221    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:58:42.222    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 4b0ed67f WebSocket 握手完成
+2026-04-22 13:58:42.245    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 13:58:42.275    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 758f25ce WebSocket 握手完成
+2026-04-22 13:58:44.809    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:58:44.809    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - b634b470 WebSocket 握手完成
+2026-04-22 13:58:44.815    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 13:58:44.831    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 2c5cf4d4 WebSocket 握手完成
+2026-04-22 13:58:50.461    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 13:58:50.461    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 6b6f313c WebSocket 握手完成
+2026-04-22 13:58:50.481    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 13:58:50.492    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 4bce8c6a WebSocket 握手完成
+2026-04-22 14:03:16.896    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 1d7c01cc WebSocket 握手完成
+2026-04-22 14:03:33.916    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 14:03:33.916    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - dbbb6d2e WebSocket 握手完成
+2026-04-22 14:03:33.921    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 14:03:33.934    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 0bee28d3 WebSocket 握手完成
+2026-04-22 14:05:58.185    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 71087ebb WebSocket 握手完成
+2026-04-22 14:06:06.764    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 14:06:06.764    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - f0e58f76 WebSocket 握手完成
+2026-04-22 14:06:06.771    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 14:06:06.786    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - fb82bdef WebSocket 握手完成
+2026-04-22 14:06:19.655    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 6a33bdd8 WebSocket 握手完成
+2026-04-22 14:06:24.632    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 14:06:24.632    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - a6a2f985 WebSocket 握手完成
+2026-04-22 14:06:24.637    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 14:06:24.648    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - a0366f73 WebSocket 握手完成
+2026-04-22 14:09:38.010    INFO  cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl - initiative stop live, roomId = 17, userId = 10020
+2026-04-22 14:13:18.727    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - cdea2887 WebSocket 握手完成
+2026-04-22 14:13:23.128    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 14:13:23.129    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 5c61c79f WebSocket 握手完成
+2026-04-22 14:13:23.136    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 14:13:23.153    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 0ae0fdf4 WebSocket 握手完成
+2026-04-22 14:15:38.309    INFO  cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl - initiative stop live, roomId = 17, userId = 10020
+2026-04-22 15:25:19.488    INFO  cn.imhtb.live.AntLiveApplication - Starting AntLiveApplication using Java 17.0.17 on LAPTOP-R1L0BICR with PID 86564 (D:\code\live\backend\target\classes started by Lenovo in D:\code\live)
+2026-04-22 15:25:19.490    INFO  cn.imhtb.live.AntLiveApplication - No active profile set, falling back to default profiles: default
+2026-04-22 15:25:23.352    INFO  cn.imhtb.live.modules.server.netty.WebSocketServer - websocket server start success, port : 10022
+2026-04-22 15:25:23.662    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 15:25:23.672    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - d89302b1 WebSocket 握手完成
+2026-04-22 15:25:24.305    INFO  cn.imhtb.live.AntLiveApplication - Started AntLiveApplication in 5.099 seconds (JVM running for 5.884)
+2026-04-22 15:25:24.306    INFO  cn.imhtb.live.start.MinioStart - minio init skipped, incomplete config = MinioConfig(endpoint=null, ip=null, port=null, accessKey=null, secretKey=null, bucketName=null, relative=false)
+2026-04-22 15:25:41.133    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 3e15706a WebSocket 握手完成
+2026-04-22 15:25:55.019    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 15:25:55.020    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 3bf1fe99 WebSocket 握手完成
+2026-04-22 15:25:55.052    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 15:25:55.097    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 6304e126 WebSocket 握手完成
+2026-04-22 15:25:57.547    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 15:25:57.549    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 973af823 WebSocket 握手完成
+2026-04-22 15:25:57.558    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 15:25:57.574    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 0a9b190a WebSocket 握手完成
+2026-04-22 15:28:51.960    INFO  cn.imhtb.live.AntLiveApplication - Starting AntLiveApplication using Java 17.0.17 on LAPTOP-R1L0BICR with PID 69792 (D:\code\live\backend\target\classes started by Lenovo in D:\code\live)
+2026-04-22 15:28:51.961    INFO  cn.imhtb.live.AntLiveApplication - No active profile set, falling back to default profiles: default
+2026-04-22 15:28:55.563    INFO  cn.imhtb.live.modules.server.netty.WebSocketServer - websocket server start success, port : 10022
+2026-04-22 15:28:56.338    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 15:28:56.350    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - ac50d9a2 WebSocket 握手完成
+2026-04-22 15:28:56.573    INFO  cn.imhtb.live.AntLiveApplication - Started AntLiveApplication in 4.885 seconds (JVM running for 5.599)
+2026-04-22 15:28:56.574    INFO  cn.imhtb.live.start.MinioStart - minio init skipped, incomplete config = MinioConfig(endpoint=null, ip=null, port=null, accessKey=null, secretKey=null, bucketName=null, relative=false)
+2026-04-22 15:29:18.153    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - b1642c41 WebSocket 握手完成
+2026-04-22 15:29:36.334    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 15:29:36.335    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 32c2033a WebSocket 握手完成
+2026-04-22 15:29:36.367    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 15:29:36.372    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 2d1f87d8 WebSocket 握手完成
+2026-04-22 15:30:01.520    INFO  cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl - initiative stop live, roomId = 17, userId = 10020
+2026-04-22 16:04:59.665    INFO  cn.imhtb.live.AntLiveApplication - Starting AntLiveApplication using Java 17.0.17 on LAPTOP-R1L0BICR with PID 48112 (D:\code\live\backend\target\classes started by Lenovo in D:\code\live)
+2026-04-22 16:04:59.667    INFO  cn.imhtb.live.AntLiveApplication - No active profile set, falling back to default profiles: default
+2026-04-22 16:05:03.405    INFO  cn.imhtb.live.modules.server.netty.WebSocketServer - websocket server start success, port : 10022
+2026-04-22 16:05:04.319    INFO  cn.imhtb.live.AntLiveApplication - Started AntLiveApplication in 4.935 seconds (JVM running for 11.973)
+2026-04-22 16:05:04.320    INFO  cn.imhtb.live.start.MinioStart - minio init skipped, incomplete config = MinioConfig(endpoint=null, ip=null, port=null, accessKey=null, secretKey=null, bucketName=null, relative=false)
+2026-04-22 16:05:33.859    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - c0c7e0c6 WebSocket 握手完成
+2026-04-22 16:05:36.251    INFO  cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl - initiative stop live, roomId = 17, userId = 10020
+2026-04-22 16:05:52.071    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 46ab2b26 WebSocket 握手完成
+2026-04-22 16:05:58.687    INFO  cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl - initiative stop live, roomId = 17, userId = 10020
+2026-04-22 16:06:05.999    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - ff9e457c WebSocket 握手完成
+2026-04-22 16:06:12.945    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - c145eefe WebSocket 握手完成
+2026-04-22 16:06:31.425    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njc2MTExNiwiZXhwIjoxNzc2ODQ3NTE2fQ.iK1IV1IbnBq64xt66IZeL4Tn1CtxJeG_ng8cvIc84UI
+2026-04-22 16:06:31.425    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 0194c240 WebSocket 握手完成
+2026-04-22 16:06:31.447    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 16:06:31.462    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - b0022ba3 WebSocket 握手完成
+2026-04-22 17:08:13.690    INFO  cn.imhtb.live.AntLiveApplication - Starting AntLiveApplication using Java 17.0.17 on LAPTOP-R1L0BICR with PID 86448 (D:\code\live\backend\target\classes started by Lenovo in D:\code\live)
+2026-04-22 17:08:13.692    INFO  cn.imhtb.live.AntLiveApplication - No active profile set, falling back to default profiles: default
+2026-04-22 17:08:17.337    INFO  cn.imhtb.live.modules.server.netty.WebSocketServer - websocket server start success, port : 10022
+2026-04-22 17:08:18.289    INFO  cn.imhtb.live.AntLiveApplication - Started AntLiveApplication in 4.876 seconds (JVM running for 5.645)
+2026-04-22 17:08:18.290    INFO  cn.imhtb.live.start.MinioStart - minio init skipped, incomplete config = MinioConfig(endpoint=null, ip=null, port=null, accessKey=null, secretKey=null, bucketName=null, relative=false)
+2026-04-22 17:08:34.897    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 103e6dc3 WebSocket 握手完成
+2026-04-22 17:10:03.402    INFO  cn.imhtb.live.AntLiveApplication - Starting AntLiveApplication using Java 17.0.17 on LAPTOP-R1L0BICR with PID 66312 (D:\code\live\backend\target\classes started by Lenovo in D:\code\live)
+2026-04-22 17:10:03.405    INFO  cn.imhtb.live.AntLiveApplication - No active profile set, falling back to default profiles: default
+2026-04-22 17:10:07.961    INFO  cn.imhtb.live.modules.server.netty.WebSocketServer - websocket server start success, port : 10022
+2026-04-22 17:10:09.523    INFO  cn.imhtb.live.AntLiveApplication - Started AntLiveApplication in 6.458 seconds (JVM running for 7.398)
+2026-04-22 17:10:09.525    INFO  cn.imhtb.live.start.MinioStart - minio init skipped, incomplete config = MinioConfig(endpoint=null, ip=null, port=null, accessKey=null, secretKey=null, bucketName=null, relative=false)
+2026-04-22 17:10:16.671    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - b6d9162e WebSocket 握手完成
+2026-04-22 17:14:51.954    INFO  cn.imhtb.live.AntLiveApplication - Starting AntLiveApplication using Java 17.0.17 on LAPTOP-R1L0BICR with PID 25892 (D:\code\live\backend\target\classes started by Lenovo in D:\code\live)
+2026-04-22 17:14:51.956    INFO  cn.imhtb.live.AntLiveApplication - No active profile set, falling back to default profiles: default
+2026-04-22 17:14:56.636    INFO  cn.imhtb.live.modules.server.netty.WebSocketServer - websocket server start success, port : 10022
+2026-04-22 17:14:57.998    INFO  cn.imhtb.live.AntLiveApplication - Started AntLiveApplication in 6.399 seconds (JVM running for 7.391)
+2026-04-22 17:14:58.001    INFO  cn.imhtb.live.start.MinioStart - minio init skipped, incomplete config = MinioConfig(endpoint=null, ip=null, port=null, accessKey=null, secretKey=null, bucketName=null, relative=false)
+2026-04-22 17:15:31.987    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 69e22f81 WebSocket 握手完成
+2026-04-22 17:15:51.736    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-22T16:45:16Z. Current time: 2026-04-22T17:15:51Z, a difference of 1835736 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 17:15:51.736    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-22T16:45:16Z. Current time: 2026-04-22T17:15:51Z, a difference of 1835736 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 17:15:51.749    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-22T16:45:16Z. Current time: 2026-04-22T17:15:51Z, a difference of 1835749 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 17:15:51.795    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-22T16:45:16Z. Current time: 2026-04-22T17:15:51Z, a difference of 1835794 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 17:15:51.795    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-22T16:45:16Z. Current time: 2026-04-22T17:15:51Z, a difference of 1835795 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 17:15:51.795    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-22T16:45:16Z. Current time: 2026-04-22T17:15:51Z, a difference of 1835794 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 17:15:54.125    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 34a8f2cb WebSocket 握手完成
+2026-04-22 17:15:54.139    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-22T16:45:16Z. Current time: 2026-04-22T17:15:54Z, a difference of 1838139 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 17:15:54.139    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-22T16:45:16Z. Current time: 2026-04-22T17:15:54Z, a difference of 1838139 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 17:15:54.139    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-22T16:45:16Z. Current time: 2026-04-22T17:15:54Z, a difference of 1838139 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 17:15:54.139    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-22T16:45:16Z. Current time: 2026-04-22T17:15:54Z, a difference of 1838139 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 17:15:54.166    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - cd2f9097 WebSocket 握手完成
+2026-04-22 17:15:54.168    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-22T16:45:16Z. Current time: 2026-04-22T17:15:54Z, a difference of 1838168 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 17:15:54.173    WARN  cn.imhtb.live.common.filter.JwtAuthorizationFilter - Request to parse JWT with invalid signature . Detail : JWT expired at 2026-04-22T16:45:16Z. Current time: 2026-04-22T17:15:54Z, a difference of 1838173 milliseconds.  Allowed clock skew: 0 milliseconds.
+2026-04-22 17:16:05.960    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njg0OTM2MywiZXhwIjoxNzc2OTM1NzYzfQ.3ssyoF9afeeqSXYE9pKcjOEwvK9udUuLsY_SDcPoPqw
+2026-04-22 17:16:05.961    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - d1d6a37a WebSocket 握手完成
+2026-04-22 17:16:05.983    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 17:16:05.988    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 31a170de WebSocket 握手完成
+2026-04-22 17:18:03.075    INFO  cn.imhtb.live.AntLiveApplication - Starting AntLiveApplication using Java 17.0.17 on LAPTOP-R1L0BICR with PID 78520 (D:\code\live\backend\target\classes started by Lenovo in D:\code\live)
+2026-04-22 17:18:03.077    INFO  cn.imhtb.live.AntLiveApplication - No active profile set, falling back to default profiles: default
+2026-04-22 17:18:06.848    INFO  cn.imhtb.live.modules.server.netty.WebSocketServer - websocket server start success, port : 10022
+2026-04-22 17:18:07.252    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njg0OTM2MywiZXhwIjoxNzc2OTM1NzYzfQ.3ssyoF9afeeqSXYE9pKcjOEwvK9udUuLsY_SDcPoPqw
+2026-04-22 17:18:07.267    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - e21c255a WebSocket 握手完成
+2026-04-22 17:18:08.157    INFO  cn.imhtb.live.AntLiveApplication - Started AntLiveApplication in 5.365 seconds (JVM running for 6.143)
+2026-04-22 17:18:08.159    INFO  cn.imhtb.live.start.MinioStart - minio init skipped, incomplete config = MinioConfig(endpoint=null, ip=null, port=null, accessKey=null, secretKey=null, bucketName=null, relative=false)
+2026-04-22 17:18:14.332    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - c844a075 WebSocket 握手完成
+2026-04-22 17:18:16.009    INFO  cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl - initiative stop live, roomId = 17, userId = 10020
+2026-04-22 17:18:26.353    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - a31b9e52 WebSocket 握手完成
+2026-04-22 17:18:30.097    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - dd9a183a WebSocket 握手完成
+2026-04-22 17:18:35.186    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - cb2dd5b2 WebSocket 握手完成
+2026-04-22 17:18:41.904    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njg0OTM2MywiZXhwIjoxNzc2OTM1NzYzfQ.3ssyoF9afeeqSXYE9pKcjOEwvK9udUuLsY_SDcPoPqw
+2026-04-22 17:18:41.905    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 56af3b53 WebSocket 握手完成
+2026-04-22 17:18:41.915    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 17:18:41.929    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 44444252 WebSocket 握手完成
+2026-04-22 17:18:56.805    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njg0OTM2MywiZXhwIjoxNzc2OTM1NzYzfQ.3ssyoF9afeeqSXYE9pKcjOEwvK9udUuLsY_SDcPoPqw
+2026-04-22 17:18:56.807    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 6a696765 WebSocket 握手完成
+2026-04-22 17:18:56.831    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 17:18:56.834    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - c3c9fa21 WebSocket 握手完成
+2026-04-22 17:19:04.232    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njg0OTM2MywiZXhwIjoxNzc2OTM1NzYzfQ.3ssyoF9afeeqSXYE9pKcjOEwvK9udUuLsY_SDcPoPqw
+2026-04-22 17:19:04.233    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 542dd7a9 WebSocket 握手完成
+2026-04-22 17:19:04.241    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 17:19:04.261    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - f667802d WebSocket 握手完成
+2026-04-22 17:19:14.010    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - aadfc94b WebSocket 握手完成
+2026-04-22 17:20:41.188    WARN  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 542dd7a9 读空闲超时 30 秒，主动关闭连接
+2026-04-22 17:20:54.008    INFO  cn.imhtb.live.AntLiveApplication - Starting AntLiveApplication using Java 17.0.17 on LAPTOP-R1L0BICR with PID 10788 (D:\code\live\backend\target\classes started by Lenovo in D:\code\live)
+2026-04-22 17:20:54.011    INFO  cn.imhtb.live.AntLiveApplication - No active profile set, falling back to default profiles: default
+2026-04-22 17:20:59.204    INFO  cn.imhtb.live.modules.server.netty.WebSocketServer - websocket server start success, port : 10022
+2026-04-22 17:21:00.605    INFO  cn.imhtb.live.AntLiveApplication - Started AntLiveApplication in 6.952 seconds (JVM running for 8.011)
+2026-04-22 17:21:00.607    INFO  cn.imhtb.live.start.MinioStart - minio init skipped, incomplete config = MinioConfig(endpoint=null, ip=null, port=null, accessKey=null, secretKey=null, bucketName=null, relative=false)
+2026-04-22 17:21:01.219    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 6a44d2a0 WebSocket 握手完成
+2026-04-22 17:21:04.617    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njg0OTM2MywiZXhwIjoxNzc2OTM1NzYzfQ.3ssyoF9afeeqSXYE9pKcjOEwvK9udUuLsY_SDcPoPqw
+2026-04-22 17:21:04.618    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - a7796de2 WebSocket 握手完成
+2026-04-22 17:21:04.638    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 17:21:04.644    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 73a48366 WebSocket 握手完成
+2026-04-22 17:21:40.245    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - ed10d6ba WebSocket 握手完成
+2026-04-22 17:22:07.904    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - b0398c40 WebSocket 握手完成
+2026-04-22 17:22:32.064    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 180062a1 WebSocket 握手完成
+2026-04-22 17:22:50.011    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 805ebfdb WebSocket 握手完成
+2026-04-22 17:23:27.255    INFO  cn.imhtb.live.modules.live.service.impl.LalLiveServiceImpl - initiative stop live, roomId = 17, userId = 10020
+2026-04-22 17:35:19.773    INFO  cn.imhtb.live.AntLiveApplication - Starting AntLiveApplication using Java 17.0.17 on LAPTOP-R1L0BICR with PID 44904 (D:\code\live\backend\target\classes started by Lenovo in D:\code\live)
+2026-04-22 17:35:19.775    INFO  cn.imhtb.live.AntLiveApplication - No active profile set, falling back to default profiles: default
+2026-04-22 17:35:26.055    INFO  cn.imhtb.live.modules.server.netty.WebSocketServer - websocket server start success, port : 10022
+2026-04-22 17:35:26.933    INFO  cn.imhtb.live.AntLiveApplication - Started AntLiveApplication in 7.441 seconds (JVM running for 14.501)
+2026-04-22 17:35:26.934    INFO  cn.imhtb.live.start.MinioStart - minio init skipped, incomplete config = MinioConfig(endpoint=null, ip=null, port=null, accessKey=null, secretKey=null, bucketName=null, relative=false)
+2026-04-22 17:36:02.814    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 96fd6782 WebSocket 握手完成
+2026-04-22 17:37:17.098    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - b15c9b27 WebSocket 握手完成
+2026-04-22 17:37:34.639    INFO  cn.imhtb.live.modules.server.netty.handler.HttpHeaderHandler - connect userId = 10019, token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwianRpIjoiMTAwMTkiLCJ1c2VybmFtZSI6IuW4heWTpSIsImlhdCI6MTc3Njg0OTM2MywiZXhwIjoxNzc2OTM1NzYzfQ.3ssyoF9afeeqSXYE9pKcjOEwvK9udUuLsY_SDcPoPqw
+2026-04-22 17:37:34.639    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - ad7b0099 WebSocket 握手完成
+2026-04-22 17:37:34.678    WARN  cn.imhtb.live.modules.wallet.service.impl.WalletServiceImpl - wallet table is unavailable in current schema, returning synthetic wallet, userId = 10019
+2026-04-22 17:37:34.683    INFO  cn.imhtb.live.modules.server.netty.WebSocketServerHandler - 725a2baf WebSocket 握手完成

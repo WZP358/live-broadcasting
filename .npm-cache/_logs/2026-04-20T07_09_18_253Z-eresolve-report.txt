@@ -1,0 +1,18 @@
+'Log files:
+d:\code\live\.npm-cache\_logs\2026-04-20T07_09_18_253Z-debug-0.log
+
+# npm resolution error report
+
+While resolving: ant-live-web@0.0.0
+Found: pinia@2.3.1
+node_modules/pinia
+  pinia@"^2.3.1" from the root project
+
+Could not resolve dependency:
+peerOptional pinia@">=3.0.0" from pinia-plugin-persistedstate@4.7.1
+node_modules/pinia-plugin-persistedstate
+  pinia-plugin-persistedstate@"^4.2.0" from the root project
+
+Fix the upstream dependency conflict, or retry
+this command with --force or --legacy-peer-deps
+to accept an incorrect (and potentially broken) dependency resolution.

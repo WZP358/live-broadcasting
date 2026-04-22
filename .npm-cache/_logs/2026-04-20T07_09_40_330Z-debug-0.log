@@ -1,0 +1,1059 @@
+0 verbose cli D:\development\Node\v18.19.0\node.exe D:\development\Node\v18.19.0\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.2.3
+2 info using node@v18.19.0
+3 timing npm:load:whichnode Completed in 1ms
+4 timing config:load:defaults Completed in 2ms
+5 timing config:load:file:D:\development\Node\v18.19.0\node_modules\npm\npmrc Completed in 2ms
+6 timing config:load:builtin Completed in 2ms
+7 timing config:load:cli Completed in 1ms
+8 timing config:load:env Completed in 1ms
+9 timing config:load:file:D:\code\live\frontend\.npmrc Completed in 0ms
+10 timing config:load:project Completed in 1ms
+11 timing config:load:file:C:\Users\Lenovo\.npmrc Completed in 0ms
+12 timing config:load:user Completed in 0ms
+13 timing config:load:file:C:\Users\Lenovo\AppData\Roaming\npm\etc\npmrc Completed in 0ms
+14 timing config:load:global Completed in 1ms
+15 timing config:load:setEnvs Completed in 0ms
+16 timing config:load Completed in 8ms
+17 timing npm:load:configload Completed in 8ms
+18 timing config:load:flatten Completed in 1ms
+19 timing npm:load:mkdirpcache Completed in 1ms
+20 timing npm:load:mkdirplogs Completed in 0ms
+21 verbose title npm install
+22 verbose argv "install" "--cache" "d:\\code\\live\\.npm-cache"
+23 timing npm:load:setTitle Completed in 1ms
+24 timing npm:load:display Completed in 0ms
+25 verbose logfile logs-max:10 dir:d:\code\live\.npm-cache\_logs\2026-04-20T07_09_40_330Z-
+26 verbose logfile d:\code\live\.npm-cache\_logs\2026-04-20T07_09_40_330Z-debug-0.log
+27 timing npm:load:logFile Completed in 12ms
+28 timing npm:load:timers Completed in 0ms
+29 timing npm:load:configScope Completed in 0ms
+30 timing npm:load Completed in 48ms
+31 timing arborist:ctor Completed in 0ms
+32 silly logfile done cleaning log files
+33 timing idealTree:init Completed in 41ms
+34 timing idealTree:userRequests Completed in 1ms
+35 silly idealTree buildDeps
+36 silly fetch manifest pinia@^2.3.1
+37 verbose shrinkwrap failed to load node_modules/.package-lock.json out of date, updated: node_modules
+38 http fetch GET 200 https://registry.npmjs.org/pinia 11ms (cache hit)
+39 silly fetch manifest typescript@>=4.4.4
+40 http fetch GET 200 https://registry.npmjs.org/typescript 35ms (cache hit)
+41 silly fetch manifest vue@^3.5.13
+42 http fetch GET 200 https://registry.npmjs.org/vue 7ms (cache hit)
+43 silly fetch manifest pinia-plugin-persistedstate@^3.2.3
+44 http fetch GET 200 https://registry.npmjs.org/pinia-plugin-persistedstate 6ms (cache hit)
+45 silly placeDep ROOT pinia@2.3.1 OK for: ant-live-web@0.0.0 want: ^2.3.1
+46 silly fetch manifest vue-demi@^0.14.10
+47 silly placeDep ROOT pinia-plugin-persistedstate@3.2.3 OK for: ant-live-web@0.0.0 want: ^3.2.3
+48 http fetch GET 200 https://registry.npmjs.org/vue-demi 1428ms (cache miss)
+49 timing idealTree:#root Completed in 1527ms
+50 silly fetch manifest @vue/composition-api@^1.0.0-rc.1
+51 http fetch GET 200 https://registry.npmjs.org/@vue%2fcomposition-api 338ms (cache miss)
+52 silly fetch manifest vue@^2.7.0 || ^3.5.11
+53 silly fetch manifest vue@>= 2.5 < 2.7
+54 silly placeDep ROOT vue-demi@0.14.10 OK for: pinia@2.3.1 want: ^0.14.10
+55 timing idealTree:node_modules/pinia Completed in 347ms
+56 timing idealTree:node_modules/pinia-plugin-persistedstate Completed in 0ms
+57 timing idealTree:node_modules/vue-demi Completed in 0ms
+58 timing idealTree:buildDeps Completed in 1876ms
+59 timing idealTree:fixDepFlags Completed in 0ms
+60 timing idealTree Completed in 1920ms
+61 timing reify:loadTrees Completed in 1921ms
+62 timing reify:diffTrees Completed in 4ms
+63 silly reify mark retired [
+63 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm-musleabihf'
+63 silly reify ]
+64 silly reify moves {
+64 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm-musleabihf': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-linux-arm-musleabihf-oYsqlthc'
+64 silly reify }
+65 timing reify:retireShallow Completed in 2ms
+66 timing reify:createSparse Completed in 10ms
+67 timing reify:loadBundles Completed in 0ms
+68 silly audit bulk request {
+68 silly audit   '@ant-design/colors': [ '6.0.0' ],
+68 silly audit   '@ant-design/icons-svg': [ '4.4.2' ],
+68 silly audit   '@ant-design/icons-vue': [ '7.0.1' ],
+68 silly audit   '@antfu/utils': [ '0.7.10' ],
+68 silly audit   '@babel/helper-string-parser': [ '7.25.9' ],
+68 silly audit   '@babel/helper-validator-identifier': [ '7.25.9' ],
+68 silly audit   '@babel/parser': [ '7.26.3' ],
+68 silly audit   '@babel/runtime': [ '7.26.0' ],
+68 silly audit   '@babel/types': [ '7.26.3' ],
+68 silly audit   '@ctrl/tinycolor': [ '3.6.1' ],
+68 silly audit   '@emotion/hash': [ '0.9.2' ],
+68 silly audit   '@emotion/unitless': [ '0.8.1' ],
+68 silly audit   '@esbuild/aix-ppc64': [ '0.24.0' ],
+68 silly audit   '@esbuild/android-arm': [ '0.24.0' ],
+68 silly audit   '@esbuild/android-arm64': [ '0.24.0' ],
+68 silly audit   '@esbuild/android-x64': [ '0.24.0' ],
+68 silly audit   '@esbuild/darwin-arm64': [ '0.24.0' ],
+68 silly audit   '@esbuild/darwin-x64': [ '0.24.0' ],
+68 silly audit   '@esbuild/freebsd-arm64': [ '0.24.0' ],
+68 silly audit   '@esbuild/freebsd-x64': [ '0.24.0' ],
+68 silly audit   '@esbuild/linux-arm': [ '0.24.0' ],
+68 silly audit   '@esbuild/linux-arm64': [ '0.24.0' ],
+68 silly audit   '@esbuild/linux-ia32': [ '0.24.0' ],
+68 silly audit   '@esbuild/linux-loong64': [ '0.24.0' ],
+68 silly audit   '@esbuild/linux-mips64el': [ '0.24.0' ],
+68 silly audit   '@esbuild/linux-ppc64': [ '0.24.0' ],
+68 silly audit   '@esbuild/linux-riscv64': [ '0.24.0' ],
+68 silly audit   '@esbuild/linux-s390x': [ '0.24.0' ],
+68 silly audit   '@esbuild/linux-x64': [ '0.24.0' ],
+68 silly audit   '@esbuild/netbsd-x64': [ '0.24.0' ],
+68 silly audit   '@esbuild/openbsd-arm64': [ '0.24.0' ],
+68 silly audit   '@esbuild/openbsd-x64': [ '0.24.0' ],
+68 silly audit   '@esbuild/sunos-x64': [ '0.24.0' ],
+68 silly audit   '@esbuild/win32-arm64': [ '0.24.0' ],
+68 silly audit   '@esbuild/win32-ia32': [ '0.24.0' ],
+68 silly audit   '@esbuild/win32-x64': [ '0.24.0' ],
+68 silly audit   '@jridgewell/sourcemap-codec': [ '1.5.0' ],
+68 silly audit   '@nodelib/fs.scandir': [ '2.1.5' ],
+68 silly audit   '@nodelib/fs.stat': [ '2.0.5' ],
+68 silly audit   '@nodelib/fs.walk': [ '1.2.8' ],
+68 silly audit   '@parcel/watcher': [ '2.5.0' ],
+68 silly audit   '@parcel/watcher-android-arm64': [ '2.5.0' ],
+68 silly audit   '@parcel/watcher-darwin-arm64': [ '2.5.0' ],
+68 silly audit   '@parcel/watcher-darwin-x64': [ '2.5.0' ],
+68 silly audit   '@parcel/watcher-freebsd-x64': [ '2.5.0' ],
+68 silly audit   '@parcel/watcher-linux-arm-glibc': [ '2.5.0' ],
+68 silly audit   '@parcel/watcher-linux-arm-musl': [ '2.5.0' ],
+68 silly audit   '@parcel/watcher-linux-arm64-glibc': [ '2.5.0' ],
+68 silly audit   '@parcel/watcher-linux-arm64-musl': [ '2.5.0' ],
+68 silly audit   '@parcel/watcher-linux-x64-glibc': [ '2.5.0' ],
+68 silly audit   '@parcel/watcher-linux-x64-musl': [ '2.5.0' ],
+68 silly audit   '@parcel/watcher-win32-arm64': [ '2.5.0' ],
+68 silly audit   '@parcel/watcher-win32-ia32': [ '2.5.0' ],
+68 silly audit   '@parcel/watcher-win32-x64': [ '2.5.0' ],
+68 silly audit   '@rollup/pluginutils': [ '5.1.4' ],
+68 silly audit   '@rollup/rollup-android-arm-eabi': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-android-arm64': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-darwin-arm64': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-darwin-x64': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-freebsd-arm64': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-freebsd-x64': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-linux-arm-gnueabihf': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-linux-arm-musleabihf': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-linux-arm64-gnu': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-linux-arm64-musl': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-linux-loongarch64-gnu': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-linux-powerpc64le-gnu': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-linux-riscv64-gnu': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-linux-s390x-gnu': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-linux-x64-gnu': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-linux-x64-musl': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-win32-arm64-msvc': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-win32-ia32-msvc': [ '4.29.1' ],
+68 silly audit   '@rollup/rollup-win32-x64-msvc': [ '4.29.1' ],
+68 silly audit   '@simonwep/pickr': [ '1.8.2' ],
+68 silly audit   '@types/estree': [ '1.0.6' ],
+68 silly audit   '@vitejs/plugin-vue': [ '5.2.1' ],
+68 silly audit   '@vue/compiler-core': [ '3.5.13' ],
+68 silly audit   '@vue/compiler-dom': [ '3.5.13' ],
+68 silly audit   '@vue/compiler-sfc': [ '3.5.13' ],
+68 silly audit   '@vue/compiler-ssr': [ '3.5.13' ],
+68 silly audit   '@vue/devtools-api': [ '6.6.4' ],
+68 silly audit   '@vue/reactivity': [ '3.5.13' ],
+68 silly audit   '@vue/runtime-core': [ '3.5.13' ],
+68 silly audit   '@vue/runtime-dom': [ '3.5.13' ],
+68 silly audit   '@vue/server-renderer': [ '3.5.13' ],
+68 silly audit   '@vue/shared': [ '3.5.13' ],
+68 silly audit   acorn: [ '8.14.0' ],
+68 silly audit   'ant-design-vue': [ '4.2.6' ],
+68 silly audit   anymatch: [ '3.1.3' ],
+68 silly audit   picomatch: [ '2.3.1', '4.0.2' ],
+68 silly audit   'array-tree-filter': [ '2.1.0' ],
+68 silly audit   'async-validator': [ '4.2.5' ],
+68 silly audit   asynckit: [ '0.4.0' ],
+68 silly audit   axios: [ '1.7.9' ],
+68 silly audit   'balanced-match': [ '1.0.2' ],
+68 silly audit   'binary-extensions': [ '2.3.0' ],
+68 silly audit   'brace-expansion': [ '2.0.1' ],
+68 silly audit   braces: [ '3.0.3' ],
+68 silly audit   chokidar: [ '3.6.0', '4.0.3' ],
+68 silly audit   'combined-stream': [ '1.0.8' ],
+68 silly audit   'compute-scroll-into-view': [ '1.0.20' ],
+68 silly audit   confbox: [ '0.1.8' ],
+68 silly audit   'core-js': [ '3.39.0' ],
+68 silly audit   csstype: [ '3.1.3' ],
+68 silly audit   dayjs: [ '1.11.13' ],
+68 silly audit   debug: [ '4.4.0' ],
+68 silly audit   'delayed-stream': [ '1.0.0' ],
+68 silly audit   'detect-libc': [ '1.0.3' ],
+68 silly audit   'dom-align': [ '1.12.4' ],
+68 silly audit   'dom-scroll-into-view': [ '2.0.1' ],
+68 silly audit   entities: [ '4.5.0' ],
+68 silly audit   'es6-promise': [ '4.2.8' ],
+68 silly audit   esbuild: [ '0.24.0' ],
+68 silly audit   'estree-walker': [ '2.0.2' ],
+68 silly audit   'fast-glob': [ '3.3.2' ],
+68 silly audit   fastq: [ '1.18.0' ],
+68 silly audit   'fill-range': [ '7.1.1' ],
+68 silly audit   'flv.js': [ '1.6.2' ],
+68 silly audit   'follow-redirects': [ '1.15.9' ],
+68 silly audit   'form-data': [ '4.0.1' ],
+68 silly audit   fsevents: [ '2.3.3' ],
+68 silly audit   'glob-parent': [ '5.1.2' ],
+68 silly audit   immutable: [ '5.0.3' ],
+68 silly audit   'is-binary-path': [ '2.1.0' ],
+68 silly audit   'is-extglob': [ '2.1.1' ],
+68 silly audit   'is-glob': [ '4.0.3' ],
+68 silly audit   'is-number': [ '7.0.0' ],
+68 silly audit   'is-plain-object': [ '3.0.1' ],
+68 silly audit   'js-tokens': [ '4.0.0' ],
+68 silly audit   'local-pkg': [ '0.5.1' ],
+68 silly audit   lodash: [ '4.17.21' ],
+68 silly audit   'lodash-es': [ '4.17.21' ],
+68 silly audit   'loose-envify': [ '1.4.0' ],
+68 silly audit   'magic-string': [ '0.30.17' ],
+68 silly audit   merge2: [ '1.4.1' ],
+68 silly audit   micromatch: [ '4.0.8' ],
+68 silly audit   'mime-db': [ '1.52.0' ],
+68 silly audit   'mime-types': [ '2.1.35' ],
+68 silly audit   minimatch: [ '9.0.5' ],
+68 silly audit   mlly: [ '1.7.3' ],
+68 silly audit   ms: [ '2.1.3' ],
+68 silly audit   nanoid: [ '3.3.8' ],
+68 silly audit   nanopop: [ '2.4.2' ],
+68 silly audit   'node-addon-api': [ '7.1.1' ],
+68 silly audit   'normalize-path': [ '3.0.0' ],
+68 silly audit   pathe: [ '1.1.2' ],
+68 silly audit   picocolors: [ '1.1.1' ],
+68 silly audit   'pkg-types': [ '1.2.1' ],
+68 silly audit   postcss: [ '8.4.49' ],
+68 silly audit   prettier: [ '3.4.2' ],
+68 silly audit   'proxy-from-env': [ '1.1.0' ],
+68 silly audit   'queue-microtask': [ '1.2.3' ],
+68 silly audit   readdirp: [ '3.6.0', '4.0.2' ],
+68 silly audit   'regenerator-runtime': [ '0.14.1' ],
+68 silly audit   'resize-observer-polyfill': [ '1.5.1' ],
+68 silly audit   reusify: [ '1.0.4' ],
+68 silly audit   rollup: [ '4.29.1' ],
+68 silly audit   'run-parallel': [ '1.2.0' ],
+68 silly audit   sass: [ '1.83.0' ],
+68 silly audit   'scroll-into-view-if-needed': [ '2.2.31' ],
+68 silly audit   'shallow-equal': [ '1.2.1' ],
+68 silly audit   'source-map-js': [ '1.2.1' ],
+68 silly audit   stylis: [ '4.3.4' ],
+68 silly audit   svgaplayerweb: [ '2.3.2' ],
+68 silly audit   'throttle-debounce': [ '5.0.2' ],
+68 silly audit   'to-regex-range': [ '5.0.1' ],
+68 silly audit   ufo: [ '1.5.4' ],
+68 silly audit   unplugin: [ '2.1.0' ],
+68 silly audit   'unplugin-vue-components': [ '0.28.0' ],
+68 silly audit   vite: [ '6.0.5' ],
+68 silly audit   vue: [ '3.5.13' ],
+68 silly audit   'vue-infinite-scroll': [ '2.0.2' ],
+68 silly audit   'vue-router': [ '4.5.0' ],
+68 silly audit   'vue-types': [ '3.0.2' ],
+68 silly audit   warning: [ '4.0.3' ],
+68 silly audit   'webpack-virtual-modules': [ '0.6.2' ],
+68 silly audit   'webworkify-webpack': [ '2.1.5' ],
+68 silly audit   pinia: [ '2.3.1' ],
+68 silly audit   'pinia-plugin-persistedstate': [ '3.2.3' ],
+68 silly audit   'vue-demi': [ '0.14.10' ]
+68 silly audit }
+69 verbose reify failed optional dependency D:\code\live\frontend\node_modules\fsevents
+70 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\fsevents' ]
+71 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-win32-ia32-msvc
+72 silly reify mark deleted [
+72 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-win32-ia32-msvc'
+72 silly reify ]
+73 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-win32-arm64-msvc
+74 silly reify mark deleted [
+74 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-win32-arm64-msvc'
+74 silly reify ]
+75 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-x64-musl
+76 silly reify mark deleted [
+76 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-x64-musl'
+76 silly reify ]
+77 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-x64-gnu
+78 silly reify mark deleted [
+78 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-x64-gnu'
+78 silly reify ]
+79 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-s390x-gnu
+80 silly reify mark deleted [
+80 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-s390x-gnu'
+80 silly reify ]
+81 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-riscv64-gnu
+82 silly reify mark deleted [
+82 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-riscv64-gnu'
+82 silly reify ]
+83 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-powerpc64le-gnu
+84 silly reify mark deleted [
+84 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-powerpc64le-gnu'
+84 silly reify ]
+85 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-loongarch64-gnu
+86 silly reify mark deleted [
+86 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-loongarch64-gnu'
+86 silly reify ]
+87 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-arm64-musl
+88 silly reify mark deleted [
+88 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm64-musl'
+88 silly reify ]
+89 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-arm64-gnu
+90 silly reify mark deleted [
+90 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm64-gnu'
+90 silly reify ]
+91 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-arm-gnueabihf
+92 silly reify mark deleted [
+92 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm-gnueabihf'
+92 silly reify ]
+93 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-freebsd-x64
+94 silly reify mark deleted [
+94 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-freebsd-x64'
+94 silly reify ]
+95 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-freebsd-arm64
+96 silly reify mark deleted [
+96 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-freebsd-arm64'
+96 silly reify ]
+97 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-darwin-x64
+98 silly reify mark deleted [
+98 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-darwin-x64'
+98 silly reify ]
+99 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-darwin-arm64
+100 silly reify mark deleted [
+100 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-darwin-arm64'
+100 silly reify ]
+101 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-android-arm64
+102 silly reify mark deleted [
+102 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-android-arm64'
+102 silly reify ]
+103 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-android-arm-eabi
+104 silly reify mark deleted [
+104 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-android-arm-eabi'
+104 silly reify ]
+105 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-win32-ia32
+106 silly reify mark deleted [
+106 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-win32-ia32'
+106 silly reify ]
+107 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-win32-arm64
+108 silly reify mark deleted [
+108 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-win32-arm64'
+108 silly reify ]
+109 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-linux-x64-musl
+110 silly reify mark deleted [
+110 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-x64-musl'
+110 silly reify ]
+111 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-linux-x64-glibc
+112 silly reify mark deleted [
+112 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-x64-glibc'
+112 silly reify ]
+113 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-linux-arm64-musl
+114 silly reify mark deleted [
+114 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-arm64-musl'
+114 silly reify ]
+115 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-linux-arm64-glibc
+116 silly reify mark deleted [
+116 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-arm64-glibc'
+116 silly reify ]
+117 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-linux-arm-musl
+118 silly reify mark deleted [
+118 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-arm-musl'
+118 silly reify ]
+119 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-linux-arm-glibc
+120 silly reify mark deleted [
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-arm-glibc'
+120 silly reify ]
+121 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-freebsd-x64
+122 silly reify mark deleted [
+122 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-freebsd-x64'
+122 silly reify ]
+123 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-darwin-x64
+124 silly reify mark deleted [
+124 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-darwin-x64'
+124 silly reify ]
+125 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-darwin-arm64
+126 silly reify mark deleted [
+126 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-darwin-arm64'
+126 silly reify ]
+127 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-android-arm64
+128 silly reify mark deleted [
+128 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-android-arm64'
+128 silly reify ]
+129 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\win32-ia32
+130 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\win32-ia32' ]
+131 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\win32-arm64
+132 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\win32-arm64' ]
+133 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\sunos-x64
+134 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\sunos-x64' ]
+135 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\openbsd-x64
+136 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\openbsd-x64' ]
+137 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\openbsd-arm64
+138 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\openbsd-arm64' ]
+139 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\netbsd-x64
+140 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\netbsd-x64' ]
+141 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-x64
+142 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-x64' ]
+143 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-s390x
+144 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-s390x' ]
+145 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-riscv64
+146 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-riscv64' ]
+147 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-ppc64
+148 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-ppc64' ]
+149 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-mips64el
+150 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-mips64el' ]
+151 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-loong64
+152 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-loong64' ]
+153 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-ia32
+154 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-ia32' ]
+155 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-arm64
+156 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-arm64' ]
+157 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-arm
+158 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-arm' ]
+159 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\freebsd-x64
+160 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\freebsd-x64' ]
+161 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\freebsd-arm64
+162 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\freebsd-arm64' ]
+163 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\darwin-x64
+164 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\darwin-x64' ]
+165 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\darwin-arm64
+166 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\darwin-arm64' ]
+167 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\android-x64
+168 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\android-x64' ]
+169 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\android-arm64
+170 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\android-arm64' ]
+171 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\android-arm
+172 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\android-arm' ]
+173 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\aix-ppc64
+174 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\aix-ppc64' ]
+175 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-arm-musleabihf
+176 silly reify mark deleted [
+176 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm-musleabihf'
+176 silly reify ]
+177 timing reifyNode:node_modules/fsevents Completed in 6ms
+178 timing reifyNode:node_modules/@rollup/rollup-win32-ia32-msvc Completed in 6ms
+179 timing reifyNode:node_modules/@rollup/rollup-win32-arm64-msvc Completed in 6ms
+180 timing reifyNode:node_modules/@rollup/rollup-linux-x64-musl Completed in 6ms
+181 timing reifyNode:node_modules/@rollup/rollup-linux-x64-gnu Completed in 6ms
+182 timing reifyNode:node_modules/@rollup/rollup-linux-s390x-gnu Completed in 5ms
+183 timing reifyNode:node_modules/@rollup/rollup-linux-riscv64-gnu Completed in 5ms
+184 timing reifyNode:node_modules/@rollup/rollup-linux-powerpc64le-gnu Completed in 5ms
+185 timing reifyNode:node_modules/@rollup/rollup-linux-loongarch64-gnu Completed in 5ms
+186 timing reifyNode:node_modules/@rollup/rollup-linux-arm64-musl Completed in 5ms
+187 timing reifyNode:node_modules/@rollup/rollup-linux-arm64-gnu Completed in 5ms
+188 timing reifyNode:node_modules/@rollup/rollup-linux-arm-gnueabihf Completed in 5ms
+189 timing reifyNode:node_modules/@rollup/rollup-freebsd-x64 Completed in 5ms
+190 timing reifyNode:node_modules/@rollup/rollup-freebsd-arm64 Completed in 5ms
+191 timing reifyNode:node_modules/@rollup/rollup-darwin-x64 Completed in 6ms
+192 timing reifyNode:node_modules/@rollup/rollup-darwin-arm64 Completed in 6ms
+193 timing reifyNode:node_modules/@rollup/rollup-android-arm64 Completed in 6ms
+194 timing reifyNode:node_modules/@rollup/rollup-android-arm-eabi Completed in 6ms
+195 timing reifyNode:node_modules/@parcel/watcher-win32-ia32 Completed in 6ms
+196 timing reifyNode:node_modules/@parcel/watcher-win32-arm64 Completed in 6ms
+197 timing reifyNode:node_modules/@parcel/watcher-linux-x64-musl Completed in 6ms
+198 timing reifyNode:node_modules/@parcel/watcher-linux-x64-glibc Completed in 6ms
+199 timing reifyNode:node_modules/@parcel/watcher-linux-arm64-musl Completed in 6ms
+200 timing reifyNode:node_modules/@parcel/watcher-linux-arm64-glibc Completed in 6ms
+201 timing reifyNode:node_modules/@parcel/watcher-linux-arm-musl Completed in 6ms
+202 timing reifyNode:node_modules/@parcel/watcher-linux-arm-glibc Completed in 6ms
+203 timing reifyNode:node_modules/@parcel/watcher-freebsd-x64 Completed in 6ms
+204 timing reifyNode:node_modules/@parcel/watcher-darwin-x64 Completed in 6ms
+205 timing reifyNode:node_modules/@parcel/watcher-darwin-arm64 Completed in 6ms
+206 timing reifyNode:node_modules/@parcel/watcher-android-arm64 Completed in 6ms
+207 timing reifyNode:node_modules/@esbuild/win32-ia32 Completed in 6ms
+208 timing reifyNode:node_modules/@esbuild/win32-arm64 Completed in 6ms
+209 timing reifyNode:node_modules/@esbuild/sunos-x64 Completed in 6ms
+210 timing reifyNode:node_modules/@esbuild/openbsd-x64 Completed in 6ms
+211 timing reifyNode:node_modules/@esbuild/openbsd-arm64 Completed in 6ms
+212 timing reifyNode:node_modules/@esbuild/netbsd-x64 Completed in 6ms
+213 timing reifyNode:node_modules/@esbuild/linux-x64 Completed in 6ms
+214 timing reifyNode:node_modules/@esbuild/linux-s390x Completed in 6ms
+215 timing reifyNode:node_modules/@esbuild/linux-riscv64 Completed in 6ms
+216 timing reifyNode:node_modules/@esbuild/linux-ppc64 Completed in 6ms
+217 timing reifyNode:node_modules/@esbuild/linux-mips64el Completed in 6ms
+218 timing reifyNode:node_modules/@esbuild/linux-loong64 Completed in 6ms
+219 timing reifyNode:node_modules/@esbuild/linux-ia32 Completed in 6ms
+220 timing reifyNode:node_modules/@esbuild/linux-arm64 Completed in 6ms
+221 timing reifyNode:node_modules/@esbuild/linux-arm Completed in 6ms
+222 timing reifyNode:node_modules/@esbuild/freebsd-x64 Completed in 6ms
+223 timing reifyNode:node_modules/@esbuild/freebsd-arm64 Completed in 6ms
+224 timing reifyNode:node_modules/@esbuild/darwin-x64 Completed in 6ms
+225 timing reifyNode:node_modules/@esbuild/darwin-arm64 Completed in 6ms
+226 timing reifyNode:node_modules/@esbuild/android-x64 Completed in 6ms
+227 timing reifyNode:node_modules/@esbuild/android-arm64 Completed in 6ms
+228 timing reifyNode:node_modules/@esbuild/android-arm Completed in 6ms
+229 timing reifyNode:node_modules/@esbuild/aix-ppc64 Completed in 6ms
+230 timing reifyNode:node_modules/@rollup/rollup-linux-arm-musleabihf Completed in 6ms
+231 silly tarball no local data for vue-demi@https://registry.npmjs.org/vue-demi/-/vue-demi-0.14.10.tgz. Extracting by manifest.
+232 silly tarball no local data for pinia-plugin-persistedstate@https://registry.npmjs.org/pinia-plugin-persistedstate/-/pinia-plugin-persistedstate-3.2.3.tgz. Extracting by manifest.
+233 silly tarball no local data for pinia@https://registry.npmjs.org/pinia/-/pinia-2.3.1.tgz. Extracting by manifest.
+234 http fetch POST 200 https://registry.npmjs.org/-/npm/v1/security/advisories/bulk 276ms
+235 timing auditReport:getReport Completed in 277ms
+236 silly audit report {
+236 silly audit report   '@babel/runtime': [
+236 silly audit report     {
+236 silly audit report       id: 1104000,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-968p-4wvh-cqc8',
+236 silly audit report       title: 'Babel has inefficient RegExp complexity in generated code with .replace when transpiling named capturing groups',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '<7.26.10',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     }
+236 silly audit report   ],
+236 silly audit report   picomatch: [
+236 silly audit report     {
+236 silly audit report       id: 1115549,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-3v7f-55p6-f55p',
+236 silly audit report       title: 'Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '<2.3.2',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1115551,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-3v7f-55p6-f55p',
+236 silly audit report       title: 'Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '>=4.0.0 <4.0.4',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1115552,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-c2c7-rcm5-vvqj',
+236 silly audit report       title: 'Picomatch has a ReDoS vulnerability via extglob quantifiers',
+236 silly audit report       severity: 'high',
+236 silly audit report       vulnerable_versions: '<2.3.2',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1115554,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-c2c7-rcm5-vvqj',
+236 silly audit report       title: 'Picomatch has a ReDoS vulnerability via extglob quantifiers',
+236 silly audit report       severity: 'high',
+236 silly audit report       vulnerable_versions: '>=4.0.0 <4.0.4',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     }
+236 silly audit report   ],
+236 silly audit report   axios: [
+236 silly audit report     {
+236 silly audit report       id: 1111035,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-jr5f-v2jv-69x6',
+236 silly audit report       title: 'axios Requests Vulnerable To Possible SSRF and Credential Leakage via Absolute URL',
+236 silly audit report       severity: 'high',
+236 silly audit report       vulnerable_versions: '>=1.0.0 <1.8.2',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1112195,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-4hjh-wcwx-xvwj',
+236 silly audit report       title: 'Axios is vulnerable to DoS attack through lack of data size check',
+236 silly audit report       severity: 'high',
+236 silly audit report       vulnerable_versions: '>=1.0.0 <1.12.0',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1113275,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-43fc-jf86-j433',
+236 silly audit report       title: 'Axios is Vulnerable to Denial of Service via __proto__ Key in mergeConfig',
+236 silly audit report       severity: 'high',
+236 silly audit report       vulnerable_versions: '>=1.0.0 <=1.13.4',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1116673,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-3p68-rc4w-qgx5',
+236 silly audit report       title: 'Axios has a NO_PROXY Hostname Normalization Bypass that Leads to SSRF',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '>=1.0.0 <1.15.0',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1116675,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-fvcv-3m26-pcqx',
+236 silly audit report       title: 'Axios has Unrestricted Cloud Metadata Exfiltration via Header Injection Chain',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '>=1.0.0 <1.15.0',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     }
+236 silly audit report   ],
+236 silly audit report   'brace-expansion': [
+236 silly audit report     {
+236 silly audit report       id: 1105444,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-v6h2-p8h4-qcjw',
+236 silly audit report       title: 'brace-expansion Regular Expression Denial of Service vulnerability',
+236 silly audit report       severity: 'low',
+236 silly audit report       vulnerable_versions: '>=2.0.0 <=2.0.1',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1115541,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-f886-m6hf-6m8v',
+236 silly audit report       title: 'brace-expansion: Zero-step sequence causes process hang and memory exhaustion',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '>=2.0.0 <2.0.3',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     }
+236 silly audit report   ],
+236 silly audit report   esbuild: [
+236 silly audit report     {
+236 silly audit report       id: 1102341,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-67mh-4wv8-2f99',
+236 silly audit report       title: 'esbuild enables any website to send any requests to the development server and read the response',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '<=0.24.2',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     }
+236 silly audit report   ],
+236 silly audit report   'follow-redirects': [
+236 silly audit report     {
+236 silly audit report       id: 1116560,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-r4q5-vmmm-2653',
+236 silly audit report       title: 'follow-redirects leaks Custom Authentication Headers to Cross-Domain Redirect Targets',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '<=1.15.11',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     }
+236 silly audit report   ],
+236 silly audit report   'form-data': [
+236 silly audit report     {
+236 silly audit report       id: 1109538,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-fjxv-7rqg-78g4',
+236 silly audit report       title: 'form-data uses unsafe random function in form-data for choosing boundary',
+236 silly audit report       severity: 'critical',
+236 silly audit report       vulnerable_versions: '>=4.0.0 <4.0.4',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     }
+236 silly audit report   ],
+236 silly audit report   immutable: [
+236 silly audit report     {
+236 silly audit report       id: 1114168,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-wf6x-7x77-mvgw',
+236 silly audit report       title: 'Immutable is vulnerable to Prototype Pollution',
+236 silly audit report       severity: 'high',
+236 silly audit report       vulnerable_versions: '>=5.0.0 <5.1.5',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     }
+236 silly audit report   ],
+236 silly audit report   lodash: [
+236 silly audit report     {
+236 silly audit report       id: 1112455,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-xxjr-mmjv-4gpg',
+236 silly audit report       title: 'Lodash has Prototype Pollution Vulnerability in `_.unset` and `_.omit` functions',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '>=4.0.0 <=4.17.22',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1115806,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-r5fr-rjxr-66jc',
+236 silly audit report       title: 'lodash vulnerable to Code Injection via `_.template` imports key names',
+236 silly audit report       severity: 'high',
+236 silly audit report       vulnerable_versions: '>=4.0.0 <=4.17.23',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1115810,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-f23m-r3pf-42rh',
+236 silly audit report       title: 'lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit`',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '<=4.17.23',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     }
+236 silly audit report   ],
+236 silly audit report   'lodash-es': [
+236 silly audit report     {
+236 silly audit report       id: 1112453,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-xxjr-mmjv-4gpg',
+236 silly audit report       title: 'Lodash has Prototype Pollution Vulnerability in `_.unset` and `_.omit` functions',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '>=4.0.0 <=4.17.22',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1115805,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-r5fr-rjxr-66jc',
+236 silly audit report       title: 'lodash vulnerable to Code Injection via `_.template` imports key names',
+236 silly audit report       severity: 'high',
+236 silly audit report       vulnerable_versions: '>=4.0.0 <=4.17.23',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1115809,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-f23m-r3pf-42rh',
+236 silly audit report       title: 'lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit`',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '<=4.17.23',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     }
+236 silly audit report   ],
+236 silly audit report   minimatch: [
+236 silly audit report     {
+236 silly audit report       id: 1113465,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-3ppc-4f35-3m26',
+236 silly audit report       title: 'minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern',
+236 silly audit report       severity: 'high',
+236 silly audit report       vulnerable_versions: '>=9.0.0 <9.0.6',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1113544,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-7r86-cg39-jmmj',
+236 silly audit report       title: 'minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments',
+236 silly audit report       severity: 'high',
+236 silly audit report       vulnerable_versions: '>=9.0.0 <9.0.7',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1113552,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-23c5-xmqv-rm74',
+236 silly audit report       title: 'minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions',
+236 silly audit report       severity: 'high',
+236 silly audit report       vulnerable_versions: '>=9.0.0 <9.0.7',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     }
+236 silly audit report   ],
+236 silly audit report   rollup: [
+236 silly audit report     {
+236 silly audit report       id: 1113515,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-mw96-cpmx-2vgc',
+236 silly audit report       title: 'Rollup 4 has Arbitrary File Write via Path Traversal',
+236 silly audit report       severity: 'high',
+236 silly audit report       vulnerable_versions: '>=4.0.0 <4.59.0',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     }
+236 silly audit report   ],
+236 silly audit report   vite: [
+236 silly audit report     {
+236 silly audit report       id: 1102438,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-vg6x-rcgg-rjx6',
+236 silly audit report       title: 'Websites were able to send any requests to the development server and read the response in vite',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '>=6.0.0 <=6.0.8',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1103518,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-x574-m823-4x7w',
+236 silly audit report       title: 'Vite bypasses server.fs.deny when using ?raw??',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '>=6.0.0 <6.0.12',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1103885,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-356w-63v5-8wf4',
+236 silly audit report       title: 'Vite has an `server.fs.deny` bypass with an invalid `request-target`',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '>=6.0.0 <6.0.15',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1104174,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-859w-5945-r5v3',
+236 silly audit report       title: "Vite's server.fs.deny bypassed with /. for files under project root",
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '>=6.0.0 <=6.1.5',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1104203,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-xcj6-pq6g-qj4x',
+236 silly audit report       title: 'Vite allows server.fs.deny to be bypassed with .svg or relative paths',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '>=6.0.0 <6.0.14',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1107324,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-g4jq-h2w9-997c',
+236 silly audit report       title: 'Vite middleware may serve files starting with the same name with the public directory',
+236 silly audit report       severity: 'low',
+236 silly audit report       vulnerable_versions: '>=6.0.0 <=6.3.5',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1107328,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-jqfw-vq24-v9c3',
+236 silly audit report       title: "Vite's `server.fs` settings were not applied to HTML files",
+236 silly audit report       severity: 'low',
+236 silly audit report       vulnerable_versions: '>=6.0.0 <=6.3.5',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1109135,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-93m4-6634-74q7',
+236 silly audit report       title: 'vite allows server.fs.deny bypass via backslash on Windows',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '>=6.0.0 <=6.4.0',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1112512,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-4r4m-qw57-chr8',
+236 silly audit report       title: 'Vite has a `server.fs.deny` bypassed for `inline` and `raw` with `?import` query',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '>=6.0.0 <6.0.13',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1116229,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-4w7w-66w2-5vf9',
+236 silly audit report       title: 'Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling',
+236 silly audit report       severity: 'moderate',
+236 silly audit report       vulnerable_versions: '<=6.4.1',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     },
+236 silly audit report     {
+236 silly audit report       id: 1116234,
+236 silly audit report       url: 'https://github.com/advisories/GHSA-p9ff-h696-f583',
+236 silly audit report       title: 'Vite Vulnerable to Arbitrary File Read via Vite Dev Server WebSocket',
+236 silly audit report       severity: 'high',
+236 silly audit report       vulnerable_versions: '>=6.0.0 <=6.4.1',
+236 silly audit report       cwe: [Array],
+236 silly audit report       cvss: [Object]
+236 silly audit report     }
+236 silly audit report   ]
+236 silly audit report }
+237 timing metavuln:cache:get:security-advisory:@babel/runtime:xDaNmlS3J8LRk7IfDb7e9Gp3gcy/xDr1QZXCKC997SMkqKVemm2guY9vQpRI6omD11L5cfCI+STpoAdxUgnVsA== Completed in 6ms
+238 timing metavuln:cache:get:security-advisory:picomatch:GSQ5ghUF1JWDKMssoydWDVRebjlPePRwktLhrdWzXCq5xeBXdo4Cm9HGHnH2b6P1Nq93YjwPmimVjAx6kge32A== Completed in 5ms
+239 timing metavuln:cache:get:security-advisory:picomatch:2VXNT0aF/Oc+aljqzVZL+y7UYoRsun3f1sCqjauwt4R4X9DizyqvONZbNtH8U58EY1DnyPNR0Ul3cX6UkEWNqw== Completed in 5ms
+240 timing metavuln:cache:get:security-advisory:picomatch:H8EHkZXRRUdil3DyUl8tc8lCQUliQzjc5H5D4llqFojH152sBqO1suz3XiNiRQT++wJdWkgXe/zFc/Bbrrz6ng== Completed in 5ms
+241 timing metavuln:cache:get:security-advisory:picomatch:PpR3fLr2OHopA+LsAWF3etD15aOC+jSmDwUcp4VQCTrR40wKvI/IGhhNd2qAhozxRYiHGwb06lLJm+b8SMoG/w== Completed in 5ms
+242 timing metavuln:cache:get:security-advisory:axios:yrhF9SoFtS1+urw/362xcX3WaRshCAcVmEhaF45vHkIIAF71Ck/DgTqTn8kVi59BXcnuYupSQZkUeBAjwNWE+w== Completed in 5ms
+243 timing metavuln:cache:get:security-advisory:axios:639XSxImFrmZ8FJKlGw/ayVm90HNBWG0YmBic+gXcQg9gMjToIcCAHMWMBSN7FzFQCRxOEaPuifK0LaPyaQwMQ== Completed in 5ms
+244 timing metavuln:cache:get:security-advisory:axios:XlbxCi8sLnSl8m9PvHspUcR543OMkXOxB/jXGngj0YRh02/JFR8R1cLnsolnjD+cXz1ZxpGhsdG+q3G+wJV9ZQ== Completed in 5ms
+245 timing metavuln:cache:get:security-advisory:axios:/pf+c7xKXyOAxvzOcA0l8XNUPjlepHr4MF9fvSVm0zWMU6yUfxx1lOuHqs79kY1PPoghsFsj7ayWGBefooph4w== Completed in 5ms
+246 timing metavuln:cache:get:security-advisory:axios:KM2CayCdN6DRTT7BaALDKjW3GPxc5ix/ql038mETDjk1rdIC/XISHKoQ7ML6Yi2gFcUoWDShvg4sEOs2qg8x6Q== Completed in 5ms
+247 timing metavuln:cache:get:security-advisory:brace-expansion:mClmYqWawCNXseeTBHWiIwZH/2CmFUqPCmosJIeOhAgD9z1v3SayhHAwaWVo8wmeKU/JN9VP4zDBeXaqy3Ay2A== Completed in 4ms
+248 timing metavuln:cache:get:security-advisory:brace-expansion:ZHzAtnciS42HIMtUGajCifTIrkCUkWb93u/V1lJEt9HzdJ+ypMofn/dKgSOaziPQj+WGAcGS7t7WdPUHJBz0LA== Completed in 4ms
+249 timing metavuln:cache:get:security-advisory:esbuild:jKdCIzePj7J1488qgRXvF8Srh9wutSuR1exB8YooNX62hT+qhtrUXYbArLNoIhgwbaCqKpmduh18syZU7BR9SA== Completed in 4ms
+250 timing metavuln:cache:get:security-advisory:follow-redirects:4omfKvh6Ya8SJnn3CVNWLzlRKgsHqsp8XgTxFFWXdSXyBqVHeW5UgGhBrNoO2e0bLHnlnK954cJp6k7PjkvXLg== Completed in 4ms
+251 timing metavuln:cache:get:security-advisory:form-data:QHwSQK89tp8y8NaEB/BmWWPJbFRmcqxbWkKungy6gPoWDFe3Fp6pmP2eW7jh8ZiRT8rEqJsege91INZ02VqjRw== Completed in 4ms
+252 timing metavuln:cache:get:security-advisory:immutable:YX+whGW9izHcs0SDGTqy4UrHYrvfaM29jMq36qobkKXOW7YodVH83OO0ms5bS3o1mxpncpZcFwEPtr3iMHQXRQ== Completed in 4ms
+253 timing metavuln:cache:get:security-advisory:lodash:OGNA5lR8rR8aeucWHqvJLBV5oaroI/lF2JfG9J2l63dx9uiGUyHuI4ymC6nv+dqWwxtqCIMcqBukiWYEiF5/RQ== Completed in 3ms
+254 timing metavuln:cache:get:security-advisory:lodash:DNnxUw8Ep7p1YCAJl4A30HMQmsK3uaHxA5fhfuTpXJUBgCvmZbKGD7OWAcfQ2u+fc9lY6ap1BhHpARF9oEarxQ== Completed in 3ms
+255 timing metavuln:cache:get:security-advisory:lodash:thshZSsl03tivWaq68PzU+tj1Rdgd6ZGN992B7QB+2oylByv6bvG8a/FXYANJwK5kybQ7+c0hg18JSj4gYikrg== Completed in 3ms
+256 timing metavuln:cache:get:security-advisory:lodash-es:l+Ivi/RoR532FpvwaQzAYsIYfjesd02x7xcMxq6fYeIYu2iz3B2GSyj/yXDxcsODA0hJRm7lv3yGwpGV4OaKfA== Completed in 3ms
+257 timing metavuln:cache:get:security-advisory:lodash-es:2hooxkCzh18xL2U5n9z7WQVgR0GxpITb9dueD1UQzFYy/YhDg+H/FOhCjxZk+UiPPIKgZYr2ui3uS19kFz2tWw== Completed in 4ms
+258 timing metavuln:cache:get:security-advisory:lodash-es:9c1QgLEk4XKozzWF4h4NArdR+uKvCWs2w7k2v/OVESQ3+w9z2krjvgAYF3OJlXg/6ASezbo3baMyotZ2t6lOzw== Completed in 4ms
+259 timing metavuln:cache:get:security-advisory:minimatch:B00WbbnnDNaFGA7l9BgrTioYpRMzU4+U8SUF8cn65LwArJAK0O380QwyP/UyxPr7i9XUjX9/AADC41/edu9OrA== Completed in 4ms
+260 timing metavuln:cache:get:security-advisory:minimatch:tJ9Z2VGWqiQfLaVKxc9K/6Rz1g70Mpl3An4UK+K1lyHdz27vYPzhMIkC4jRGAN2wpssY+8l13Ql259B6zkaX/Q== Completed in 4ms
+261 timing metavuln:cache:get:security-advisory:minimatch:IBqefxF0lKwSFXzwGHp5L8khqSaPYY99x0GHtXNH4YxtdIexeL4FFPzrnnBvkhgmGDEWHo3XAgpPYGyM1jidQQ== Completed in 4ms
+262 timing metavuln:cache:get:security-advisory:rollup:j57+QiunRUdD0cUD+SOC+z9ahAKAX/ORqNrS8xn5EMmMoVNjDT6jDQ8+1zJZRvVKgeAjbBSmjAgyimjwq9Hhfg== Completed in 4ms
+263 timing metavuln:cache:get:security-advisory:vite:zZrobAm5WHnXnAwVM39+2ezFQ6SgUgscplWFNujjXVzNEU1v0uRVuHsHiWDRxGO80uIXlK2oANhxa9ZKqYckFg== Completed in 3ms
+264 timing metavuln:cache:get:security-advisory:vite:cRFlaVCr1VwlZybRufRyUzrt3WnVV0kGJ80PB4YhT0CSccPFjchDLU5YSg+lsk/oJgLJJnx2RfTL5LfHnC+TwQ== Completed in 3ms
+265 timing metavuln:cache:get:security-advisory:vite:V/kkW7UAerLN868n1sEcp2kqgOWOP07jiV4jaDFuaXPxQ4TQ59aPxTjRCGM2O9YRs0XLosjZ9vjfmA3ANhScCQ== Completed in 3ms
+266 timing metavuln:cache:get:security-advisory:vite:vzgb0p24PfLuRLWG4U0Kb57ep0tMCMT+C+2juIv/bmuVWEzDFtJ9uA1zOkQd1nxOGQ0T6oo+FNFaXzLvYTb13w== Completed in 3ms
+267 timing metavuln:cache:get:security-advisory:vite:C5mSGtQ/8iySKhD/I8hWlOo+bQ6ZRd3Y05TuSqc1Pa4jQelcCx/MOVCI/v7twFwCGOY8/muOI0B1LE1IWMJyIg== Completed in 3ms
+268 timing metavuln:cache:get:security-advisory:vite:0uerD0bg2wLpA2p8gFFFUIFeutSBDzFl98dN45i4u1EYj3EvJW03UyjO7tQ7Nk8yLBSi8rbvxI4k8C+oCGWubg== Completed in 3ms
+269 timing metavuln:cache:get:security-advisory:vite:Tg1igN5ImUILB7iL3lCsdCfvryCmdwXKQoLrV9oZh5qkz8tTcdwqqtt4Gpb4Z+ybfbkRa+CBnUNY2uVy1+5EAA== Completed in 3ms
+270 timing metavuln:cache:get:security-advisory:vite:lhMAfW6KGSgCoRssD7e9LUKdutS+l4nPk6asDknTsbkWI2UMyL0z8LPAXleuo5qPagcVjQxgCtMH3fz1kzkSYA== Completed in 2ms
+271 timing metavuln:cache:get:security-advisory:vite:I1BdsVrQ8+F0Nz5pjiEY7gYSFBzvKNwOR8nQyg9euOprN34SC4VipJH1GMc8WCRl+e0xZWGr2QiYwiNwqO4gag== Completed in 2ms
+272 timing metavuln:cache:get:security-advisory:vite:NrX8Kp1+Hvd4wvEsS+lQHlOeCmhHudEeMSpjy9BuW2CaPgMCcTb+azDYWI3SEwQXj582+iuKbuJSaWmAaLYLNw== Completed in 2ms
+273 timing metavuln:cache:get:security-advisory:vite:1yM5vNWTwdJaSaVCQEuMQbWVFay/FQXXU2WmBw1Z1s5sTuRIY9GXnzHfdu2O+32zrhRCOFcG6yYYk4daSMx+ZQ== Completed in 2ms
+274 http fetch GET 200 https://registry.npmjs.org/@babel%2fruntime 396ms (cache miss)
+275 timing metavuln:packument:@babel/runtime Completed in 398ms
+276 timing metavuln:load:security-advisory:@babel/runtime:1104000 Completed in 4ms
+277 timing metavuln:cache:put:security-advisory:@babel/runtime:xDaNmlS3J8LRk7IfDb7e9Gp3gcy/xDr1QZXCKC997SMkqKVemm2guY9vQpRI6omD11L5cfCI+STpoAdxUgnVsA== Completed in 3ms
+278 timing metavuln:calculate:security-advisory:@babel/runtime:1104000 Completed in 405ms
+279 http fetch GET 200 https://registry.npmjs.org/vue-demi/-/vue-demi-0.14.10.tgz 781ms (cache miss)
+280 timing reifyNode:node_modules/vue-demi Completed in 792ms
+281 http fetch GET 200 https://registry.npmjs.org/pinia/-/pinia-2.3.1.tgz 1080ms (cache miss)
+282 timing reifyNode:node_modules/pinia Completed in 1091ms
+283 http fetch GET 200 https://registry.npmjs.org/brace-expansion 846ms (cache miss)
+284 timing metavuln:packument:brace-expansion Completed in 846ms
+285 timing metavuln:load:security-advisory:brace-expansion:1105444 Completed in 1ms
+286 timing metavuln:load:security-advisory:brace-expansion:1115541 Completed in 0ms
+287 timing metavuln:cache:put:security-advisory:brace-expansion:ZHzAtnciS42HIMtUGajCifTIrkCUkWb93u/V1lJEt9HzdJ+ypMofn/dKgSOaziPQj+WGAcGS7t7WdPUHJBz0LA== Completed in 6ms
+288 timing metavuln:calculate:security-advisory:brace-expansion:1115541 Completed in 853ms
+289 timing metavuln:cache:put:security-advisory:brace-expansion:mClmYqWawCNXseeTBHWiIwZH/2CmFUqPCmosJIeOhAgD9z1v3SayhHAwaWVo8wmeKU/JN9VP4zDBeXaqy3Ay2A== Completed in 6ms
+290 timing metavuln:calculate:security-advisory:brace-expansion:1105444 Completed in 853ms
+291 http fetch GET 200 https://registry.npmjs.org/form-data 930ms (cache miss)
+292 timing metavuln:packument:form-data Completed in 931ms
+293 timing metavuln:load:security-advisory:form-data:1109538 Completed in 1ms
+294 timing metavuln:cache:put:security-advisory:form-data:QHwSQK89tp8y8NaEB/BmWWPJbFRmcqxbWkKungy6gPoWDFe3Fp6pmP2eW7jh8ZiRT8rEqJsege91INZ02VqjRw== Completed in 4ms
+295 timing metavuln:calculate:security-advisory:form-data:1109538 Completed in 937ms
+296 http fetch GET 200 https://registry.npmjs.org/immutable 954ms (cache miss)
+297 timing metavuln:packument:immutable Completed in 956ms
+298 timing metavuln:load:security-advisory:immutable:1114168 Completed in 1ms
+299 timing metavuln:cache:put:security-advisory:immutable:YX+whGW9izHcs0SDGTqy4UrHYrvfaM29jMq36qobkKXOW7YodVH83OO0ms5bS3o1mxpncpZcFwEPtr3iMHQXRQ== Completed in 5ms
+300 timing metavuln:calculate:security-advisory:immutable:1114168 Completed in 963ms
+301 http fetch GET 200 https://registry.npmjs.org/axios 970ms (cache miss)
+302 timing metavuln:packument:axios Completed in 972ms
+303 timing metavuln:load:security-advisory:axios:1111035 Completed in 2ms
+304 timing metavuln:load:security-advisory:axios:1112195 Completed in 1ms
+305 timing metavuln:load:security-advisory:axios:1113275 Completed in 1ms
+306 timing metavuln:load:security-advisory:axios:1116673 Completed in 1ms
+307 timing metavuln:load:security-advisory:axios:1116675 Completed in 1ms
+308 timing metavuln:cache:put:security-advisory:axios:/pf+c7xKXyOAxvzOcA0l8XNUPjlepHr4MF9fvSVm0zWMU6yUfxx1lOuHqs79kY1PPoghsFsj7ayWGBefooph4w== Completed in 8ms
+309 timing metavuln:calculate:security-advisory:axios:1116673 Completed in 987ms
+310 http fetch GET 200 https://registry.npmjs.org/lodash-es 986ms (cache miss)
+311 timing metavuln:packument:lodash-es Completed in 987ms
+312 timing metavuln:load:security-advisory:lodash-es:1112453 Completed in 0ms
+313 timing metavuln:load:security-advisory:lodash-es:1115805 Completed in 1ms
+314 timing metavuln:load:security-advisory:lodash-es:1115809 Completed in 0ms
+315 timing metavuln:cache:put:security-advisory:axios:639XSxImFrmZ8FJKlGw/ayVm90HNBWG0YmBic+gXcQg9gMjToIcCAHMWMBSN7FzFQCRxOEaPuifK0LaPyaQwMQ== Completed in 16ms
+316 timing metavuln:calculate:security-advisory:axios:1112195 Completed in 991ms
+317 timing metavuln:cache:put:security-advisory:axios:yrhF9SoFtS1+urw/362xcX3WaRshCAcVmEhaF45vHkIIAF71Ck/DgTqTn8kVi59BXcnuYupSQZkUeBAjwNWE+w== Completed in 17ms
+318 timing metavuln:calculate:security-advisory:axios:1111035 Completed in 991ms
+319 timing metavuln:cache:put:security-advisory:axios:XlbxCi8sLnSl8m9PvHspUcR543OMkXOxB/jXGngj0YRh02/JFR8R1cLnsolnjD+cXz1ZxpGhsdG+q3G+wJV9ZQ== Completed in 16ms
+320 timing metavuln:calculate:security-advisory:axios:1113275 Completed in 993ms
+321 timing metavuln:cache:put:security-advisory:axios:KM2CayCdN6DRTT7BaALDKjW3GPxc5ix/ql038mETDjk1rdIC/XISHKoQ7ML6Yi2gFcUoWDShvg4sEOs2qg8x6Q== Completed in 13ms
+322 timing metavuln:calculate:security-advisory:axios:1116675 Completed in 993ms
+323 timing metavuln:cache:put:security-advisory:lodash-es:l+Ivi/RoR532FpvwaQzAYsIYfjesd02x7xcMxq6fYeIYu2iz3B2GSyj/yXDxcsODA0hJRm7lv3yGwpGV4OaKfA== Completed in 8ms
+324 timing metavuln:calculate:security-advisory:lodash-es:1112453 Completed in 995ms
+325 timing metavuln:cache:put:security-advisory:lodash-es:9c1QgLEk4XKozzWF4h4NArdR+uKvCWs2w7k2v/OVESQ3+w9z2krjvgAYF3OJlXg/6ASezbo3baMyotZ2t6lOzw== Completed in 10ms
+326 timing metavuln:calculate:security-advisory:lodash-es:1115809 Completed in 998ms
+327 timing metavuln:cache:put:security-advisory:lodash-es:2hooxkCzh18xL2U5n9z7WQVgR0GxpITb9dueD1UQzFYy/YhDg+H/FOhCjxZk+UiPPIKgZYr2ui3uS19kFz2tWw== Completed in 10ms
+328 timing metavuln:calculate:security-advisory:lodash-es:1115805 Completed in 998ms
+329 http fetch GET 200 https://registry.npmjs.org/follow-redirects 1010ms (cache miss)
+330 timing metavuln:packument:follow-redirects Completed in 1011ms
+331 timing metavuln:load:security-advisory:follow-redirects:1116560 Completed in 0ms
+332 timing metavuln:cache:put:security-advisory:follow-redirects:4omfKvh6Ya8SJnn3CVNWLzlRKgsHqsp8XgTxFFWXdSXyBqVHeW5UgGhBrNoO2e0bLHnlnK954cJp6k7PjkvXLg== Completed in 5ms
+333 timing metavuln:calculate:security-advisory:follow-redirects:1116560 Completed in 1016ms
+334 http fetch GET 200 https://registry.npmjs.org/rollup 1639ms (cache miss)
+335 timing metavuln:packument:rollup Completed in 1652ms
+336 timing metavuln:load:security-advisory:rollup:1113515 Completed in 6ms
+337 timing metavuln:cache:put:security-advisory:rollup:j57+QiunRUdD0cUD+SOC+z9ahAKAX/ORqNrS8xn5EMmMoVNjDT6jDQ8+1zJZRvVKgeAjbBSmjAgyimjwq9Hhfg== Completed in 9ms
+338 timing metavuln:calculate:security-advisory:rollup:1113515 Completed in 1667ms
+339 http fetch GET 200 https://registry.npmjs.org/vite 1717ms (cache miss)
+340 timing metavuln:packument:vite Completed in 1728ms
+341 timing metavuln:load:security-advisory:vite:1102438 Completed in 6ms
+342 timing metavuln:load:security-advisory:vite:1103518 Completed in 7ms
+343 timing metavuln:load:security-advisory:vite:1103885 Completed in 6ms
+344 timing metavuln:load:security-advisory:vite:1104174 Completed in 6ms
+345 timing metavuln:load:security-advisory:vite:1104203 Completed in 8ms
+346 timing metavuln:load:security-advisory:vite:1107324 Completed in 6ms
+347 timing metavuln:load:security-advisory:vite:1107328 Completed in 6ms
+348 timing metavuln:load:security-advisory:vite:1109135 Completed in 5ms
+349 timing metavuln:load:security-advisory:vite:1112512 Completed in 5ms
+350 timing metavuln:load:security-advisory:vite:1116229 Completed in 6ms
+351 timing metavuln:load:security-advisory:vite:1116234 Completed in 5ms
+352 http fetch GET 200 https://registry.npmjs.org/pinia-plugin-persistedstate/-/pinia-plugin-persistedstate-3.2.3.tgz 2072ms (cache miss)
+353 timing reifyNode:node_modules/pinia-plugin-persistedstate Completed in 2086ms
+354 timing reify:unpack Completed in 2086ms
+355 timing reify:unretire Completed in 0ms
+356 timing metavuln:cache:put:security-advisory:vite:V/kkW7UAerLN868n1sEcp2kqgOWOP07jiV4jaDFuaXPxQ4TQ59aPxTjRCGM2O9YRs0XLosjZ9vjfmA3ANhScCQ== Completed in 67ms
+357 timing metavuln:calculate:security-advisory:vite:1103885 Completed in 1814ms
+358 timing metavuln:cache:put:security-advisory:vite:I1BdsVrQ8+F0Nz5pjiEY7gYSFBzvKNwOR8nQyg9euOprN34SC4VipJH1GMc8WCRl+e0xZWGr2QiYwiNwqO4gag== Completed in 25ms
+359 timing metavuln:calculate:security-advisory:vite:1116229 Completed in 1814ms
+360 timing metavuln:cache:put:security-advisory:vite:C5mSGtQ/8iySKhD/I8hWlOo+bQ6ZRd3Y05TuSqc1Pa4jQelcCx/MOVCI/v7twFwCGOY8/muOI0B1LE1IWMJyIg== Completed in 53ms
+361 timing metavuln:calculate:security-advisory:vite:1104203 Completed in 1815ms
+362 timing metavuln:cache:put:security-advisory:vite:zZrobAm5WHnXnAwVM39+2ezFQ6SgUgscplWFNujjXVzNEU1v0uRVuHsHiWDRxGO80uIXlK2oANhxa9ZKqYckFg== Completed in 81ms
+363 timing metavuln:calculate:security-advisory:vite:1102438 Completed in 1815ms
+364 timing metavuln:cache:put:security-advisory:vite:NrX8Kp1+Hvd4wvEsS+lQHlOeCmhHudEeMSpjy9BuW2CaPgMCcTb+azDYWI3SEwQXj582+iuKbuJSaWmAaLYLNw== Completed in 19ms
+365 timing metavuln:calculate:security-advisory:vite:1116234 Completed in 1814ms
+366 timing metavuln:cache:put:security-advisory:vite:vzgb0p24PfLuRLWG4U0Kb57ep0tMCMT+C+2juIv/bmuVWEzDFtJ9uA1zOkQd1nxOGQ0T6oo+FNFaXzLvYTb13w== Completed in 61ms
+367 timing metavuln:calculate:security-advisory:vite:1104174 Completed in 1815ms
+368 timing metavuln:cache:put:security-advisory:vite:1yM5vNWTwdJaSaVCQEuMQbWVFay/FQXXU2WmBw1Z1s5sTuRIY9GXnzHfdu2O+32zrhRCOFcG6yYYk4daSMx+ZQ== Completed in 31ms
+369 timing metavuln:calculate:security-advisory:vite:1112512 Completed in 1814ms
+370 timing metavuln:cache:put:security-advisory:vite:cRFlaVCr1VwlZybRufRyUzrt3WnVV0kGJ80PB4YhT0CSccPFjchDLU5YSg+lsk/oJgLJJnx2RfTL5LfHnC+TwQ== Completed in 75ms
+371 timing metavuln:calculate:security-advisory:vite:1103518 Completed in 1816ms
+372 timing metavuln:cache:put:security-advisory:vite:lhMAfW6KGSgCoRssD7e9LUKdutS+l4nPk6asDknTsbkWI2UMyL0z8LPAXleuo5qPagcVjQxgCtMH3fz1kzkSYA== Completed in 37ms
+373 timing metavuln:calculate:security-advisory:vite:1109135 Completed in 1815ms
+374 timing metavuln:cache:put:security-advisory:vite:0uerD0bg2wLpA2p8gFFFUIFeutSBDzFl98dN45i4u1EYj3EvJW03UyjO7tQ7Nk8yLBSi8rbvxI4k8C+oCGWubg== Completed in 42ms
+375 timing metavuln:calculate:security-advisory:vite:1107328 Completed in 1816ms
+376 timing metavuln:cache:put:security-advisory:vite:Tg1igN5ImUILB7iL3lCsdCfvryCmdwXKQoLrV9oZh5qkz8tTcdwqqtt4Gpb4Z+ybfbkRa+CBnUNY2uVy1+5EAA== Completed in 48ms
+377 timing metavuln:calculate:security-advisory:vite:1107324 Completed in 1816ms
+378 timing build:queue Completed in 12ms
+379 timing build:link:node_modules/vue-demi Completed in 12ms
+380 timing build:link Completed in 12ms
+381 info run vue-demi@0.14.10 postinstall node_modules/vue-demi node -e "try{require('./scripts/postinstall.js')}catch(e){}"
+382 info run vue-demi@0.14.10 postinstall { code: undefined, signal: undefined }
+383 verbose stack Error: spawn EPERM
+383 verbose stack     at ChildProcess.spawn (node:internal/child_process:414:11)
+383 verbose stack     at spawn (node:child_process:761:9)
+383 verbose stack     at D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\promise-spawn\lib\index.js:18:12
+383 verbose stack     at new Promise (<anonymous>)
+383 verbose stack     at promiseSpawn (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\promise-spawn\lib\index.js:17:13)
+383 verbose stack     at spawnWithShell (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\promise-spawn\lib\index.js:123:10)
+383 verbose stack     at promiseSpawn (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\promise-spawn\lib\index.js:12:12)
+383 verbose stack     at runScriptPkg (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\run-script\lib\run-script-pkg.js:79:13)
+383 verbose stack     at runScript (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\run-script\lib\run-script.js:9:16)
+383 verbose stack     at Array.<anonymous> (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\rebuild.js:363:17)
+384 verbose cwd D:\code\live\frontend
+385 verbose Windows_NT 10.0.26200
+386 verbose node v18.19.0
+387 verbose npm  v10.2.3
+388 error code EPERM
+389 error syscall spawn
+390 error errno -4048
+391 error Error: spawn EPERM
+391 error     at ChildProcess.spawn (node:internal/child_process:414:11)
+391 error     at spawn (node:child_process:761:9)
+391 error     at D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\promise-spawn\lib\index.js:18:12
+391 error     at new Promise (<anonymous>)
+391 error     at promiseSpawn (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\promise-spawn\lib\index.js:17:13)
+391 error     at spawnWithShell (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\promise-spawn\lib\index.js:123:10)
+391 error     at promiseSpawn (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\promise-spawn\lib\index.js:12:12)
+391 error     at runScriptPkg (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\run-script\lib\run-script-pkg.js:79:13)
+391 error     at runScript (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\run-script\lib\run-script.js:9:16)
+391 error     at Array.<anonymous> (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\rebuild.js:363:17) {
+391 error   errno: -4048,
+391 error   code: 'EPERM',
+391 error   syscall: 'spawn'
+391 error }
+392 error
+392 error The operation was rejected by your operating system.
+392 error It's possible that the file was already in use (by a text editor or antivirus),
+392 error or that you lack permissions to access it.
+392 error
+392 error If you believe this might be a permissions issue, please double-check the
+392 error permissions of the file and its containing directories, or try running
+392 error the command again as root/Administrator.
+393 verbose exit -4048
+394 timing npm Completed in 4434ms
+395 verbose unfinished npm timer command:install 1776668980664
+396 verbose unfinished npm timer reify 1776668980665
+397 verbose unfinished npm timer reify:audit 1776668982606
+398 verbose unfinished npm timer auditReport:init 1776668982885
+399 verbose unfinished npm timer metavuln:calculate:security-advisory:picomatch:1115549 1776668982886
+400 verbose unfinished npm timer metavuln:packument:picomatch 1776668982886
+401 verbose unfinished npm timer metavuln:calculate:security-advisory:picomatch:1115551 1776668982886
+402 verbose unfinished npm timer metavuln:calculate:security-advisory:picomatch:1115552 1776668982886
+403 verbose unfinished npm timer metavuln:calculate:security-advisory:picomatch:1115554 1776668982886
+404 verbose unfinished npm timer metavuln:calculate:security-advisory:esbuild:1102341 1776668982887
+405 verbose unfinished npm timer metavuln:packument:esbuild 1776668982887
+406 verbose unfinished npm timer metavuln:calculate:security-advisory:lodash:1112455 1776668982888
+407 verbose unfinished npm timer metavuln:packument:lodash 1776668982888
+408 verbose unfinished npm timer metavuln:calculate:security-advisory:lodash:1115806 1776668982888
+409 verbose unfinished npm timer metavuln:calculate:security-advisory:lodash:1115810 1776668982888
+410 verbose unfinished npm timer metavuln:calculate:security-advisory:minimatch:1113465 1776668982888
+411 verbose unfinished npm timer metavuln:packument:minimatch 1776668982888
+412 verbose unfinished npm timer metavuln:calculate:security-advisory:minimatch:1113544 1776668982888
+413 verbose unfinished npm timer metavuln:calculate:security-advisory:minimatch:1113552 1776668982888
+414 verbose unfinished npm timer reify:build 1776668984695
+415 verbose unfinished npm timer build 1776668984695
+416 verbose unfinished npm timer build:deps 1776668984695
+417 verbose unfinished npm timer build:run:postinstall 1776668984719
+418 verbose unfinished npm timer build:run:postinstall:node_modules/vue-demi 1776668984720
+419 verbose unfinished npm timer reify:rollback:createSparse 1776668984760
+420 verbose code -4048
+421 error A complete log of this run can be found in: d:\code\live\.npm-cache\_logs\2026-04-20T07_09_40_330Z-debug-0.log

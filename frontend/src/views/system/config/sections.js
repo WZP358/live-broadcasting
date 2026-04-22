@@ -1,0 +1,80 @@
+export const configSections = [
+  {
+    key: "website",
+    title: "站点配置",
+    description: "维护后台展示名称、域名和基础运营信息。",
+    fields: [
+      { key: "siteName", label: "站点名称", type: "input", placeholder: "请输入站点名称" },
+      { key: "siteUrl", label: "站点地址", type: "input", placeholder: "https://example.com" },
+      { key: "adminEmail", label: "管理员邮箱", type: "input", placeholder: "请输入管理员邮箱" },
+      { key: "siteNotice", label: "站点公告", type: "textarea", placeholder: "请输入站点公告" },
+    ],
+  },
+  {
+    key: "security",
+    title: "安全配置",
+    description: "统一管理登录安全和风控阈值。",
+    fields: [
+      { key: "jwtExpireHours", label: "Token 有效期(小时)", type: "number", min: 1, max: 720 },
+      { key: "loginFailLimit", label: "登录失败上限", type: "number", min: 1, max: 20 },
+      { key: "ipWhitelist", label: "后台 IP 白名单", type: "textarea", placeholder: "多个 IP 用换行分隔" },
+      { key: "enableOperationLog", label: "记录操作日志", type: "switch" },
+    ],
+  },
+  {
+    key: "login",
+    title: "登录配置",
+    description: "整理本地环境的登录、注册和验证码开关。",
+    fields: [
+      { key: "allowRegister", label: "允许注册", type: "switch" },
+      { key: "enableSmsLogin", label: "开启短信登录", type: "switch" },
+      { key: "enableEmailLogin", label: "开启邮箱登录", type: "switch" },
+      { key: "loginTips", label: "登录页提示", type: "textarea", placeholder: "请输入登录页提示文案" },
+    ],
+  },
+  {
+    key: "storage",
+    title: "存储配置",
+    description: "本地调试场景下记录对象存储和上传域名配置。",
+    fields: [
+      { key: "storageType", label: "存储类型", type: "select", options: ["local", "minio", "oss"] },
+      { key: "bucketName", label: "Bucket 名称", type: "input", placeholder: "请输入 bucket" },
+      { key: "publicHost", label: "访问域名", type: "input", placeholder: "请输入资源访问域名" },
+      { key: "uploadLimitMb", label: "上传大小上限(MB)", type: "number", min: 1, max: 500 },
+    ],
+  },
+  {
+    key: "live",
+    title: "直播配置",
+    description: "整理推拉流和审核相关的直播参数。",
+    fields: [
+      { key: "pushDomain", label: "推流域名", type: "input", placeholder: "请输入推流域名" },
+      { key: "playDomain", label: "播放域名", type: "input", placeholder: "请输入播放域名" },
+      { key: "enableLiveAudit", label: "开启直播审核", type: "switch" },
+      { key: "auditHint", label: "审核提示", type: "textarea", placeholder: "请输入主播侧提示文案" },
+    ],
+  },
+]
+
+export const defaultConfigState = {
+  siteName: "Ant Live 本地环境",
+  siteUrl: "http://localhost:5173",
+  adminEmail: "admin@local.test",
+  siteNotice: "当前为本地联调环境，优先保证后台页面可用和接口兼容。",
+  jwtExpireHours: 24,
+  loginFailLimit: 5,
+  ipWhitelist: "",
+  enableOperationLog: true,
+  allowRegister: true,
+  enableSmsLogin: false,
+  enableEmailLogin: true,
+  loginTips: "本地环境不建议接入真实短信或邮箱服务。",
+  storageType: "local",
+  bucketName: "ant-live-local",
+  publicHost: "http://localhost:9000",
+  uploadLimitMb: 20,
+  pushDomain: "rtmp://localhost/live",
+  playDomain: "http://localhost/live",
+  enableLiveAudit: false,
+  auditHint: "本地调试环境下默认关闭直播审核。",
+}

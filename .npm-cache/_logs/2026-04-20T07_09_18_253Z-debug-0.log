@@ -1,0 +1,102 @@
+0 verbose cli D:\development\Node\v18.19.0\node.exe D:\development\Node\v18.19.0\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.2.3
+2 info using node@v18.19.0
+3 timing npm:load:whichnode Completed in 1ms
+4 timing config:load:defaults Completed in 1ms
+5 timing config:load:file:D:\development\Node\v18.19.0\node_modules\npm\npmrc Completed in 1ms
+6 timing config:load:builtin Completed in 3ms
+7 timing config:load:cli Completed in 1ms
+8 timing config:load:env Completed in 0ms
+9 timing config:load:file:D:\code\live\frontend\.npmrc Completed in 0ms
+10 timing config:load:project Completed in 1ms
+11 timing config:load:file:C:\Users\Lenovo\.npmrc Completed in 0ms
+12 timing config:load:user Completed in 0ms
+13 timing config:load:file:C:\Users\Lenovo\AppData\Roaming\npm\etc\npmrc Completed in 0ms
+14 timing config:load:global Completed in 0ms
+15 timing config:load:setEnvs Completed in 1ms
+16 timing config:load Completed in 7ms
+17 timing npm:load:configload Completed in 7ms
+18 timing config:load:flatten Completed in 1ms
+19 timing npm:load:mkdirpcache Completed in 0ms
+20 timing npm:load:mkdirplogs Completed in 0ms
+21 verbose title npm install
+22 verbose argv "install" "--cache" "d:\\code\\live\\.npm-cache"
+23 timing npm:load:setTitle Completed in 1ms
+24 timing npm:load:display Completed in 0ms
+25 verbose logfile logs-max:10 dir:d:\code\live\.npm-cache\_logs\2026-04-20T07_09_18_253Z-
+26 verbose logfile d:\code\live\.npm-cache\_logs\2026-04-20T07_09_18_253Z-debug-0.log
+27 timing npm:load:logFile Completed in 9ms
+28 timing npm:load:timers Completed in 0ms
+29 timing npm:load:configScope Completed in 0ms
+30 timing npm:load Completed in 45ms
+31 timing arborist:ctor Completed in 1ms
+32 silly logfile done cleaning log files
+33 timing idealTree:init Completed in 40ms
+34 timing idealTree:userRequests Completed in 0ms
+35 silly idealTree buildDeps
+36 silly fetch manifest pinia@^2.3.1
+37 verbose shrinkwrap failed to load node_modules/.package-lock.json out of date, updated: node_modules
+38 http fetch GET 200 https://registry.npmjs.org/pinia 1039ms (cache miss)
+39 silly fetch manifest typescript@>=4.4.4
+40 http fetch GET 200 https://registry.npmjs.org/npm 1647ms (cache miss)
+41 http fetch GET 200 https://registry.npmjs.org/typescript 909ms (cache miss)
+42 silly fetch manifest vue@^3.5.13
+43 http fetch GET 200 https://registry.npmjs.org/vue 389ms (cache miss)
+44 silly fetch manifest pinia-plugin-persistedstate@^4.2.0
+45 http fetch GET 200 https://registry.npmjs.org/pinia-plugin-persistedstate 524ms (cache miss)
+46 silly fetch manifest @nuxt/kit@>=3.0.0
+47 http fetch GET 200 https://registry.npmjs.org/@nuxt%2fkit 458ms (cache miss)
+48 silly fetch manifest @pinia/nuxt@>=0.10.0
+49 http fetch GET 200 https://registry.npmjs.org/@pinia%2fnuxt 172ms (cache miss)
+50 silly fetch manifest pinia@^3.0.4
+51 silly fetch manifest pinia@>=3.0.0
+52 silly fetch manifest typescript@>=4.5.0
+53 silly fetch manifest vue@^3.5.11
+54 timing idealTree Completed in 3574ms
+55 timing command:install Completed in 3639ms
+56 notice
+56 notice New major version of npm available! 10.2.3 -> 11.12.1
+56 notice Changelog: <https://github.com/npm/cli/releases/tag/v11.12.1>
+56 notice Run `npm install -g npm@11.12.1` to update!
+56 notice
+57 verbose stack Error: unable to resolve dependency tree
+57 verbose stack     at #failPeerConflict (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:1376:25)
+57 verbose stack     at #loadPeerSet (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:1369:29)
+57 verbose stack     at async #buildDepStep (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:917:11)
+57 verbose stack     at async Arborist.buildIdealTree (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:196:7)
+57 verbose stack     at async Promise.all (index 1)
+57 verbose stack     at async Arborist.reify (D:\development\Node\v18.19.0\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\reify.js:159:5)
+57 verbose stack     at async Install.exec (D:\development\Node\v18.19.0\node_modules\npm\lib\commands\install.js:152:5)
+57 verbose stack     at async module.exports (D:\development\Node\v18.19.0\node_modules\npm\lib\cli-entry.js:61:5)
+58 verbose cwd D:\code\live\frontend
+59 verbose Windows_NT 10.0.26200
+60 verbose node v18.19.0
+61 verbose npm  v10.2.3
+62 error code ERESOLVE
+63 error ERESOLVE unable to resolve dependency tree
+64 error
+65 error While resolving: ant-live-web@0.0.0
+65 error Found: pinia@2.3.1
+65 error node_modules/pinia
+65 error   pinia@"^2.3.1" from the root project
+65 error
+65 error Could not resolve dependency:
+65 error peerOptional pinia@">=3.0.0" from pinia-plugin-persistedstate@4.7.1
+65 error node_modules/pinia-plugin-persistedstate
+65 error   pinia-plugin-persistedstate@"^4.2.0" from the root project
+65 error
+65 error Fix the upstream dependency conflict, or retry
+65 error this command with --force or --legacy-peer-deps
+65 error to accept an incorrect (and potentially broken) dependency resolution.
+66 error
+66 error
+66 error For a full report see:
+66 error d:\code\live\.npm-cache\_logs\2026-04-20T07_09_18_253Z-eresolve-report.txt
+67 verbose exit 1
+68 timing npm Completed in 3979ms
+69 verbose unfinished npm timer reify 1776668958625
+70 verbose unfinished npm timer reify:loadTrees 1776668958652
+71 verbose unfinished npm timer idealTree:buildDeps 1776668958693
+72 verbose unfinished npm timer idealTree:#root 1776668958693
+73 verbose code 1
+74 error A complete log of this run can be found in: d:\code\live\.npm-cache\_logs\2026-04-20T07_09_18_253Z-debug-0.log

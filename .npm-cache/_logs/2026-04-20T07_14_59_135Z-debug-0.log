@@ -1,0 +1,1331 @@
+0 verbose cli D:\development\Node\v18.19.0\node.exe D:\development\Node\v18.19.0\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.2.3
+2 info using node@v18.19.0
+3 timing npm:load:whichnode Completed in 1ms
+4 timing config:load:defaults Completed in 1ms
+5 timing config:load:file:D:\development\Node\v18.19.0\node_modules\npm\npmrc Completed in 3ms
+6 timing config:load:builtin Completed in 3ms
+7 timing config:load:cli Completed in 1ms
+8 timing config:load:env Completed in 1ms
+9 timing config:load:file:D:\code\live\frontend\.npmrc Completed in 1ms
+10 timing config:load:project Completed in 1ms
+11 timing config:load:file:C:\Users\Lenovo\.npmrc Completed in 0ms
+12 timing config:load:user Completed in 0ms
+13 timing config:load:file:C:\Users\Lenovo\AppData\Roaming\npm\etc\npmrc Completed in 0ms
+14 timing config:load:global Completed in 0ms
+15 timing config:load:setEnvs Completed in 1ms
+16 timing config:load Completed in 8ms
+17 timing npm:load:configload Completed in 8ms
+18 timing config:load:flatten Completed in 2ms
+19 timing npm:load:mkdirpcache Completed in 1ms
+20 timing npm:load:mkdirplogs Completed in 0ms
+21 verbose title npm install
+22 verbose argv "install" "--ignore-scripts" "--cache" "d:\\code\\live\\.npm-cache"
+23 timing npm:load:setTitle Completed in 1ms
+24 timing npm:load:display Completed in 0ms
+25 verbose logfile logs-max:10 dir:d:\code\live\.npm-cache\_logs\2026-04-20T07_14_59_135Z-
+26 verbose logfile d:\code\live\.npm-cache\_logs\2026-04-20T07_14_59_135Z-debug-0.log
+27 timing npm:load:logFile Completed in 5ms
+28 timing npm:load:timers Completed in 0ms
+29 timing npm:load:configScope Completed in 0ms
+30 timing npm:load Completed in 44ms
+31 timing arborist:ctor Completed in 1ms
+32 silly logfile done cleaning log files
+33 timing idealTree:init Completed in 41ms
+34 timing idealTree:userRequests Completed in 0ms
+35 silly idealTree buildDeps
+36 silly fetch manifest pinia@^2.3.1
+37 verbose shrinkwrap failed to load node_modules/.package-lock.json out of date, updated: node_modules
+38 http fetch GET 200 https://registry.npmjs.org/pinia 451ms (cache revalidated)
+39 silly fetch manifest typescript@>=4.4.4
+40 http fetch GET 200 https://registry.npmjs.org/typescript 119ms (cache revalidated)
+41 silly fetch manifest vue@^3.5.13
+42 http fetch GET 200 https://registry.npmjs.org/vue 109ms (cache revalidated)
+43 silly fetch manifest pinia-plugin-persistedstate@^3.2.3
+44 http fetch GET 200 https://registry.npmjs.org/pinia-plugin-persistedstate 104ms (cache revalidated)
+45 silly placeDep ROOT pinia@2.3.1 OK for: ant-live-web@0.0.0 want: ^2.3.1
+46 silly fetch manifest vue-demi@^0.14.10
+47 silly placeDep ROOT pinia-plugin-persistedstate@3.2.3 OK for: ant-live-web@0.0.0 want: ^3.2.3
+48 http fetch GET 200 https://registry.npmjs.org/vue-demi 110ms (cache revalidated)
+49 timing idealTree:#root Completed in 934ms
+50 silly fetch manifest @vue/composition-api@^1.0.0-rc.1
+51 http fetch GET 200 https://registry.npmjs.org/@vue%2fcomposition-api 135ms (cache revalidated)
+52 silly fetch manifest vue@^2.7.0 || ^3.5.11
+53 silly fetch manifest vue@>= 2.5 < 2.7
+54 silly placeDep ROOT vue-demi@0.14.10 OK for: pinia@2.3.1 want: ^0.14.10
+55 timing idealTree:node_modules/pinia Completed in 143ms
+56 timing idealTree:node_modules/pinia-plugin-persistedstate Completed in 0ms
+57 timing idealTree:node_modules/vue-demi Completed in 0ms
+58 timing idealTree:buildDeps Completed in 1080ms
+59 timing idealTree:fixDepFlags Completed in 0ms
+60 timing idealTree Completed in 1122ms
+61 timing reify:loadTrees Completed in 1124ms
+62 timing reify:diffTrees Completed in 4ms
+63 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\fsevents' ]
+64 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\aix-ppc64' ]
+65 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\android-arm' ]
+66 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\android-arm64' ]
+67 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\android-x64' ]
+68 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\freebsd-arm64' ]
+69 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\darwin-arm64' ]
+70 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\freebsd-x64' ]
+71 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\darwin-x64' ]
+72 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-arm' ]
+73 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-arm64' ]
+74 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-loong64' ]
+75 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-ia32' ]
+76 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-mips64el' ]
+77 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-riscv64' ]
+78 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-ppc64' ]
+79 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-s390x' ]
+80 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-x64' ]
+81 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\netbsd-x64' ]
+82 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\openbsd-x64' ]
+83 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\openbsd-arm64' ]
+84 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\sunos-x64' ]
+85 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\win32-arm64' ]
+86 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\win32-ia32' ]
+87 silly reify mark retired [
+87 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-android-arm64'
+87 silly reify ]
+88 silly reify mark retired [
+88 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-darwin-x64'
+88 silly reify ]
+89 silly reify mark retired [
+89 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-freebsd-x64'
+89 silly reify ]
+90 silly reify mark retired [
+90 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-arm-glibc'
+90 silly reify ]
+91 silly reify mark retired [
+91 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-arm64-glibc'
+91 silly reify ]
+92 silly reify mark retired [
+92 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-darwin-arm64'
+92 silly reify ]
+93 silly reify mark retired [
+93 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-arm-musl'
+93 silly reify ]
+94 silly reify mark retired [
+94 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-x64-glibc'
+94 silly reify ]
+95 silly reify mark retired [
+95 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-arm64-musl'
+95 silly reify ]
+96 silly reify mark retired [
+96 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-x64-musl'
+96 silly reify ]
+97 silly reify mark retired [
+97 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-win32-ia32'
+97 silly reify ]
+98 silly reify mark retired [
+98 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-win32-arm64'
+98 silly reify ]
+99 silly reify mark retired [
+99 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-android-arm-eabi'
+99 silly reify ]
+100 silly reify mark retired [
+100 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-android-arm64'
+100 silly reify ]
+101 silly reify mark retired [
+101 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-darwin-arm64'
+101 silly reify ]
+102 silly reify mark retired [
+102 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-darwin-x64'
+102 silly reify ]
+103 silly reify mark retired [
+103 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-freebsd-arm64'
+103 silly reify ]
+104 silly reify mark retired [
+104 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-freebsd-x64'
+104 silly reify ]
+105 silly reify mark retired [
+105 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm-gnueabihf'
+105 silly reify ]
+106 silly reify mark retired [
+106 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm-musleabihf'
+106 silly reify ]
+107 silly reify mark retired [
+107 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm64-gnu'
+107 silly reify ]
+108 silly reify mark retired [
+108 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-loongarch64-gnu'
+108 silly reify ]
+109 silly reify mark retired [
+109 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-powerpc64le-gnu'
+109 silly reify ]
+110 silly reify mark retired [
+110 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm64-musl'
+110 silly reify ]
+111 silly reify mark retired [
+111 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-riscv64-gnu'
+111 silly reify ]
+112 silly reify mark retired [
+112 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-s390x-gnu'
+112 silly reify ]
+113 silly reify mark retired [
+113 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-x64-gnu'
+113 silly reify ]
+114 silly reify mark retired [
+114 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-x64-musl'
+114 silly reify ]
+115 silly reify mark retired [
+115 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-win32-arm64-msvc'
+115 silly reify ]
+116 silly reify mark retired [
+116 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-win32-ia32-msvc'
+116 silly reify ]
+117 silly reify mark retired [
+117 silly reify   'D:\\code\\live\\frontend\\node_modules\\pinia-plugin-persistedstate'
+117 silly reify ]
+118 silly reify mark retired [ 'D:\\code\\live\\frontend\\node_modules\\pinia' ]
+119 silly reify mark retired [
+119 silly reify   'D:\\code\\live\\frontend\\node_modules\\vue-demi',
+119 silly reify   'D:\\code\\live\\frontend\\node_modules\\.bin\\vue-demi-fix',
+119 silly reify   'D:\\code\\live\\frontend\\node_modules\\.bin\\vue-demi-fix.cmd',
+119 silly reify   'D:\\code\\live\\frontend\\node_modules\\.bin\\vue-demi-fix.ps1',
+119 silly reify   'D:\\code\\live\\frontend\\node_modules\\.bin\\vue-demi-switch',
+119 silly reify   'D:\\code\\live\\frontend\\node_modules\\.bin\\vue-demi-switch.cmd',
+119 silly reify   'D:\\code\\live\\frontend\\node_modules\\.bin\\vue-demi-switch.ps1'
+119 silly reify ]
+120 silly reify moves {
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\fsevents': 'D:\\code\\live\\frontend\\node_modules\\.fsevents-a0ouzoky',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\aix-ppc64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.aix-ppc64-XA0ei3lR',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\android-arm': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.android-arm-gO3qeSAw',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\android-arm64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.android-arm64-49VLkFIF',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\android-x64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.android-x64-mUF9MNE1',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\freebsd-arm64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.freebsd-arm64-Ul5zWvMk',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\darwin-arm64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.darwin-arm64-jKGGqcWp',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\freebsd-x64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.freebsd-x64-WGL7auuR',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\darwin-x64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.darwin-x64-NPQak8bf',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-arm': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.linux-arm-byVmDlBa',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-arm64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.linux-arm64-6jKcvMIZ',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-loong64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.linux-loong64-UbNizcVj',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-ia32': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.linux-ia32-HSCu3lpV',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-mips64el': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.linux-mips64el-dKZxG1O9',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-riscv64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.linux-riscv64-ID91wk4Z',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-ppc64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.linux-ppc64-El0XV52T',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-s390x': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.linux-s390x-yDTauqOF',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-x64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.linux-x64-YpcttRlO',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\netbsd-x64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.netbsd-x64-MecP2PUM',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\openbsd-x64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.openbsd-x64-8c6wmiqy',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\openbsd-arm64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.openbsd-arm64-QnWu00iP',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\sunos-x64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.sunos-x64-miv0XxCr',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\win32-arm64': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.win32-arm64-zlQ6ltU7',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@esbuild\\win32-ia32': 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\.win32-ia32-GZj2pBqc',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-android-arm64': 'D:\\code\\live\\frontend\\node_modules\\@parcel\\.watcher-android-arm64-3yYS66KM',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-darwin-x64': 'D:\\code\\live\\frontend\\node_modules\\@parcel\\.watcher-darwin-x64-dAQePOtD',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-freebsd-x64': 'D:\\code\\live\\frontend\\node_modules\\@parcel\\.watcher-freebsd-x64-IBbYOQpX',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-arm-glibc': 'D:\\code\\live\\frontend\\node_modules\\@parcel\\.watcher-linux-arm-glibc-kHD3xWAU',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-arm64-glibc': 'D:\\code\\live\\frontend\\node_modules\\@parcel\\.watcher-linux-arm64-glibc-Pvs2aLOw',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-darwin-arm64': 'D:\\code\\live\\frontend\\node_modules\\@parcel\\.watcher-darwin-arm64-eZnUKIip',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-arm-musl': 'D:\\code\\live\\frontend\\node_modules\\@parcel\\.watcher-linux-arm-musl-rwQXGEUG',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-x64-glibc': 'D:\\code\\live\\frontend\\node_modules\\@parcel\\.watcher-linux-x64-glibc-l5JjrpDj',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-arm64-musl': 'D:\\code\\live\\frontend\\node_modules\\@parcel\\.watcher-linux-arm64-musl-6KtE2dci',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-x64-musl': 'D:\\code\\live\\frontend\\node_modules\\@parcel\\.watcher-linux-x64-musl-NqdRuVj9',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-win32-ia32': 'D:\\code\\live\\frontend\\node_modules\\@parcel\\.watcher-win32-ia32-JiywrJM2',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-win32-arm64': 'D:\\code\\live\\frontend\\node_modules\\@parcel\\.watcher-win32-arm64-IVIs0wEf',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-android-arm-eabi': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-android-arm-eabi-AJMz5A6b',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-android-arm64': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-android-arm64-KkrmG5KC',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-darwin-arm64': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-darwin-arm64-hGEmkunk',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-darwin-x64': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-darwin-x64-TVomPCHr',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-freebsd-arm64': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-freebsd-arm64-dPa0DYpG',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-freebsd-x64': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-freebsd-x64-tVaYWok5',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm-gnueabihf': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-linux-arm-gnueabihf-EWTWcGpc',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm-musleabihf': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-linux-arm-musleabihf-oYsqlthc',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm64-gnu': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-linux-arm64-gnu-UmLfPlDc',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-loongarch64-gnu': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-linux-loongarch64-gnu-RtWBe4sr',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-powerpc64le-gnu': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-linux-powerpc64le-gnu-7ntXqHbE',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm64-musl': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-linux-arm64-musl-ohbvLfdR',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-riscv64-gnu': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-linux-riscv64-gnu-YdGUt3Zr',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-s390x-gnu': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-linux-s390x-gnu-YWQdC0i5',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-x64-gnu': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-linux-x64-gnu-amEjKSWM',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-x64-musl': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-linux-x64-musl-Q5muJ4bG',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-win32-arm64-msvc': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-win32-arm64-msvc-82M9Vuue',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-win32-ia32-msvc': 'D:\\code\\live\\frontend\\node_modules\\@rollup\\.rollup-win32-ia32-msvc-XcL0pdMH',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\pinia-plugin-persistedstate': 'D:\\code\\live\\frontend\\node_modules\\.pinia-plugin-persistedstate-MwMY8OSY',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\pinia': 'D:\\code\\live\\frontend\\node_modules\\.pinia-p3ThgQSU',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\vue-demi': 'D:\\code\\live\\frontend\\node_modules\\.vue-demi-yq6ev6Ik',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\.bin\\vue-demi-fix': 'D:\\code\\live\\frontend\\node_modules\\.bin\\.vue-demi-fix-LwxVlJb3',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\.bin\\vue-demi-fix.cmd': 'D:\\code\\live\\frontend\\node_modules\\.bin\\.vue-demi-fix.cmd-cReQea9R',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\.bin\\vue-demi-fix.ps1': 'D:\\code\\live\\frontend\\node_modules\\.bin\\.vue-demi-fix.ps1-cGZOMFcp',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\.bin\\vue-demi-switch': 'D:\\code\\live\\frontend\\node_modules\\.bin\\.vue-demi-switch-Teoe3b1r',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\.bin\\vue-demi-switch.cmd': 'D:\\code\\live\\frontend\\node_modules\\.bin\\.vue-demi-switch.cmd-bMunscKf',
+120 silly reify   'D:\\code\\live\\frontend\\node_modules\\.bin\\vue-demi-switch.ps1': 'D:\\code\\live\\frontend\\node_modules\\.bin\\.vue-demi-switch.ps1-0Lv8jmCW'
+120 silly reify }
+121 timing reify:retireShallow Completed in 25ms
+122 timing reify:createSparse Completed in 16ms
+123 timing reify:loadBundles Completed in 0ms
+124 silly audit bulk request {
+124 silly audit   '@ant-design/colors': [ '6.0.0' ],
+124 silly audit   '@ant-design/icons-svg': [ '4.4.2' ],
+124 silly audit   '@ant-design/icons-vue': [ '7.0.1' ],
+124 silly audit   '@antfu/utils': [ '0.7.10' ],
+124 silly audit   '@babel/helper-string-parser': [ '7.25.9' ],
+124 silly audit   '@babel/helper-validator-identifier': [ '7.25.9' ],
+124 silly audit   '@babel/parser': [ '7.26.3' ],
+124 silly audit   '@babel/runtime': [ '7.26.0' ],
+124 silly audit   '@babel/types': [ '7.26.3' ],
+124 silly audit   '@ctrl/tinycolor': [ '3.6.1' ],
+124 silly audit   '@emotion/hash': [ '0.9.2' ],
+124 silly audit   '@emotion/unitless': [ '0.8.1' ],
+124 silly audit   '@esbuild/aix-ppc64': [ '0.24.0' ],
+124 silly audit   '@esbuild/android-arm': [ '0.24.0' ],
+124 silly audit   '@esbuild/android-arm64': [ '0.24.0' ],
+124 silly audit   '@esbuild/android-x64': [ '0.24.0' ],
+124 silly audit   '@esbuild/darwin-arm64': [ '0.24.0' ],
+124 silly audit   '@esbuild/darwin-x64': [ '0.24.0' ],
+124 silly audit   '@esbuild/freebsd-arm64': [ '0.24.0' ],
+124 silly audit   '@esbuild/freebsd-x64': [ '0.24.0' ],
+124 silly audit   '@esbuild/linux-arm': [ '0.24.0' ],
+124 silly audit   '@esbuild/linux-arm64': [ '0.24.0' ],
+124 silly audit   '@esbuild/linux-ia32': [ '0.24.0' ],
+124 silly audit   '@esbuild/linux-loong64': [ '0.24.0' ],
+124 silly audit   '@esbuild/linux-mips64el': [ '0.24.0' ],
+124 silly audit   '@esbuild/linux-ppc64': [ '0.24.0' ],
+124 silly audit   '@esbuild/linux-riscv64': [ '0.24.0' ],
+124 silly audit   '@esbuild/linux-s390x': [ '0.24.0' ],
+124 silly audit   '@esbuild/linux-x64': [ '0.24.0' ],
+124 silly audit   '@esbuild/netbsd-x64': [ '0.24.0' ],
+124 silly audit   '@esbuild/openbsd-arm64': [ '0.24.0' ],
+124 silly audit   '@esbuild/openbsd-x64': [ '0.24.0' ],
+124 silly audit   '@esbuild/sunos-x64': [ '0.24.0' ],
+124 silly audit   '@esbuild/win32-arm64': [ '0.24.0' ],
+124 silly audit   '@esbuild/win32-ia32': [ '0.24.0' ],
+124 silly audit   '@esbuild/win32-x64': [ '0.24.0' ],
+124 silly audit   '@jridgewell/sourcemap-codec': [ '1.5.0' ],
+124 silly audit   '@nodelib/fs.scandir': [ '2.1.5' ],
+124 silly audit   '@nodelib/fs.stat': [ '2.0.5' ],
+124 silly audit   '@nodelib/fs.walk': [ '1.2.8' ],
+124 silly audit   '@parcel/watcher': [ '2.5.0' ],
+124 silly audit   '@parcel/watcher-android-arm64': [ '2.5.0' ],
+124 silly audit   '@parcel/watcher-darwin-arm64': [ '2.5.0' ],
+124 silly audit   '@parcel/watcher-darwin-x64': [ '2.5.0' ],
+124 silly audit   '@parcel/watcher-freebsd-x64': [ '2.5.0' ],
+124 silly audit   '@parcel/watcher-linux-arm-glibc': [ '2.5.0' ],
+124 silly audit   '@parcel/watcher-linux-arm-musl': [ '2.5.0' ],
+124 silly audit   '@parcel/watcher-linux-arm64-glibc': [ '2.5.0' ],
+124 silly audit   '@parcel/watcher-linux-arm64-musl': [ '2.5.0' ],
+124 silly audit   '@parcel/watcher-linux-x64-glibc': [ '2.5.0' ],
+124 silly audit   '@parcel/watcher-linux-x64-musl': [ '2.5.0' ],
+124 silly audit   '@parcel/watcher-win32-arm64': [ '2.5.0' ],
+124 silly audit   '@parcel/watcher-win32-ia32': [ '2.5.0' ],
+124 silly audit   '@parcel/watcher-win32-x64': [ '2.5.0' ],
+124 silly audit   '@rollup/pluginutils': [ '5.1.4' ],
+124 silly audit   '@rollup/rollup-android-arm-eabi': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-android-arm64': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-darwin-arm64': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-darwin-x64': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-freebsd-arm64': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-freebsd-x64': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-linux-arm-gnueabihf': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-linux-arm-musleabihf': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-linux-arm64-gnu': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-linux-arm64-musl': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-linux-loongarch64-gnu': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-linux-powerpc64le-gnu': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-linux-riscv64-gnu': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-linux-s390x-gnu': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-linux-x64-gnu': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-linux-x64-musl': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-win32-arm64-msvc': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-win32-ia32-msvc': [ '4.29.1' ],
+124 silly audit   '@rollup/rollup-win32-x64-msvc': [ '4.29.1' ],
+124 silly audit   '@simonwep/pickr': [ '1.8.2' ],
+124 silly audit   '@types/estree': [ '1.0.6' ],
+124 silly audit   '@vitejs/plugin-vue': [ '5.2.1' ],
+124 silly audit   '@vue/compiler-core': [ '3.5.13' ],
+124 silly audit   '@vue/compiler-dom': [ '3.5.13' ],
+124 silly audit   '@vue/compiler-sfc': [ '3.5.13' ],
+124 silly audit   '@vue/compiler-ssr': [ '3.5.13' ],
+124 silly audit   '@vue/devtools-api': [ '6.6.4' ],
+124 silly audit   '@vue/reactivity': [ '3.5.13' ],
+124 silly audit   '@vue/runtime-core': [ '3.5.13' ],
+124 silly audit   '@vue/runtime-dom': [ '3.5.13' ],
+124 silly audit   '@vue/server-renderer': [ '3.5.13' ],
+124 silly audit   '@vue/shared': [ '3.5.13' ],
+124 silly audit   acorn: [ '8.14.0' ],
+124 silly audit   'ant-design-vue': [ '4.2.6' ],
+124 silly audit   anymatch: [ '3.1.3' ],
+124 silly audit   picomatch: [ '2.3.1', '4.0.2' ],
+124 silly audit   'array-tree-filter': [ '2.1.0' ],
+124 silly audit   'async-validator': [ '4.2.5' ],
+124 silly audit   asynckit: [ '0.4.0' ],
+124 silly audit   axios: [ '1.7.9' ],
+124 silly audit   'balanced-match': [ '1.0.2' ],
+124 silly audit   'binary-extensions': [ '2.3.0' ],
+124 silly audit   'brace-expansion': [ '2.0.1' ],
+124 silly audit   braces: [ '3.0.3' ],
+124 silly audit   chokidar: [ '3.6.0', '4.0.3' ],
+124 silly audit   'combined-stream': [ '1.0.8' ],
+124 silly audit   'compute-scroll-into-view': [ '1.0.20' ],
+124 silly audit   confbox: [ '0.1.8' ],
+124 silly audit   'core-js': [ '3.39.0' ],
+124 silly audit   csstype: [ '3.1.3' ],
+124 silly audit   dayjs: [ '1.11.13' ],
+124 silly audit   debug: [ '4.4.0' ],
+124 silly audit   'delayed-stream': [ '1.0.0' ],
+124 silly audit   'detect-libc': [ '1.0.3' ],
+124 silly audit   'dom-align': [ '1.12.4' ],
+124 silly audit   'dom-scroll-into-view': [ '2.0.1' ],
+124 silly audit   entities: [ '4.5.0' ],
+124 silly audit   'es6-promise': [ '4.2.8' ],
+124 silly audit   esbuild: [ '0.24.0' ],
+124 silly audit   'estree-walker': [ '2.0.2' ],
+124 silly audit   'fast-glob': [ '3.3.2' ],
+124 silly audit   fastq: [ '1.18.0' ],
+124 silly audit   'fill-range': [ '7.1.1' ],
+124 silly audit   'flv.js': [ '1.6.2' ],
+124 silly audit   'follow-redirects': [ '1.15.9' ],
+124 silly audit   'form-data': [ '4.0.1' ],
+124 silly audit   fsevents: [ '2.3.3' ],
+124 silly audit   'glob-parent': [ '5.1.2' ],
+124 silly audit   immutable: [ '5.0.3' ],
+124 silly audit   'is-binary-path': [ '2.1.0' ],
+124 silly audit   'is-extglob': [ '2.1.1' ],
+124 silly audit   'is-glob': [ '4.0.3' ],
+124 silly audit   'is-number': [ '7.0.0' ],
+124 silly audit   'is-plain-object': [ '3.0.1' ],
+124 silly audit   'js-tokens': [ '4.0.0' ],
+124 silly audit   'local-pkg': [ '0.5.1' ],
+124 silly audit   lodash: [ '4.17.21' ],
+124 silly audit   'lodash-es': [ '4.17.21' ],
+124 silly audit   'loose-envify': [ '1.4.0' ],
+124 silly audit   'magic-string': [ '0.30.17' ],
+124 silly audit   merge2: [ '1.4.1' ],
+124 silly audit   micromatch: [ '4.0.8' ],
+124 silly audit   'mime-db': [ '1.52.0' ],
+124 silly audit   'mime-types': [ '2.1.35' ],
+124 silly audit   minimatch: [ '9.0.5' ],
+124 silly audit   mlly: [ '1.7.3' ],
+124 silly audit   ms: [ '2.1.3' ],
+124 silly audit   nanoid: [ '3.3.8' ],
+124 silly audit   nanopop: [ '2.4.2' ],
+124 silly audit   'node-addon-api': [ '7.1.1' ],
+124 silly audit   'normalize-path': [ '3.0.0' ],
+124 silly audit   pathe: [ '1.1.2' ],
+124 silly audit   picocolors: [ '1.1.1' ],
+124 silly audit   'pkg-types': [ '1.2.1' ],
+124 silly audit   postcss: [ '8.4.49' ],
+124 silly audit   prettier: [ '3.4.2' ],
+124 silly audit   'proxy-from-env': [ '1.1.0' ],
+124 silly audit   'queue-microtask': [ '1.2.3' ],
+124 silly audit   readdirp: [ '3.6.0', '4.0.2' ],
+124 silly audit   'regenerator-runtime': [ '0.14.1' ],
+124 silly audit   'resize-observer-polyfill': [ '1.5.1' ],
+124 silly audit   reusify: [ '1.0.4' ],
+124 silly audit   rollup: [ '4.29.1' ],
+124 silly audit   'run-parallel': [ '1.2.0' ],
+124 silly audit   sass: [ '1.83.0' ],
+124 silly audit   'scroll-into-view-if-needed': [ '2.2.31' ],
+124 silly audit   'shallow-equal': [ '1.2.1' ],
+124 silly audit   'source-map-js': [ '1.2.1' ],
+124 silly audit   stylis: [ '4.3.4' ],
+124 silly audit   svgaplayerweb: [ '2.3.2' ],
+124 silly audit   'throttle-debounce': [ '5.0.2' ],
+124 silly audit   'to-regex-range': [ '5.0.1' ],
+124 silly audit   ufo: [ '1.5.4' ],
+124 silly audit   unplugin: [ '2.1.0' ],
+124 silly audit   'unplugin-vue-components': [ '0.28.0' ],
+124 silly audit   vite: [ '6.0.5' ],
+124 silly audit   vue: [ '3.5.13' ],
+124 silly audit   'vue-infinite-scroll': [ '2.0.2' ],
+124 silly audit   'vue-router': [ '4.5.0' ],
+124 silly audit   'vue-types': [ '3.0.2' ],
+124 silly audit   warning: [ '4.0.3' ],
+124 silly audit   'webpack-virtual-modules': [ '0.6.2' ],
+124 silly audit   'webworkify-webpack': [ '2.1.5' ],
+124 silly audit   pinia: [ '2.3.1' ],
+124 silly audit   'pinia-plugin-persistedstate': [ '3.2.3' ],
+124 silly audit   'vue-demi': [ '0.14.10' ]
+124 silly audit }
+125 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-win32-ia32-msvc
+126 silly reify mark deleted [
+126 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-win32-ia32-msvc'
+126 silly reify ]
+127 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-win32-arm64-msvc
+128 silly reify mark deleted [
+128 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-win32-arm64-msvc'
+128 silly reify ]
+129 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-x64-musl
+130 silly reify mark deleted [
+130 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-x64-musl'
+130 silly reify ]
+131 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-x64-gnu
+132 silly reify mark deleted [
+132 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-x64-gnu'
+132 silly reify ]
+133 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-s390x-gnu
+134 silly reify mark deleted [
+134 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-s390x-gnu'
+134 silly reify ]
+135 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-riscv64-gnu
+136 silly reify mark deleted [
+136 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-riscv64-gnu'
+136 silly reify ]
+137 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-arm64-musl
+138 silly reify mark deleted [
+138 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm64-musl'
+138 silly reify ]
+139 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-powerpc64le-gnu
+140 silly reify mark deleted [
+140 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-powerpc64le-gnu'
+140 silly reify ]
+141 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-loongarch64-gnu
+142 silly reify mark deleted [
+142 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-loongarch64-gnu'
+142 silly reify ]
+143 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-arm64-gnu
+144 silly reify mark deleted [
+144 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm64-gnu'
+144 silly reify ]
+145 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-arm-musleabihf
+146 silly reify mark deleted [
+146 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm-musleabihf'
+146 silly reify ]
+147 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-linux-arm-gnueabihf
+148 silly reify mark deleted [
+148 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-linux-arm-gnueabihf'
+148 silly reify ]
+149 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-freebsd-x64
+150 silly reify mark deleted [
+150 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-freebsd-x64'
+150 silly reify ]
+151 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-freebsd-arm64
+152 silly reify mark deleted [
+152 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-freebsd-arm64'
+152 silly reify ]
+153 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-darwin-x64
+154 silly reify mark deleted [
+154 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-darwin-x64'
+154 silly reify ]
+155 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-darwin-arm64
+156 silly reify mark deleted [
+156 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-darwin-arm64'
+156 silly reify ]
+157 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-android-arm64
+158 silly reify mark deleted [
+158 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-android-arm64'
+158 silly reify ]
+159 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@rollup\rollup-android-arm-eabi
+160 silly reify mark deleted [
+160 silly reify   'D:\\code\\live\\frontend\\node_modules\\@rollup\\rollup-android-arm-eabi'
+160 silly reify ]
+161 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-win32-arm64
+162 silly reify mark deleted [
+162 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-win32-arm64'
+162 silly reify ]
+163 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-win32-ia32
+164 silly reify mark deleted [
+164 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-win32-ia32'
+164 silly reify ]
+165 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-linux-x64-musl
+166 silly reify mark deleted [
+166 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-x64-musl'
+166 silly reify ]
+167 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-linux-arm64-musl
+168 silly reify mark deleted [
+168 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-arm64-musl'
+168 silly reify ]
+169 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-linux-x64-glibc
+170 silly reify mark deleted [
+170 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-x64-glibc'
+170 silly reify ]
+171 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-linux-arm-musl
+172 silly reify mark deleted [
+172 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-arm-musl'
+172 silly reify ]
+173 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-darwin-arm64
+174 silly reify mark deleted [
+174 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-darwin-arm64'
+174 silly reify ]
+175 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-linux-arm64-glibc
+176 silly reify mark deleted [
+176 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-arm64-glibc'
+176 silly reify ]
+177 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-linux-arm-glibc
+178 silly reify mark deleted [
+178 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-linux-arm-glibc'
+178 silly reify ]
+179 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-freebsd-x64
+180 silly reify mark deleted [
+180 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-freebsd-x64'
+180 silly reify ]
+181 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-darwin-x64
+182 silly reify mark deleted [
+182 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-darwin-x64'
+182 silly reify ]
+183 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@parcel\watcher-android-arm64
+184 silly reify mark deleted [
+184 silly reify   'D:\\code\\live\\frontend\\node_modules\\@parcel\\watcher-android-arm64'
+184 silly reify ]
+185 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\win32-ia32
+186 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\win32-ia32' ]
+187 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\win32-arm64
+188 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\win32-arm64' ]
+189 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\sunos-x64
+190 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\sunos-x64' ]
+191 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\openbsd-arm64
+192 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\openbsd-arm64' ]
+193 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\openbsd-x64
+194 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\openbsd-x64' ]
+195 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\netbsd-x64
+196 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\netbsd-x64' ]
+197 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-x64
+198 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-x64' ]
+199 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-s390x
+200 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-s390x' ]
+201 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-ppc64
+202 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-ppc64' ]
+203 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-riscv64
+204 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-riscv64' ]
+205 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-mips64el
+206 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-mips64el' ]
+207 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-ia32
+208 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-ia32' ]
+209 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-loong64
+210 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-loong64' ]
+211 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-arm64
+212 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-arm64' ]
+213 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\linux-arm
+214 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\linux-arm' ]
+215 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\darwin-x64
+216 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\darwin-x64' ]
+217 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\freebsd-x64
+218 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\freebsd-x64' ]
+219 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\darwin-arm64
+220 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\darwin-arm64' ]
+221 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\freebsd-arm64
+222 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\freebsd-arm64' ]
+223 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\android-x64
+224 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\android-x64' ]
+225 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\android-arm64
+226 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\android-arm64' ]
+227 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\android-arm
+228 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\android-arm' ]
+229 verbose reify failed optional dependency D:\code\live\frontend\node_modules\@esbuild\aix-ppc64
+230 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\@esbuild\\aix-ppc64' ]
+231 verbose reify failed optional dependency D:\code\live\frontend\node_modules\fsevents
+232 silly reify mark deleted [ 'D:\\code\\live\\frontend\\node_modules\\fsevents' ]
+233 timing reifyNode:node_modules/@rollup/rollup-win32-ia32-msvc Completed in 6ms
+234 timing reifyNode:node_modules/@rollup/rollup-win32-arm64-msvc Completed in 6ms
+235 timing reifyNode:node_modules/@rollup/rollup-linux-x64-musl Completed in 6ms
+236 timing reifyNode:node_modules/@rollup/rollup-linux-x64-gnu Completed in 6ms
+237 timing reifyNode:node_modules/@rollup/rollup-linux-s390x-gnu Completed in 6ms
+238 timing reifyNode:node_modules/@rollup/rollup-linux-riscv64-gnu Completed in 6ms
+239 timing reifyNode:node_modules/@rollup/rollup-linux-arm64-musl Completed in 6ms
+240 timing reifyNode:node_modules/@rollup/rollup-linux-powerpc64le-gnu Completed in 6ms
+241 timing reifyNode:node_modules/@rollup/rollup-linux-loongarch64-gnu Completed in 6ms
+242 timing reifyNode:node_modules/@rollup/rollup-linux-arm64-gnu Completed in 6ms
+243 timing reifyNode:node_modules/@rollup/rollup-linux-arm-musleabihf Completed in 6ms
+244 timing reifyNode:node_modules/@rollup/rollup-linux-arm-gnueabihf Completed in 6ms
+245 timing reifyNode:node_modules/@rollup/rollup-freebsd-x64 Completed in 6ms
+246 timing reifyNode:node_modules/@rollup/rollup-freebsd-arm64 Completed in 6ms
+247 timing reifyNode:node_modules/@rollup/rollup-darwin-x64 Completed in 6ms
+248 timing reifyNode:node_modules/@rollup/rollup-darwin-arm64 Completed in 6ms
+249 timing reifyNode:node_modules/@rollup/rollup-android-arm64 Completed in 6ms
+250 timing reifyNode:node_modules/@rollup/rollup-android-arm-eabi Completed in 6ms
+251 timing reifyNode:node_modules/@parcel/watcher-win32-arm64 Completed in 6ms
+252 timing reifyNode:node_modules/@parcel/watcher-win32-ia32 Completed in 6ms
+253 timing reifyNode:node_modules/@parcel/watcher-linux-x64-musl Completed in 6ms
+254 timing reifyNode:node_modules/@parcel/watcher-linux-arm64-musl Completed in 6ms
+255 timing reifyNode:node_modules/@parcel/watcher-linux-x64-glibc Completed in 6ms
+256 timing reifyNode:node_modules/@parcel/watcher-linux-arm-musl Completed in 6ms
+257 timing reifyNode:node_modules/@parcel/watcher-darwin-arm64 Completed in 6ms
+258 timing reifyNode:node_modules/@parcel/watcher-linux-arm64-glibc Completed in 6ms
+259 timing reifyNode:node_modules/@parcel/watcher-linux-arm-glibc Completed in 6ms
+260 timing reifyNode:node_modules/@parcel/watcher-freebsd-x64 Completed in 6ms
+261 timing reifyNode:node_modules/@parcel/watcher-darwin-x64 Completed in 6ms
+262 timing reifyNode:node_modules/@parcel/watcher-android-arm64 Completed in 6ms
+263 timing reifyNode:node_modules/@esbuild/win32-ia32 Completed in 6ms
+264 timing reifyNode:node_modules/@esbuild/win32-arm64 Completed in 6ms
+265 timing reifyNode:node_modules/@esbuild/sunos-x64 Completed in 6ms
+266 timing reifyNode:node_modules/@esbuild/openbsd-arm64 Completed in 7ms
+267 timing reifyNode:node_modules/@esbuild/openbsd-x64 Completed in 7ms
+268 timing reifyNode:node_modules/@esbuild/netbsd-x64 Completed in 7ms
+269 timing reifyNode:node_modules/@esbuild/linux-x64 Completed in 7ms
+270 timing reifyNode:node_modules/@esbuild/linux-s390x Completed in 7ms
+271 timing reifyNode:node_modules/@esbuild/linux-ppc64 Completed in 7ms
+272 timing reifyNode:node_modules/@esbuild/linux-riscv64 Completed in 7ms
+273 timing reifyNode:node_modules/@esbuild/linux-mips64el Completed in 7ms
+274 timing reifyNode:node_modules/@esbuild/linux-ia32 Completed in 7ms
+275 timing reifyNode:node_modules/@esbuild/linux-loong64 Completed in 7ms
+276 timing reifyNode:node_modules/@esbuild/linux-arm64 Completed in 7ms
+277 timing reifyNode:node_modules/@esbuild/linux-arm Completed in 7ms
+278 timing reifyNode:node_modules/@esbuild/darwin-x64 Completed in 6ms
+279 timing reifyNode:node_modules/@esbuild/freebsd-x64 Completed in 6ms
+280 timing reifyNode:node_modules/@esbuild/darwin-arm64 Completed in 6ms
+281 timing reifyNode:node_modules/@esbuild/freebsd-arm64 Completed in 6ms
+282 timing reifyNode:node_modules/@esbuild/android-x64 Completed in 6ms
+283 timing reifyNode:node_modules/@esbuild/android-arm64 Completed in 6ms
+284 timing reifyNode:node_modules/@esbuild/android-arm Completed in 6ms
+285 timing reifyNode:node_modules/@esbuild/aix-ppc64 Completed in 6ms
+286 timing reifyNode:node_modules/fsevents Completed in 6ms
+287 timing reifyNode:node_modules/pinia-plugin-persistedstate Completed in 23ms
+288 timing reifyNode:node_modules/pinia Completed in 35ms
+289 timing reifyNode:node_modules/vue-demi Completed in 36ms
+290 timing reify:unpack Completed in 37ms
+291 timing reify:unretire Completed in 1ms
+292 timing build:queue Completed in 2ms
+293 timing build:link:node_modules/vue-demi Completed in 14ms
+294 timing build:link Completed in 14ms
+295 timing build:deps Completed in 16ms
+296 timing build Completed in 16ms
+297 timing reify:build Completed in 16ms
+298 timing reify:trash Completed in 18ms
+299 timing reify:save Completed in 31ms
+300 http fetch POST 200 https://registry.npmjs.org/-/npm/v1/security/advisories/bulk 274ms
+301 timing auditReport:getReport Completed in 275ms
+302 silly audit report {
+302 silly audit report   '@babel/runtime': [
+302 silly audit report     {
+302 silly audit report       id: 1104000,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-968p-4wvh-cqc8',
+302 silly audit report       title: 'Babel has inefficient RegExp complexity in generated code with .replace when transpiling named capturing groups',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '<7.26.10',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     }
+302 silly audit report   ],
+302 silly audit report   picomatch: [
+302 silly audit report     {
+302 silly audit report       id: 1115549,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-3v7f-55p6-f55p',
+302 silly audit report       title: 'Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '<2.3.2',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1115551,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-3v7f-55p6-f55p',
+302 silly audit report       title: 'Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '>=4.0.0 <4.0.4',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1115552,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-c2c7-rcm5-vvqj',
+302 silly audit report       title: 'Picomatch has a ReDoS vulnerability via extglob quantifiers',
+302 silly audit report       severity: 'high',
+302 silly audit report       vulnerable_versions: '<2.3.2',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1115554,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-c2c7-rcm5-vvqj',
+302 silly audit report       title: 'Picomatch has a ReDoS vulnerability via extglob quantifiers',
+302 silly audit report       severity: 'high',
+302 silly audit report       vulnerable_versions: '>=4.0.0 <4.0.4',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     }
+302 silly audit report   ],
+302 silly audit report   axios: [
+302 silly audit report     {
+302 silly audit report       id: 1111035,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-jr5f-v2jv-69x6',
+302 silly audit report       title: 'axios Requests Vulnerable To Possible SSRF and Credential Leakage via Absolute URL',
+302 silly audit report       severity: 'high',
+302 silly audit report       vulnerable_versions: '>=1.0.0 <1.8.2',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1112195,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-4hjh-wcwx-xvwj',
+302 silly audit report       title: 'Axios is vulnerable to DoS attack through lack of data size check',
+302 silly audit report       severity: 'high',
+302 silly audit report       vulnerable_versions: '>=1.0.0 <1.12.0',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1113275,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-43fc-jf86-j433',
+302 silly audit report       title: 'Axios is Vulnerable to Denial of Service via __proto__ Key in mergeConfig',
+302 silly audit report       severity: 'high',
+302 silly audit report       vulnerable_versions: '>=1.0.0 <=1.13.4',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1116673,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-3p68-rc4w-qgx5',
+302 silly audit report       title: 'Axios has a NO_PROXY Hostname Normalization Bypass that Leads to SSRF',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '>=1.0.0 <1.15.0',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1116675,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-fvcv-3m26-pcqx',
+302 silly audit report       title: 'Axios has Unrestricted Cloud Metadata Exfiltration via Header Injection Chain',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '>=1.0.0 <1.15.0',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     }
+302 silly audit report   ],
+302 silly audit report   'brace-expansion': [
+302 silly audit report     {
+302 silly audit report       id: 1105444,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-v6h2-p8h4-qcjw',
+302 silly audit report       title: 'brace-expansion Regular Expression Denial of Service vulnerability',
+302 silly audit report       severity: 'low',
+302 silly audit report       vulnerable_versions: '>=2.0.0 <=2.0.1',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1115541,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-f886-m6hf-6m8v',
+302 silly audit report       title: 'brace-expansion: Zero-step sequence causes process hang and memory exhaustion',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '>=2.0.0 <2.0.3',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     }
+302 silly audit report   ],
+302 silly audit report   esbuild: [
+302 silly audit report     {
+302 silly audit report       id: 1102341,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-67mh-4wv8-2f99',
+302 silly audit report       title: 'esbuild enables any website to send any requests to the development server and read the response',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '<=0.24.2',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     }
+302 silly audit report   ],
+302 silly audit report   'follow-redirects': [
+302 silly audit report     {
+302 silly audit report       id: 1116560,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-r4q5-vmmm-2653',
+302 silly audit report       title: 'follow-redirects leaks Custom Authentication Headers to Cross-Domain Redirect Targets',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '<=1.15.11',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     }
+302 silly audit report   ],
+302 silly audit report   'form-data': [
+302 silly audit report     {
+302 silly audit report       id: 1109538,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-fjxv-7rqg-78g4',
+302 silly audit report       title: 'form-data uses unsafe random function in form-data for choosing boundary',
+302 silly audit report       severity: 'critical',
+302 silly audit report       vulnerable_versions: '>=4.0.0 <4.0.4',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     }
+302 silly audit report   ],
+302 silly audit report   immutable: [
+302 silly audit report     {
+302 silly audit report       id: 1114168,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-wf6x-7x77-mvgw',
+302 silly audit report       title: 'Immutable is vulnerable to Prototype Pollution',
+302 silly audit report       severity: 'high',
+302 silly audit report       vulnerable_versions: '>=5.0.0 <5.1.5',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     }
+302 silly audit report   ],
+302 silly audit report   lodash: [
+302 silly audit report     {
+302 silly audit report       id: 1112455,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-xxjr-mmjv-4gpg',
+302 silly audit report       title: 'Lodash has Prototype Pollution Vulnerability in `_.unset` and `_.omit` functions',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '>=4.0.0 <=4.17.22',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1115806,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-r5fr-rjxr-66jc',
+302 silly audit report       title: 'lodash vulnerable to Code Injection via `_.template` imports key names',
+302 silly audit report       severity: 'high',
+302 silly audit report       vulnerable_versions: '>=4.0.0 <=4.17.23',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1115810,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-f23m-r3pf-42rh',
+302 silly audit report       title: 'lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit`',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '<=4.17.23',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     }
+302 silly audit report   ],
+302 silly audit report   'lodash-es': [
+302 silly audit report     {
+302 silly audit report       id: 1112453,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-xxjr-mmjv-4gpg',
+302 silly audit report       title: 'Lodash has Prototype Pollution Vulnerability in `_.unset` and `_.omit` functions',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '>=4.0.0 <=4.17.22',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1115805,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-r5fr-rjxr-66jc',
+302 silly audit report       title: 'lodash vulnerable to Code Injection via `_.template` imports key names',
+302 silly audit report       severity: 'high',
+302 silly audit report       vulnerable_versions: '>=4.0.0 <=4.17.23',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1115809,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-f23m-r3pf-42rh',
+302 silly audit report       title: 'lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit`',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '<=4.17.23',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     }
+302 silly audit report   ],
+302 silly audit report   minimatch: [
+302 silly audit report     {
+302 silly audit report       id: 1113465,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-3ppc-4f35-3m26',
+302 silly audit report       title: 'minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern',
+302 silly audit report       severity: 'high',
+302 silly audit report       vulnerable_versions: '>=9.0.0 <9.0.6',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1113544,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-7r86-cg39-jmmj',
+302 silly audit report       title: 'minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments',
+302 silly audit report       severity: 'high',
+302 silly audit report       vulnerable_versions: '>=9.0.0 <9.0.7',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1113552,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-23c5-xmqv-rm74',
+302 silly audit report       title: 'minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions',
+302 silly audit report       severity: 'high',
+302 silly audit report       vulnerable_versions: '>=9.0.0 <9.0.7',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     }
+302 silly audit report   ],
+302 silly audit report   rollup: [
+302 silly audit report     {
+302 silly audit report       id: 1113515,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-mw96-cpmx-2vgc',
+302 silly audit report       title: 'Rollup 4 has Arbitrary File Write via Path Traversal',
+302 silly audit report       severity: 'high',
+302 silly audit report       vulnerable_versions: '>=4.0.0 <4.59.0',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     }
+302 silly audit report   ],
+302 silly audit report   vite: [
+302 silly audit report     {
+302 silly audit report       id: 1102438,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-vg6x-rcgg-rjx6',
+302 silly audit report       title: 'Websites were able to send any requests to the development server and read the response in vite',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '>=6.0.0 <=6.0.8',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1103518,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-x574-m823-4x7w',
+302 silly audit report       title: 'Vite bypasses server.fs.deny when using ?raw??',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '>=6.0.0 <6.0.12',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1103885,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-356w-63v5-8wf4',
+302 silly audit report       title: 'Vite has an `server.fs.deny` bypass with an invalid `request-target`',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '>=6.0.0 <6.0.15',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1104174,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-859w-5945-r5v3',
+302 silly audit report       title: "Vite's server.fs.deny bypassed with /. for files under project root",
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '>=6.0.0 <=6.1.5',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1104203,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-xcj6-pq6g-qj4x',
+302 silly audit report       title: 'Vite allows server.fs.deny to be bypassed with .svg or relative paths',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '>=6.0.0 <6.0.14',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1107324,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-g4jq-h2w9-997c',
+302 silly audit report       title: 'Vite middleware may serve files starting with the same name with the public directory',
+302 silly audit report       severity: 'low',
+302 silly audit report       vulnerable_versions: '>=6.0.0 <=6.3.5',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1107328,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-jqfw-vq24-v9c3',
+302 silly audit report       title: "Vite's `server.fs` settings were not applied to HTML files",
+302 silly audit report       severity: 'low',
+302 silly audit report       vulnerable_versions: '>=6.0.0 <=6.3.5',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1109135,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-93m4-6634-74q7',
+302 silly audit report       title: 'vite allows server.fs.deny bypass via backslash on Windows',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '>=6.0.0 <=6.4.0',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1112512,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-4r4m-qw57-chr8',
+302 silly audit report       title: 'Vite has a `server.fs.deny` bypassed for `inline` and `raw` with `?import` query',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '>=6.0.0 <6.0.13',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1116229,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-4w7w-66w2-5vf9',
+302 silly audit report       title: 'Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling',
+302 silly audit report       severity: 'moderate',
+302 silly audit report       vulnerable_versions: '<=6.4.1',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     },
+302 silly audit report     {
+302 silly audit report       id: 1116234,
+302 silly audit report       url: 'https://github.com/advisories/GHSA-p9ff-h696-f583',
+302 silly audit report       title: 'Vite Vulnerable to Arbitrary File Read via Vite Dev Server WebSocket',
+302 silly audit report       severity: 'high',
+302 silly audit report       vulnerable_versions: '>=6.0.0 <=6.4.1',
+302 silly audit report       cwe: [Array],
+302 silly audit report       cvss: [Object]
+302 silly audit report     }
+302 silly audit report   ]
+302 silly audit report }
+303 timing metavuln:cache:get:security-advisory:picomatch:GSQ5ghUF1JWDKMssoydWDVRebjlPePRwktLhrdWzXCq5xeBXdo4Cm9HGHnH2b6P1Nq93YjwPmimVjAx6kge32A== Completed in 4ms
+304 timing metavuln:cache:get:security-advisory:picomatch:2VXNT0aF/Oc+aljqzVZL+y7UYoRsun3f1sCqjauwt4R4X9DizyqvONZbNtH8U58EY1DnyPNR0Ul3cX6UkEWNqw== Completed in 4ms
+305 timing metavuln:cache:get:security-advisory:picomatch:H8EHkZXRRUdil3DyUl8tc8lCQUliQzjc5H5D4llqFojH152sBqO1suz3XiNiRQT++wJdWkgXe/zFc/Bbrrz6ng== Completed in 4ms
+306 timing metavuln:cache:get:security-advisory:picomatch:PpR3fLr2OHopA+LsAWF3etD15aOC+jSmDwUcp4VQCTrR40wKvI/IGhhNd2qAhozxRYiHGwb06lLJm+b8SMoG/w== Completed in 4ms
+307 timing metavuln:cache:get:security-advisory:esbuild:jKdCIzePj7J1488qgRXvF8Srh9wutSuR1exB8YooNX62hT+qhtrUXYbArLNoIhgwbaCqKpmduh18syZU7BR9SA== Completed in 3ms
+308 timing metavuln:cache:get:security-advisory:lodash:OGNA5lR8rR8aeucWHqvJLBV5oaroI/lF2JfG9J2l63dx9uiGUyHuI4ymC6nv+dqWwxtqCIMcqBukiWYEiF5/RQ== Completed in 2ms
+309 timing metavuln:cache:get:security-advisory:lodash:DNnxUw8Ep7p1YCAJl4A30HMQmsK3uaHxA5fhfuTpXJUBgCvmZbKGD7OWAcfQ2u+fc9lY6ap1BhHpARF9oEarxQ== Completed in 2ms
+310 timing metavuln:cache:get:security-advisory:lodash:thshZSsl03tivWaq68PzU+tj1Rdgd6ZGN992B7QB+2oylByv6bvG8a/FXYANJwK5kybQ7+c0hg18JSj4gYikrg== Completed in 2ms
+311 timing metavuln:cache:get:security-advisory:minimatch:B00WbbnnDNaFGA7l9BgrTioYpRMzU4+U8SUF8cn65LwArJAK0O380QwyP/UyxPr7i9XUjX9/AADC41/edu9OrA== Completed in 2ms
+312 timing metavuln:cache:get:security-advisory:minimatch:tJ9Z2VGWqiQfLaVKxc9K/6Rz1g70Mpl3An4UK+K1lyHdz27vYPzhMIkC4jRGAN2wpssY+8l13Ql259B6zkaX/Q== Completed in 2ms
+313 timing metavuln:cache:get:security-advisory:minimatch:IBqefxF0lKwSFXzwGHp5L8khqSaPYY99x0GHtXNH4YxtdIexeL4FFPzrnnBvkhgmGDEWHo3XAgpPYGyM1jidQQ== Completed in 2ms
+314 timing metavuln:cache:get:security-advisory:axios:/pf+c7xKXyOAxvzOcA0l8XNUPjlepHr4MF9fvSVm0zWMU6yUfxx1lOuHqs79kY1PPoghsFsj7ayWGBefooph4w== Completed in 12ms
+315 timing metavuln:cache:get:security-advisory:axios:yrhF9SoFtS1+urw/362xcX3WaRshCAcVmEhaF45vHkIIAF71Ck/DgTqTn8kVi59BXcnuYupSQZkUeBAjwNWE+w== Completed in 13ms
+316 timing metavuln:cache:get:security-advisory:axios:639XSxImFrmZ8FJKlGw/ayVm90HNBWG0YmBic+gXcQg9gMjToIcCAHMWMBSN7FzFQCRxOEaPuifK0LaPyaQwMQ== Completed in 13ms
+317 timing metavuln:cache:get:security-advisory:@babel/runtime:xDaNmlS3J8LRk7IfDb7e9Gp3gcy/xDr1QZXCKC997SMkqKVemm2guY9vQpRI6omD11L5cfCI+STpoAdxUgnVsA== Completed in 15ms
+318 timing metavuln:cache:get:security-advisory:axios:KM2CayCdN6DRTT7BaALDKjW3GPxc5ix/ql038mETDjk1rdIC/XISHKoQ7ML6Yi2gFcUoWDShvg4sEOs2qg8x6Q== Completed in 13ms
+319 timing metavuln:cache:get:security-advisory:brace-expansion:ZHzAtnciS42HIMtUGajCifTIrkCUkWb93u/V1lJEt9HzdJ+ypMofn/dKgSOaziPQj+WGAcGS7t7WdPUHJBz0LA== Completed in 13ms
+320 timing metavuln:cache:get:security-advisory:form-data:QHwSQK89tp8y8NaEB/BmWWPJbFRmcqxbWkKungy6gPoWDFe3Fp6pmP2eW7jh8ZiRT8rEqJsege91INZ02VqjRw== Completed in 13ms
+321 timing metavuln:cache:get:security-advisory:brace-expansion:mClmYqWawCNXseeTBHWiIwZH/2CmFUqPCmosJIeOhAgD9z1v3SayhHAwaWVo8wmeKU/JN9VP4zDBeXaqy3Ay2A== Completed in 13ms
+322 timing metavuln:cache:get:security-advisory:immutable:YX+whGW9izHcs0SDGTqy4UrHYrvfaM29jMq36qobkKXOW7YodVH83OO0ms5bS3o1mxpncpZcFwEPtr3iMHQXRQ== Completed in 12ms
+323 timing metavuln:cache:get:security-advisory:axios:XlbxCi8sLnSl8m9PvHspUcR543OMkXOxB/jXGngj0YRh02/JFR8R1cLnsolnjD+cXz1ZxpGhsdG+q3G+wJV9ZQ== Completed in 13ms
+324 timing metavuln:cache:get:security-advisory:follow-redirects:4omfKvh6Ya8SJnn3CVNWLzlRKgsHqsp8XgTxFFWXdSXyBqVHeW5UgGhBrNoO2e0bLHnlnK954cJp6k7PjkvXLg== Completed in 13ms
+325 timing metavuln:cache:get:security-advisory:lodash-es:9c1QgLEk4XKozzWF4h4NArdR+uKvCWs2w7k2v/OVESQ3+w9z2krjvgAYF3OJlXg/6ASezbo3baMyotZ2t6lOzw== Completed in 12ms
+326 timing metavuln:cache:get:security-advisory:lodash-es:2hooxkCzh18xL2U5n9z7WQVgR0GxpITb9dueD1UQzFYy/YhDg+H/FOhCjxZk+UiPPIKgZYr2ui3uS19kFz2tWw== Completed in 12ms
+327 timing metavuln:cache:get:security-advisory:lodash-es:l+Ivi/RoR532FpvwaQzAYsIYfjesd02x7xcMxq6fYeIYu2iz3B2GSyj/yXDxcsODA0hJRm7lv3yGwpGV4OaKfA== Completed in 12ms
+328 timing metavuln:cache:get:security-advisory:vite:V/kkW7UAerLN868n1sEcp2kqgOWOP07jiV4jaDFuaXPxQ4TQ59aPxTjRCGM2O9YRs0XLosjZ9vjfmA3ANhScCQ== Completed in 11ms
+329 timing metavuln:cache:get:security-advisory:rollup:j57+QiunRUdD0cUD+SOC+z9ahAKAX/ORqNrS8xn5EMmMoVNjDT6jDQ8+1zJZRvVKgeAjbBSmjAgyimjwq9Hhfg== Completed in 12ms
+330 timing metavuln:cache:get:security-advisory:vite:zZrobAm5WHnXnAwVM39+2ezFQ6SgUgscplWFNujjXVzNEU1v0uRVuHsHiWDRxGO80uIXlK2oANhxa9ZKqYckFg== Completed in 12ms
+331 timing metavuln:cache:get:security-advisory:vite:vzgb0p24PfLuRLWG4U0Kb57ep0tMCMT+C+2juIv/bmuVWEzDFtJ9uA1zOkQd1nxOGQ0T6oo+FNFaXzLvYTb13w== Completed in 12ms
+332 timing metavuln:cache:get:security-advisory:vite:0uerD0bg2wLpA2p8gFFFUIFeutSBDzFl98dN45i4u1EYj3EvJW03UyjO7tQ7Nk8yLBSi8rbvxI4k8C+oCGWubg== Completed in 12ms
+333 timing metavuln:cache:get:security-advisory:vite:cRFlaVCr1VwlZybRufRyUzrt3WnVV0kGJ80PB4YhT0CSccPFjchDLU5YSg+lsk/oJgLJJnx2RfTL5LfHnC+TwQ== Completed in 12ms
+334 timing metavuln:cache:get:security-advisory:vite:C5mSGtQ/8iySKhD/I8hWlOo+bQ6ZRd3Y05TuSqc1Pa4jQelcCx/MOVCI/v7twFwCGOY8/muOI0B1LE1IWMJyIg== Completed in 12ms
+335 timing metavuln:cache:get:security-advisory:vite:1yM5vNWTwdJaSaVCQEuMQbWVFay/FQXXU2WmBw1Z1s5sTuRIY9GXnzHfdu2O+32zrhRCOFcG6yYYk4daSMx+ZQ== Completed in 12ms
+336 timing metavuln:cache:get:security-advisory:vite:I1BdsVrQ8+F0Nz5pjiEY7gYSFBzvKNwOR8nQyg9euOprN34SC4VipJH1GMc8WCRl+e0xZWGr2QiYwiNwqO4gag== Completed in 12ms
+337 timing metavuln:cache:get:security-advisory:vite:lhMAfW6KGSgCoRssD7e9LUKdutS+l4nPk6asDknTsbkWI2UMyL0z8LPAXleuo5qPagcVjQxgCtMH3fz1kzkSYA== Completed in 12ms
+338 timing metavuln:cache:get:security-advisory:vite:NrX8Kp1+Hvd4wvEsS+lQHlOeCmhHudEeMSpjy9BuW2CaPgMCcTb+azDYWI3SEwQXj582+iuKbuJSaWmAaLYLNw== Completed in 12ms
+339 timing metavuln:cache:get:security-advisory:vite:Tg1igN5ImUILB7iL3lCsdCfvryCmdwXKQoLrV9oZh5qkz8tTcdwqqtt4Gpb4Z+ybfbkRa+CBnUNY2uVy1+5EAA== Completed in 12ms
+340 http fetch GET 200 https://registry.npmjs.org/picomatch 124ms (cache miss)
+341 timing metavuln:packument:picomatch Completed in 124ms
+342 timing metavuln:load:security-advisory:picomatch:1115549 Completed in 1ms
+343 timing metavuln:load:security-advisory:picomatch:1115551 Completed in 1ms
+344 timing metavuln:load:security-advisory:picomatch:1115552 Completed in 0ms
+345 timing metavuln:load:security-advisory:picomatch:1115554 Completed in 1ms
+346 timing metavuln:cache:put:security-advisory:picomatch:2VXNT0aF/Oc+aljqzVZL+y7UYoRsun3f1sCqjauwt4R4X9DizyqvONZbNtH8U58EY1DnyPNR0Ul3cX6UkEWNqw== Completed in 6ms
+347 timing metavuln:calculate:security-advisory:picomatch:1115551 Completed in 132ms
+348 timing metavuln:cache:put:security-advisory:picomatch:GSQ5ghUF1JWDKMssoydWDVRebjlPePRwktLhrdWzXCq5xeBXdo4Cm9HGHnH2b6P1Nq93YjwPmimVjAx6kge32A== Completed in 8ms
+349 timing metavuln:calculate:security-advisory:picomatch:1115549 Completed in 133ms
+350 timing metavuln:cache:put:security-advisory:picomatch:PpR3fLr2OHopA+LsAWF3etD15aOC+jSmDwUcp4VQCTrR40wKvI/IGhhNd2qAhozxRYiHGwb06lLJm+b8SMoG/w== Completed in 6ms
+351 timing metavuln:calculate:security-advisory:picomatch:1115554 Completed in 133ms
+352 timing metavuln:cache:put:security-advisory:picomatch:H8EHkZXRRUdil3DyUl8tc8lCQUliQzjc5H5D4llqFojH152sBqO1suz3XiNiRQT++wJdWkgXe/zFc/Bbrrz6ng== Completed in 7ms
+353 timing metavuln:calculate:security-advisory:picomatch:1115552 Completed in 133ms
+354 http fetch GET 200 https://registry.npmjs.org/vite 409ms (cache revalidated)
+355 timing metavuln:packument:vite Completed in 418ms
+356 timing metavuln:load:security-advisory:vite:1102438 Completed in 2ms
+357 timing metavuln:calculate:security-advisory:vite:1102438 Completed in 420ms
+358 timing metavuln:load:security-advisory:vite:1103518 Completed in 2ms
+359 timing metavuln:calculate:security-advisory:vite:1103518 Completed in 422ms
+360 timing metavuln:load:security-advisory:vite:1103885 Completed in 2ms
+361 timing metavuln:calculate:security-advisory:vite:1103885 Completed in 424ms
+362 timing metavuln:load:security-advisory:vite:1104174 Completed in 2ms
+363 timing metavuln:calculate:security-advisory:vite:1104174 Completed in 426ms
+364 timing metavuln:load:security-advisory:vite:1104203 Completed in 3ms
+365 timing metavuln:calculate:security-advisory:vite:1104203 Completed in 429ms
+366 timing metavuln:load:security-advisory:vite:1107324 Completed in 1ms
+367 timing metavuln:calculate:security-advisory:vite:1107324 Completed in 430ms
+368 timing metavuln:load:security-advisory:vite:1107328 Completed in 2ms
+369 timing metavuln:calculate:security-advisory:vite:1107328 Completed in 433ms
+370 timing metavuln:load:security-advisory:vite:1109135 Completed in 1ms
+371 timing metavuln:calculate:security-advisory:vite:1109135 Completed in 434ms
+372 timing metavuln:load:security-advisory:vite:1112512 Completed in 1ms
+373 timing metavuln:calculate:security-advisory:vite:1112512 Completed in 435ms
+374 timing metavuln:load:security-advisory:vite:1116229 Completed in 2ms
+375 timing metavuln:calculate:security-advisory:vite:1116229 Completed in 437ms
+376 timing metavuln:load:security-advisory:vite:1116234 Completed in 1ms
+377 timing metavuln:calculate:security-advisory:vite:1116234 Completed in 438ms
+378 http fetch GET 200 https://registry.npmjs.org/immutable 447ms (cache revalidated)
+379 timing metavuln:packument:immutable Completed in 447ms
+380 timing metavuln:load:security-advisory:immutable:1114168 Completed in 1ms
+381 timing metavuln:calculate:security-advisory:immutable:1114168 Completed in 449ms
+382 http fetch GET 200 https://registry.npmjs.org/lodash-es 448ms (cache revalidated)
+383 timing metavuln:packument:lodash-es Completed in 448ms
+384 timing metavuln:load:security-advisory:lodash-es:1112453 Completed in 0ms
+385 timing metavuln:calculate:security-advisory:lodash-es:1112453 Completed in 448ms
+386 timing metavuln:load:security-advisory:lodash-es:1115805 Completed in 0ms
+387 timing metavuln:calculate:security-advisory:lodash-es:1115805 Completed in 448ms
+388 timing metavuln:load:security-advisory:lodash-es:1115809 Completed in 0ms
+389 timing metavuln:calculate:security-advisory:lodash-es:1115809 Completed in 448ms
+390 http fetch GET 200 https://registry.npmjs.org/axios 451ms (cache revalidated)
+391 timing metavuln:packument:axios Completed in 452ms
+392 timing metavuln:load:security-advisory:axios:1111035 Completed in 0ms
+393 timing metavuln:calculate:security-advisory:axios:1111035 Completed in 452ms
+394 timing metavuln:load:security-advisory:axios:1112195 Completed in 1ms
+395 timing metavuln:calculate:security-advisory:axios:1112195 Completed in 452ms
+396 timing metavuln:load:security-advisory:axios:1113275 Completed in 0ms
+397 timing metavuln:calculate:security-advisory:axios:1113275 Completed in 452ms
+398 timing metavuln:load:security-advisory:axios:1116673 Completed in 0ms
+399 timing metavuln:calculate:security-advisory:axios:1116673 Completed in 452ms
+400 timing metavuln:load:security-advisory:axios:1116675 Completed in 0ms
+401 timing metavuln:calculate:security-advisory:axios:1116675 Completed in 452ms
+402 http fetch GET 200 https://registry.npmjs.org/brace-expansion 453ms (cache revalidated)
+403 timing metavuln:packument:brace-expansion Completed in 453ms
+404 timing metavuln:load:security-advisory:brace-expansion:1105444 Completed in 0ms
+405 timing metavuln:calculate:security-advisory:brace-expansion:1105444 Completed in 453ms
+406 timing metavuln:load:security-advisory:brace-expansion:1115541 Completed in 0ms
+407 timing metavuln:calculate:security-advisory:brace-expansion:1115541 Completed in 453ms
+408 http fetch GET 200 https://registry.npmjs.org/form-data 453ms (cache revalidated)
+409 timing metavuln:packument:form-data Completed in 453ms
+410 timing metavuln:load:security-advisory:form-data:1109538 Completed in 1ms
+411 timing metavuln:calculate:security-advisory:form-data:1109538 Completed in 454ms
+412 http fetch GET 200 https://registry.npmjs.org/@babel%2fruntime 455ms (cache revalidated)
+413 timing metavuln:packument:@babel/runtime Completed in 455ms
+414 timing metavuln:load:security-advisory:@babel/runtime:1104000 Completed in 2ms
+415 timing metavuln:calculate:security-advisory:@babel/runtime:1104000 Completed in 458ms
+416 http fetch GET 200 https://registry.npmjs.org/follow-redirects 457ms (cache revalidated)
+417 timing metavuln:packument:follow-redirects Completed in 457ms
+418 timing metavuln:load:security-advisory:follow-redirects:1116560 Completed in 0ms
+419 timing metavuln:calculate:security-advisory:follow-redirects:1116560 Completed in 458ms
+420 http fetch GET 200 https://registry.npmjs.org/rollup 459ms (cache revalidated)
+421 timing metavuln:packument:rollup Completed in 468ms
+422 timing metavuln:load:security-advisory:rollup:1113515 Completed in 2ms
+423 timing metavuln:calculate:security-advisory:rollup:1113515 Completed in 470ms
+424 http fetch GET 200 https://registry.npmjs.org/lodash 475ms (cache miss)
+425 timing metavuln:packument:lodash Completed in 475ms
+426 timing metavuln:load:security-advisory:lodash:1112455 Completed in 1ms
+427 timing metavuln:load:security-advisory:lodash:1115806 Completed in 1ms
+428 timing metavuln:load:security-advisory:lodash:1115810 Completed in 1ms
+429 timing metavuln:cache:put:security-advisory:lodash:DNnxUw8Ep7p1YCAJl4A30HMQmsK3uaHxA5fhfuTpXJUBgCvmZbKGD7OWAcfQ2u+fc9lY6ap1BhHpARF9oEarxQ== Completed in 5ms
+430 timing metavuln:calculate:security-advisory:lodash:1115806 Completed in 482ms
+431 timing metavuln:cache:put:security-advisory:lodash:OGNA5lR8rR8aeucWHqvJLBV5oaroI/lF2JfG9J2l63dx9uiGUyHuI4ymC6nv+dqWwxtqCIMcqBukiWYEiF5/RQ== Completed in 7ms
+432 timing metavuln:calculate:security-advisory:lodash:1112455 Completed in 483ms
+433 timing metavuln:cache:put:security-advisory:lodash:thshZSsl03tivWaq68PzU+tj1Rdgd6ZGN992B7QB+2oylByv6bvG8a/FXYANJwK5kybQ7+c0hg18JSj4gYikrg== Completed in 5ms
+434 timing metavuln:calculate:security-advisory:lodash:1115810 Completed in 483ms
+435 http fetch GET 200 https://registry.npmjs.org/minimatch 509ms (cache miss)
+436 timing metavuln:packument:minimatch Completed in 509ms
+437 timing metavuln:load:security-advisory:minimatch:1113465 Completed in 1ms
+438 timing metavuln:load:security-advisory:minimatch:1113544 Completed in 1ms
+439 timing metavuln:load:security-advisory:minimatch:1113552 Completed in 1ms
+440 timing metavuln:cache:put:security-advisory:minimatch:tJ9Z2VGWqiQfLaVKxc9K/6Rz1g70Mpl3An4UK+K1lyHdz27vYPzhMIkC4jRGAN2wpssY+8l13Ql259B6zkaX/Q== Completed in 5ms
+441 timing metavuln:calculate:security-advisory:minimatch:1113544 Completed in 516ms
+442 timing metavuln:cache:put:security-advisory:minimatch:B00WbbnnDNaFGA7l9BgrTioYpRMzU4+U8SUF8cn65LwArJAK0O380QwyP/UyxPr7i9XUjX9/AADC41/edu9OrA== Completed in 6ms
+443 timing metavuln:calculate:security-advisory:minimatch:1113465 Completed in 516ms
+444 timing metavuln:cache:put:security-advisory:minimatch:IBqefxF0lKwSFXzwGHp5L8khqSaPYY99x0GHtXNH4YxtdIexeL4FFPzrnnBvkhgmGDEWHo3XAgpPYGyM1jidQQ== Completed in 5ms
+445 timing metavuln:calculate:security-advisory:minimatch:1113552 Completed in 517ms
+446 http fetch GET 200 https://registry.npmjs.org/esbuild 649ms (cache miss)
+447 timing metavuln:packument:esbuild Completed in 652ms
+448 timing metavuln:load:security-advisory:esbuild:1102341 Completed in 3ms
+449 timing metavuln:cache:put:security-advisory:esbuild:jKdCIzePj7J1488qgRXvF8Srh9wutSuR1exB8YooNX62hT+qhtrUXYbArLNoIhgwbaCqKpmduh18syZU7BR9SA== Completed in 3ms
+450 timing metavuln:calculate:security-advisory:esbuild:1102341 Completed in 658ms
+451 timing metavuln:cache:get:security-advisory:ant-design-vue:Pwh6H3X6V1iAo9kvHUrI0bNsc/OyHwBxSjy9QkTa8WNF23CMeaJjnBae0KtYGmkCtcOxU/LrcbANEXG8XfQRWQ== Completed in 0ms
+452 http fetch GET 200 https://registry.npmjs.org/ant-design-vue 293ms (cache miss)
+453 timing metavuln:packument:ant-design-vue Completed in 299ms
+454 timing metavuln:load:security-advisory:ant-design-vue:xDaNmlS3J8LRk7IfDb7e9Gp3gcy/xDr1QZXCKC997SMkqKVemm2guY9vQpRI6omD11L5cfCI+STpoAdxUgnVsA== Completed in 3ms
+455 timing metavuln:cache:put:security-advisory:ant-design-vue:Pwh6H3X6V1iAo9kvHUrI0bNsc/OyHwBxSjy9QkTa8WNF23CMeaJjnBae0KtYGmkCtcOxU/LrcbANEXG8XfQRWQ== Completed in 5ms
+456 timing metavuln:calculate:security-advisory:ant-design-vue:xDaNmlS3J8LRk7IfDb7e9Gp3gcy/xDr1QZXCKC997SMkqKVemm2guY9vQpRI6omD11L5cfCI+STpoAdxUgnVsA== Completed in 307ms
+457 timing metavuln:cache:get:security-advisory:anymatch:Nfla9E9Lgs+mqMt1dA/8UaXdCl7sXuZQsKzxwmqxeyDZbX+CRdcfKSFFgjhZ/F0BJR9geE1mRVv3h/ODZoo63g== Completed in 2ms
+458 timing metavuln:cache:get:security-advisory:micromatch:Gfx2SOQRY3jP5uv6bFlh3nIPxMXsxdnbcyF/xURx+dAnDK2wtpAvWYKdTiFWGD3MlWR/x1stzjO6SjznwiVonw== Completed in 1ms
+459 timing metavuln:cache:get:security-advisory:readdirp:O7WXRupQt48LJyZ17mA/uSHYfhYyK7sMYMihjKrTsH3mKxobKArK3CCtifRFqfhAMZFOU4AsOtouYzz86OtBxQ== Completed in 1ms
+460 http fetch GET 200 https://registry.npmjs.org/anymatch 109ms (cache miss)
+461 timing metavuln:packument:anymatch Completed in 110ms
+462 timing metavuln:load:security-advisory:anymatch:GSQ5ghUF1JWDKMssoydWDVRebjlPePRwktLhrdWzXCq5xeBXdo4Cm9HGHnH2b6P1Nq93YjwPmimVjAx6kge32A== Completed in 0ms
+463 http fetch GET 200 https://registry.npmjs.org/micromatch 113ms (cache miss)
+464 timing metavuln:packument:micromatch Completed in 114ms
+465 timing metavuln:load:security-advisory:micromatch:GSQ5ghUF1JWDKMssoydWDVRebjlPePRwktLhrdWzXCq5xeBXdo4Cm9HGHnH2b6P1Nq93YjwPmimVjAx6kge32A== Completed in 1ms
+466 timing metavuln:cache:put:security-advisory:anymatch:Nfla9E9Lgs+mqMt1dA/8UaXdCl7sXuZQsKzxwmqxeyDZbX+CRdcfKSFFgjhZ/F0BJR9geE1mRVv3h/ODZoo63g== Completed in 7ms
+467 timing metavuln:calculate:security-advisory:anymatch:GSQ5ghUF1JWDKMssoydWDVRebjlPePRwktLhrdWzXCq5xeBXdo4Cm9HGHnH2b6P1Nq93YjwPmimVjAx6kge32A== Completed in 117ms
+468 timing metavuln:cache:put:security-advisory:micromatch:Gfx2SOQRY3jP5uv6bFlh3nIPxMXsxdnbcyF/xURx+dAnDK2wtpAvWYKdTiFWGD3MlWR/x1stzjO6SjznwiVonw== Completed in 4ms
+469 timing metavuln:calculate:security-advisory:micromatch:GSQ5ghUF1JWDKMssoydWDVRebjlPePRwktLhrdWzXCq5xeBXdo4Cm9HGHnH2b6P1Nq93YjwPmimVjAx6kge32A== Completed in 120ms
+470 http fetch GET 200 https://registry.npmjs.org/readdirp 148ms (cache miss)
+471 timing metavuln:packument:readdirp Completed in 148ms
+472 timing metavuln:load:security-advisory:readdirp:GSQ5ghUF1JWDKMssoydWDVRebjlPePRwktLhrdWzXCq5xeBXdo4Cm9HGHnH2b6P1Nq93YjwPmimVjAx6kge32A== Completed in 1ms
+473 timing metavuln:cache:put:security-advisory:readdirp:O7WXRupQt48LJyZ17mA/uSHYfhYyK7sMYMihjKrTsH3mKxobKArK3CCtifRFqfhAMZFOU4AsOtouYzz86OtBxQ== Completed in 3ms
+474 timing metavuln:calculate:security-advisory:readdirp:GSQ5ghUF1JWDKMssoydWDVRebjlPePRwktLhrdWzXCq5xeBXdo4Cm9HGHnH2b6P1Nq93YjwPmimVjAx6kge32A== Completed in 152ms
+475 timing metavuln:cache:get:security-advisory:@rollup/pluginutils:n2ZdRYbkVfOpggkAn57AsDsLtSdsRgrg8T81dTnrFNkeL2GsJBYvfMqXjYaV9+BM+rQQagElbxA334jCq2AipA== Completed in 1ms
+476 http fetch GET 200 https://registry.npmjs.org/@rollup%2fpluginutils 133ms (cache miss)
+477 timing metavuln:packument:@rollup/pluginutils Completed in 133ms
+478 timing metavuln:load:security-advisory:@rollup/pluginutils:2VXNT0aF/Oc+aljqzVZL+y7UYoRsun3f1sCqjauwt4R4X9DizyqvONZbNtH8U58EY1DnyPNR0Ul3cX6UkEWNqw== Completed in 0ms
+479 timing metavuln:cache:put:security-advisory:@rollup/pluginutils:n2ZdRYbkVfOpggkAn57AsDsLtSdsRgrg8T81dTnrFNkeL2GsJBYvfMqXjYaV9+BM+rQQagElbxA334jCq2AipA== Completed in 4ms
+480 timing metavuln:calculate:security-advisory:@rollup/pluginutils:2VXNT0aF/Oc+aljqzVZL+y7UYoRsun3f1sCqjauwt4R4X9DizyqvONZbNtH8U58EY1DnyPNR0Ul3cX6UkEWNqw== Completed in 138ms
+481 timing metavuln:cache:get:security-advisory:minimatch:47aVejY8/1KnEnFlTo+uF90a7w1XvtOjMP1i7DvyX4+jxy/wlG4RjX1rMW+bmptQMpL8TSkcMyWTMH7gxl9Fpg== Completed in 0ms
+482 timing metavuln:load:security-advisory:minimatch:mClmYqWawCNXseeTBHWiIwZH/2CmFUqPCmosJIeOhAgD9z1v3SayhHAwaWVo8wmeKU/JN9VP4zDBeXaqy3Ay2A== Completed in 2ms
+483 timing metavuln:cache:put:security-advisory:minimatch:47aVejY8/1KnEnFlTo+uF90a7w1XvtOjMP1i7DvyX4+jxy/wlG4RjX1rMW+bmptQMpL8TSkcMyWTMH7gxl9Fpg== Completed in 3ms
+484 timing metavuln:calculate:security-advisory:minimatch:mClmYqWawCNXseeTBHWiIwZH/2CmFUqPCmosJIeOhAgD9z1v3SayhHAwaWVo8wmeKU/JN9VP4zDBeXaqy3Ay2A== Completed in 5ms
+485 timing metavuln:cache:get:security-advisory:vite:tMBsdAS7JBTyRORp0YaJR984WAAsOxgmReSLBN0Nd41GhzEakjROICqAJ31iOdYG5Ijo/MlJ01p3ig1iN88+Tw== Completed in 0ms
+486 timing metavuln:load:security-advisory:vite:jKdCIzePj7J1488qgRXvF8Srh9wutSuR1exB8YooNX62hT+qhtrUXYbArLNoIhgwbaCqKpmduh18syZU7BR9SA== Completed in 55ms
+487 timing metavuln:cache:put:security-advisory:vite:tMBsdAS7JBTyRORp0YaJR984WAAsOxgmReSLBN0Nd41GhzEakjROICqAJ31iOdYG5Ijo/MlJ01p3ig1iN88+Tw== Completed in 5ms
+488 timing metavuln:calculate:security-advisory:vite:jKdCIzePj7J1488qgRXvF8Srh9wutSuR1exB8YooNX62hT+qhtrUXYbArLNoIhgwbaCqKpmduh18syZU7BR9SA== Completed in 60ms
+489 timing metavuln:cache:get:security-advisory:axios:BE/AOjOVyF8ZT/4nkyNE+Keqz53GIuATd0cAqCdlCKUT+V8U94LKR6YN/lLRDtizMt46UKcIgnI6HSNuaEJQ0A== Completed in 1ms
+490 timing metavuln:load:security-advisory:axios:4omfKvh6Ya8SJnn3CVNWLzlRKgsHqsp8XgTxFFWXdSXyBqVHeW5UgGhBrNoO2e0bLHnlnK954cJp6k7PjkvXLg== Completed in 4ms
+491 timing metavuln:cache:put:security-advisory:axios:BE/AOjOVyF8ZT/4nkyNE+Keqz53GIuATd0cAqCdlCKUT+V8U94LKR6YN/lLRDtizMt46UKcIgnI6HSNuaEJQ0A== Completed in 3ms
+492 timing metavuln:calculate:security-advisory:axios:4omfKvh6Ya8SJnn3CVNWLzlRKgsHqsp8XgTxFFWXdSXyBqVHeW5UgGhBrNoO2e0bLHnlnK954cJp6k7PjkvXLg== Completed in 8ms
+493 timing metavuln:cache:get:security-advisory:axios:C2fIAmAB2uOvlfUuWl4nar/gbg/mmHzmzeMphxDBwRWYxDXxg8Ta1mzTq6jDIuRTZqkNY/kJ4g85IdHIaKaoPQ== Completed in 1ms
+494 timing metavuln:load:security-advisory:axios:QHwSQK89tp8y8NaEB/BmWWPJbFRmcqxbWkKungy6gPoWDFe3Fp6pmP2eW7jh8ZiRT8rEqJsege91INZ02VqjRw== Completed in 1ms
+495 timing metavuln:cache:put:security-advisory:axios:C2fIAmAB2uOvlfUuWl4nar/gbg/mmHzmzeMphxDBwRWYxDXxg8Ta1mzTq6jDIuRTZqkNY/kJ4g85IdHIaKaoPQ== Completed in 4ms
+496 timing metavuln:calculate:security-advisory:axios:QHwSQK89tp8y8NaEB/BmWWPJbFRmcqxbWkKungy6gPoWDFe3Fp6pmP2eW7jh8ZiRT8rEqJsege91INZ02VqjRw== Completed in 6ms
+497 timing metavuln:cache:get:security-advisory:sass:/DhIUYbf4T3AnGx+PzD6W7syROdczWMVjvjgrWRtbOFMLMgI8bnlkX1ZD2lE/oeb/LTneNK4DQSzB1IP3sJw4A== Completed in 0ms
+498 http fetch GET 200 https://registry.npmjs.org/sass 303ms (cache miss)
+499 timing metavuln:packument:sass Completed in 304ms
+500 timing metavuln:load:security-advisory:sass:YX+whGW9izHcs0SDGTqy4UrHYrvfaM29jMq36qobkKXOW7YodVH83OO0ms5bS3o1mxpncpZcFwEPtr3iMHQXRQ== Completed in 2ms
+501 timing metavuln:cache:put:security-advisory:sass:/DhIUYbf4T3AnGx+PzD6W7syROdczWMVjvjgrWRtbOFMLMgI8bnlkX1ZD2lE/oeb/LTneNK4DQSzB1IP3sJw4A== Completed in 4ms
+502 timing metavuln:calculate:security-advisory:sass:YX+whGW9izHcs0SDGTqy4UrHYrvfaM29jMq36qobkKXOW7YodVH83OO0ms5bS3o1mxpncpZcFwEPtr3iMHQXRQ== Completed in 311ms
+503 timing metavuln:cache:get:security-advisory:ant-design-vue:OuP5azgJ7DbsB2C6wPq5Jd4LATmKEdZklFL0gxXSNupmOkDrCa1ylI2QQlSMcYGzD1VBwjGM69yAProjs6Jgnw== Completed in 0ms
+504 timing metavuln:load:security-advisory:ant-design-vue:OGNA5lR8rR8aeucWHqvJLBV5oaroI/lF2JfG9J2l63dx9uiGUyHuI4ymC6nv+dqWwxtqCIMcqBukiWYEiF5/RQ== Completed in 3ms
+505 timing metavuln:cache:put:security-advisory:ant-design-vue:OuP5azgJ7DbsB2C6wPq5Jd4LATmKEdZklFL0gxXSNupmOkDrCa1ylI2QQlSMcYGzD1VBwjGM69yAProjs6Jgnw== Completed in 4ms
+506 timing metavuln:calculate:security-advisory:ant-design-vue:OGNA5lR8rR8aeucWHqvJLBV5oaroI/lF2JfG9J2l63dx9uiGUyHuI4ymC6nv+dqWwxtqCIMcqBukiWYEiF5/RQ== Completed in 8ms
+507 timing metavuln:cache:get:security-advisory:ant-design-vue:zaTyGze7xcdK8qp35FAUFXKFLKrsgJJcpC2Bs7EQyNPJ/E+Sl0e/wJeH+BrkQAKDC6Wvli4kOTDNTwpfos9rYw== Completed in 0ms
+508 timing metavuln:load:security-advisory:ant-design-vue:l+Ivi/RoR532FpvwaQzAYsIYfjesd02x7xcMxq6fYeIYu2iz3B2GSyj/yXDxcsODA0hJRm7lv3yGwpGV4OaKfA== Completed in 4ms
+509 timing metavuln:cache:put:security-advisory:ant-design-vue:zaTyGze7xcdK8qp35FAUFXKFLKrsgJJcpC2Bs7EQyNPJ/E+Sl0e/wJeH+BrkQAKDC6Wvli4kOTDNTwpfos9rYw== Completed in 5ms
+510 timing metavuln:calculate:security-advisory:ant-design-vue:l+Ivi/RoR532FpvwaQzAYsIYfjesd02x7xcMxq6fYeIYu2iz3B2GSyj/yXDxcsODA0hJRm7lv3yGwpGV4OaKfA== Completed in 9ms
+511 timing metavuln:cache:get:security-advisory:unplugin-vue-components:mtwDWOt/NngTO5a4rmwTftygFM6gB2H4FdLumY4fS3aYtB7nf4Viznga9Yut8Zn7i4R6qmevvyRna0FkWuF0AA== Completed in 1ms
+512 http fetch GET 200 https://registry.npmjs.org/unplugin-vue-components 154ms (cache miss)
+513 timing metavuln:packument:unplugin-vue-components Completed in 156ms
+514 timing metavuln:load:security-advisory:unplugin-vue-components:B00WbbnnDNaFGA7l9BgrTioYpRMzU4+U8SUF8cn65LwArJAK0O380QwyP/UyxPr7i9XUjX9/AADC41/edu9OrA== Completed in 3ms
+515 timing metavuln:cache:put:security-advisory:unplugin-vue-components:mtwDWOt/NngTO5a4rmwTftygFM6gB2H4FdLumY4fS3aYtB7nf4Viznga9Yut8Zn7i4R6qmevvyRna0FkWuF0AA== Completed in 5ms
+516 timing metavuln:calculate:security-advisory:unplugin-vue-components:B00WbbnnDNaFGA7l9BgrTioYpRMzU4+U8SUF8cn65LwArJAK0O380QwyP/UyxPr7i9XUjX9/AADC41/edu9OrA== Completed in 164ms
+517 timing metavuln:cache:get:security-advisory:@rollup/pluginutils:dMdnd9raqui7IVsTxayEuCOtdg+luTuDRWeXcvRAg8J3v4f3HS/d+58hbjXUW/451OFYPnLKfXufgSknpMWp7Q== Completed in 0ms
+518 timing metavuln:load:security-advisory:@rollup/pluginutils:j57+QiunRUdD0cUD+SOC+z9ahAKAX/ORqNrS8xn5EMmMoVNjDT6jDQ8+1zJZRvVKgeAjbBSmjAgyimjwq9Hhfg== Completed in 4ms
+519 timing metavuln:cache:get:security-advisory:vite:SaJWDd5gEEZd3lHg31QWzLWgMkCzYHn5RvntQLmOGssdx9DgqFp1CHRkx1q//bJjITqFeBtPANooZCY8TRvk8g== Completed in 5ms
+520 timing metavuln:load:security-advisory:vite:j57+QiunRUdD0cUD+SOC+z9ahAKAX/ORqNrS8xn5EMmMoVNjDT6jDQ8+1zJZRvVKgeAjbBSmjAgyimjwq9Hhfg== Completed in 54ms
+521 timing metavuln:cache:put:security-advisory:@rollup/pluginutils:dMdnd9raqui7IVsTxayEuCOtdg+luTuDRWeXcvRAg8J3v4f3HS/d+58hbjXUW/451OFYPnLKfXufgSknpMWp7Q== Completed in 60ms
+522 timing metavuln:calculate:security-advisory:@rollup/pluginutils:j57+QiunRUdD0cUD+SOC+z9ahAKAX/ORqNrS8xn5EMmMoVNjDT6jDQ8+1zJZRvVKgeAjbBSmjAgyimjwq9Hhfg== Completed in 64ms
+523 timing metavuln:cache:put:security-advisory:vite:SaJWDd5gEEZd3lHg31QWzLWgMkCzYHn5RvntQLmOGssdx9DgqFp1CHRkx1q//bJjITqFeBtPANooZCY8TRvk8g== Completed in 6ms
+524 timing metavuln:calculate:security-advisory:vite:j57+QiunRUdD0cUD+SOC+z9ahAKAX/ORqNrS8xn5EMmMoVNjDT6jDQ8+1zJZRvVKgeAjbBSmjAgyimjwq9Hhfg== Completed in 65ms
+525 timing metavuln:cache:get:security-advisory:@vitejs/plugin-vue:XpO6q+cOvu9E+9FjxiKzWUHtaCozFTh8BIEn5Sczd07mIE5gzChKoR14TRZcbkLrK3wSuDoR1ROGWK935iYrOg== Completed in 0ms
+526 http fetch GET 200 https://registry.npmjs.org/@vitejs%2fplugin-vue 194ms (cache miss)
+527 timing metavuln:packument:@vitejs/plugin-vue Completed in 195ms
+528 timing metavuln:load:security-advisory:@vitejs/plugin-vue:zZrobAm5WHnXnAwVM39+2ezFQ6SgUgscplWFNujjXVzNEU1v0uRVuHsHiWDRxGO80uIXlK2oANhxa9ZKqYckFg== Completed in 13ms
+529 timing metavuln:cache:put:security-advisory:@vitejs/plugin-vue:XpO6q+cOvu9E+9FjxiKzWUHtaCozFTh8BIEn5Sczd07mIE5gzChKoR14TRZcbkLrK3wSuDoR1ROGWK935iYrOg== Completed in 4ms
+530 timing metavuln:calculate:security-advisory:@vitejs/plugin-vue:zZrobAm5WHnXnAwVM39+2ezFQ6SgUgscplWFNujjXVzNEU1v0uRVuHsHiWDRxGO80uIXlK2oANhxa9ZKqYckFg== Completed in 212ms
+531 timing auditReport:init Completed in 2110ms
+532 timing reify:audit Completed in 2387ms
+533 timing reify Completed in 3559ms
+534 silly CHANGE node_modules/vue-demi
+535 silly CHANGE node_modules/pinia
+536 silly CHANGE node_modules/pinia-plugin-persistedstate
+537 silly CHANGE node_modules/@rollup/rollup-win32-ia32-msvc
+538 silly CHANGE node_modules/@rollup/rollup-win32-arm64-msvc
+539 silly CHANGE node_modules/@rollup/rollup-linux-x64-musl
+540 silly CHANGE node_modules/@rollup/rollup-linux-x64-gnu
+541 silly CHANGE node_modules/@rollup/rollup-linux-s390x-gnu
+542 silly CHANGE node_modules/@rollup/rollup-linux-riscv64-gnu
+543 silly CHANGE node_modules/@rollup/rollup-linux-arm64-musl
+544 silly CHANGE node_modules/@rollup/rollup-linux-powerpc64le-gnu
+545 silly CHANGE node_modules/@rollup/rollup-linux-loongarch64-gnu
+546 silly CHANGE node_modules/@rollup/rollup-linux-arm64-gnu
+547 silly CHANGE node_modules/@rollup/rollup-linux-arm-musleabihf
+548 silly CHANGE node_modules/@rollup/rollup-linux-arm-gnueabihf
+549 silly CHANGE node_modules/@rollup/rollup-freebsd-x64
+550 silly CHANGE node_modules/@rollup/rollup-freebsd-arm64
+551 silly CHANGE node_modules/@rollup/rollup-darwin-x64
+552 silly CHANGE node_modules/@rollup/rollup-darwin-arm64
+553 silly CHANGE node_modules/@rollup/rollup-android-arm64
+554 silly CHANGE node_modules/@rollup/rollup-android-arm-eabi
+555 silly CHANGE node_modules/@parcel/watcher-win32-arm64
+556 silly CHANGE node_modules/@parcel/watcher-win32-ia32
+557 silly CHANGE node_modules/@parcel/watcher-linux-x64-musl
+558 silly CHANGE node_modules/@parcel/watcher-linux-arm64-musl
+559 silly CHANGE node_modules/@parcel/watcher-linux-x64-glibc
+560 silly CHANGE node_modules/@parcel/watcher-linux-arm-musl
+561 silly CHANGE node_modules/@parcel/watcher-darwin-arm64
+562 silly CHANGE node_modules/@parcel/watcher-linux-arm64-glibc
+563 silly CHANGE node_modules/@parcel/watcher-linux-arm-glibc
+564 silly CHANGE node_modules/@parcel/watcher-freebsd-x64
+565 silly CHANGE node_modules/@parcel/watcher-darwin-x64
+566 silly CHANGE node_modules/@parcel/watcher-android-arm64
+567 silly CHANGE node_modules/@esbuild/win32-ia32
+568 silly CHANGE node_modules/@esbuild/win32-arm64
+569 silly CHANGE node_modules/@esbuild/sunos-x64
+570 silly CHANGE node_modules/@esbuild/openbsd-arm64
+571 silly CHANGE node_modules/@esbuild/openbsd-x64
+572 silly CHANGE node_modules/@esbuild/netbsd-x64
+573 silly CHANGE node_modules/@esbuild/linux-x64
+574 silly CHANGE node_modules/@esbuild/linux-s390x
+575 silly CHANGE node_modules/@esbuild/linux-ppc64
+576 silly CHANGE node_modules/@esbuild/linux-riscv64
+577 silly CHANGE node_modules/@esbuild/linux-mips64el
+578 silly CHANGE node_modules/@esbuild/linux-ia32
+579 silly CHANGE node_modules/@esbuild/linux-loong64
+580 silly CHANGE node_modules/@esbuild/linux-arm64
+581 silly CHANGE node_modules/@esbuild/linux-arm
+582 silly CHANGE node_modules/@esbuild/darwin-x64
+583 silly CHANGE node_modules/@esbuild/freebsd-x64
+584 silly CHANGE node_modules/@esbuild/darwin-arm64
+585 silly CHANGE node_modules/@esbuild/freebsd-arm64
+586 silly CHANGE node_modules/@esbuild/android-x64
+587 silly CHANGE node_modules/@esbuild/android-arm64
+588 silly CHANGE node_modules/@esbuild/android-arm
+589 silly CHANGE node_modules/@esbuild/aix-ppc64
+590 silly CHANGE node_modules/fsevents
+591 timing command:install Completed in 3581ms
+592 verbose exit 0
+593 timing npm Completed in 3911ms
+594 info ok

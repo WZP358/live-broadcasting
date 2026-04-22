@@ -1,0 +1,31 @@
+{
+  "name": "ant-live-web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --mode dev",
+    "prod": "vite --mode prod",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "ant-design-vue": "^4.2.6",
+    "axios": "^1.7.9",
+    "flv.js": "^1.6.2",
+    "hls.js": "^1.6.16",
+    "pinia": "^2.3.1",
+    "pinia-plugin-persistedstate": "^3.2.3",
+    "svgaplayerweb": "^2.3.2",
+    "vue": "^3.5.13",
+    "vue-infinite-scroll": "^2.0.2",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "prettier": "3.4.2",
+    "sass": "^1.83.0",
+    "unplugin-vue-components": "^0.28.0",
+    "vite": "^6.0.5"
+  }
+}

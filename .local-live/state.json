@@ -1,0 +1,6 @@
+{
+  "room_id": "1",
+  "http_pid": 70060,
+  "ffmpeg_pid": 20416,
+  "playlist_url": "http://127.0.0.1:8080/live/1.m3u8"
+}

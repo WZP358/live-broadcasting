@@ -1,0 +1,9 @@
+spring:
+  redis:
+    password: ""
+
+lal:
+  secret: local-ant-live
+  rtmpPushStream: rtmp://127.0.0.1:1935/live/
+  flvPullStream: http://127.0.0.1:8080/live/
+  hlsPullStream: http://127.0.0.1:8080/live/
