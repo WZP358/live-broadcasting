@@ -19,6 +19,7 @@ public enum WsRespMethodEnum {
     GIFT("giftMessage", "礼物"),
     INTIMACY_RANK("intimacyRank", "亲密榜"),
     STATS("statsMessage", "状态"),
+    GUARD_VIOLATION("guardViolation", "违规检测"),
     ;
 
     private final String method;

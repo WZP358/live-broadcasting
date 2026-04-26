@@ -41,7 +41,7 @@ const handleClick = (item) => {
   }
 }
 
-const itemList = ref([
+const itemList = computed(() => [
   {
     title: "安全手机",
     icon: "#icon-shouji",
@@ -76,27 +76,30 @@ const itemList = ref([
 
 <style lang="scss" scoped>
 .security-item {
-  height: 60px;
+  min-height: 56px;
   display: flex;
   flex-direction: row;
-  padding: 5px;
+  gap: 10px;
+  padding: 6px 2px;
   align-items: center;
   .icon-wrapper {
-    width: 40px;
-    height: 40px;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #d6e7ff80;
     border-radius: 50%;
-    margin: 0px 20px;
+    margin: 0 8px 0 6px;
     .icon {
-      width: 30px;
-      height: 30px;
+      width: 24px;
+      height: 24px;
     }
   }
   .info-wrapper {
     flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -105,11 +108,20 @@ const itemList = ref([
       display: flex;
       flex-direction: row;
       align-items: center;
+      gap: 10px;
+      min-width: 0;
       .label {
-        font-size: 16px;
+        flex: 0 0 auto;
+        font-size: 14px;
+        line-height: 1.25;
+        white-space: nowrap;
       }
       .tag {
-        margin-left: 20px;
+        flex: 0 0 auto;
+        margin-left: 0;
+        font-size: 12px;
+        line-height: 1.25;
+        white-space: nowrap;
         color: green;
         :nth-child(1) {
           margin-right: 2px;
@@ -118,12 +130,25 @@ const itemList = ref([
     }
     .describe {
       display: block;
-      font-size: 12px;
+      margin-top: 4px;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 11px;
+      line-height: 1.35;
       color: #666;
     }
   }
   .btn-wrapper {
-    width: 80px;
+    width: 66px;
+    flex: 0 0 66px;
+    :deep(.ant-btn) {
+      min-width: 60px;
+      height: 32px;
+      padding: 0 12px;
+      font-size: 13px;
+    }
   }
 }
 </style>

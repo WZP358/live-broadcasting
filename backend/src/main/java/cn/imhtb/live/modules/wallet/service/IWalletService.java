@@ -1,9 +1,11 @@
 package cn.imhtb.live.modules.wallet.service;
 
 import cn.imhtb.live.pojo.database.Wallet;
+import cn.imhtb.live.modules.wallet.model.RechargePayResp;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * @author pinteh
@@ -28,5 +30,11 @@ public interface IWalletService extends IService<Wallet> {
      * @return 充值结果
      */
     Boolean rechargeMock(Integer userId, String count);
+
+    RechargePayResp createAlipayRecharge(Integer userId, String count);
+
+    boolean completeAlipayRecharge(Map<String, String> params);
+
+    boolean completeAlipayReturn(Map<String, String> params);
 
 }

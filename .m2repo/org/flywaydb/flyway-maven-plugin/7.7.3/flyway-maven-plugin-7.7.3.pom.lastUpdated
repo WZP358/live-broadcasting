@@ -1,0 +1,4 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Sat Apr 25 10:44:25 CST 2026
+@default-alimaven-https\://maven.aliyun.com/repository/public/.lastUpdated=1777085065407
+https\://maven.aliyun.com/repository/public/.error=Could not transfer artifact org.flywaydb\:flyway-maven-plugin\:pom\:7.7.3 from/to alimaven (https\://maven.aliyun.com/repository/public)\: Permission denied\: getsockopt

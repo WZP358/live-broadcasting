@@ -2,10 +2,12 @@ package cn.imhtb.live.common.utils;
 
 import cn.imhtb.live.common.config.MinioConfig;
 import io.minio.*;
+import io.minio.http.Method;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author pinteh
@@ -100,7 +102,18 @@ public class MinioUtil {
         if (Boolean.TRUE.equals(relative)){
             return String.format("/%s/%s", bucket, object);
         }
-        return String.format("%s/%s/%s", ENDPOINT, bucket, object);
+        try {
+            return minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(bucket)
+                            .object(object)
+                            .expiry(7, TimeUnit.DAYS)
+                            .build());
+        } catch (Exception e) {
+            log.error("generate presigned url error", e);
+            return String.format("%s/%s/%s", ENDPOINT, bucket, object);
+        }
     }
 
 }

@@ -5,6 +5,8 @@ import cn.imhtb.live.common.exception.BusinessException;
 import cn.imhtb.live.common.exception.base.UserErrorCode;
 import cn.imhtb.live.common.holder.UserHolder;
 import cn.imhtb.live.mappers.UserMapper;
+import cn.imhtb.live.modules.infra.config.RedisKey;
+import cn.imhtb.live.modules.infra.utils.RedisUtils;
 import cn.imhtb.live.modules.user.model.req.UserExtraReq;
 import cn.imhtb.live.modules.user.model.req.UserInfoUpdateReq;
 import cn.imhtb.live.modules.user.model.req.UserRegisterReq;
@@ -13,7 +15,6 @@ import cn.imhtb.live.pojo.database.User;
 import cn.imhtb.live.service.IRoomService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.benmanes.caffeine.cache.Cache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +34,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    private final Cache<String, String> cache;
     private final IRoomService roomService;
 
     @Override
@@ -104,23 +104,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public boolean bindUserExtra(UserExtraReq userExtraReq) {
-        // todo
         User user = getById(UserHolder.getUserId());
-        String account = user.getAccount();
-        String verifyCode = cache.getIfPresent(getCacheKey(userExtraReq.getType(), account));
-        if (StringUtils.equalsIgnoreCase(verifyCode, userExtraReq.getVerifyCode())) {
-            return false;
+        String type = normalizeExtraType(userExtraReq.getType());
+        String target = userExtraReq.getVal().trim();
+        String verifyCodeKey = RedisKey.getKey(RedisKey.VERIFY_CODE, type, target);
+        String verifyCode = RedisUtils.get(verifyCodeKey);
+        if (!StringUtils.equalsIgnoreCase(verifyCode, userExtraReq.getVerifyCode())) {
+            throw new BusinessException("验证码错误或已过期");
         }
-        switch (userExtraReq.getType()) {
+        switch (type) {
             case AntLiveConstant.EMAIL:
-                user.setEmail(userExtraReq.getVal());
+                user.setEmail(target);
                 break;
             case AntLiveConstant.MOBILE:
-                user.setMobile(userExtraReq.getVal());
+                user.setMobile(target);
                 break;
             default:
         }
-        return updateById(user);
+        boolean updated = updateById(user);
+        if (updated) {
+            RedisUtils.delete(verifyCodeKey);
+        }
+        return updated;
     }
 
     @Override
@@ -147,8 +152,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         updateById(user);
     }
 
-    private String getCacheKey(String type, String account) {
-        return type + ":" + account;
+    private String normalizeExtraType(String type) {
+        if ("phone".equalsIgnoreCase(type)) {
+            return AntLiveConstant.MOBILE;
+        }
+        return type.toLowerCase();
     }
 
 }

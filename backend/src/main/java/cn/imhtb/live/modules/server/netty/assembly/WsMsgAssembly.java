@@ -56,4 +56,14 @@ public class WsMsgAssembly {
         return wsMsgRespDTO;
     }
 
+    /**
+     * 构建违规信息
+     */
+    public static WsMsgRespDTO<cn.imhtb.live.modules.server.netty.domain.resp.GuardViolationRespDTO> buildGuardViolation(cn.imhtb.live.modules.server.netty.domain.resp.GuardViolationRespDTO data){
+        WsMsgRespDTO<cn.imhtb.live.modules.server.netty.domain.resp.GuardViolationRespDTO> wsMsgRespDTO = new WsMsgRespDTO<>();
+        wsMsgRespDTO.setMethod(WsRespMethodEnum.GUARD_VIOLATION.getMethod());
+        wsMsgRespDTO.setData(data);
+        return wsMsgRespDTO;
+    }
+
 }

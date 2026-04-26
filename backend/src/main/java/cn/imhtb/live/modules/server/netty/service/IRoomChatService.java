@@ -66,4 +66,12 @@ public interface IRoomChatService {
      */
     void broadcastIntimacyRank(Integer roomId);
 
+    /**
+     * 发送违规通知
+     *
+     * @param roomId 房间id
+     * @param data   违规数据
+     */
+    void sendGuardViolation(Integer roomId, cn.imhtb.live.modules.server.netty.domain.resp.GuardViolationRespDTO data);
+
 }

@@ -78,6 +78,9 @@ const handleItemClick = async (num, item) => {
     number: num,
     roomId: props.roomId,
   })
+  if (isLogin.value) {
+    await getWallet()
+  }
 }
 
 /**

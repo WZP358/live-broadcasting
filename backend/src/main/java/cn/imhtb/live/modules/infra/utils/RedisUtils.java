@@ -34,4 +34,8 @@ public class RedisUtils {
     public static Boolean contains(String key){
         return redisTemplate.hasKey(key);
     }
+
+    public static Boolean delete(String key){
+        return redisTemplate.delete(key);
+    }
 }

@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     username: root
-    password: wzp
+    password: Kishi...015
     url: jdbc:mysql://localhost:3306/ant-live?characterEncoding=utf-8&serverTimezone=GMT%2b8
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
@@ -24,9 +24,9 @@ spring:
 
   redis:
     database: 0
-    host: xxxx
+    host: localhost
     port: 6379
-    password: xxx
+    password: 
     jedis:
       pool:
         max-active: 8

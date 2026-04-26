@@ -3,6 +3,8 @@ package cn.imhtb.live.modules.live.controller;
 import cn.imhtb.live.common.ApiResponse;
 import cn.imhtb.live.common.PageData;
 import cn.imhtb.live.common.holder.UserHolder;
+import cn.imhtb.live.modules.live.guard.GuardCheckResult;
+import cn.imhtb.live.modules.live.guard.LiveGuardService;
 import cn.imhtb.live.modules.live.service.ILiveInfoService;
 import cn.imhtb.live.modules.live.service.ILiveService;
 import cn.imhtb.live.modules.live.vo.LiveInfoReqVo;
@@ -17,6 +19,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 直播控制器
@@ -36,6 +39,9 @@ public class AntLiveController {
     @Autowired
     private ILiveInfoService liveInfoService;
 
+    @Autowired
+    private LiveGuardService liveGuardService;
+
     @ApiOperation("申请直播密钥")
     @PostMapping("/applySecret")
     public ApiResponse<StartOpenLiveVo> applySecret() {
@@ -53,6 +59,12 @@ public class AntLiveController {
     public ApiResponse<LiveStatusVo> getLiveStatus() {
         return ApiResponse.ofSuccess(liveService.getLiveStatus());
     }
+    @ApiOperation("直播违规检测")
+    @PostMapping("/guard/check")
+    public ApiResponse<GuardCheckResult> guardCheck(@RequestParam Integer roomId,
+                                                    @RequestParam("file") MultipartFile file) {
+        return ApiResponse.ofSuccess(liveGuardService.checkFrame(roomId, file));
+    }
 
     @ApiOperation("获取直播记录")
     @PostMapping("/getLiveRecords")
@@ -68,3 +80,4 @@ public class AntLiveController {
     }
 
 }
+

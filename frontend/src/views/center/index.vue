@@ -120,9 +120,9 @@ const items = ref([
 
 <style lang="scss" scoped>
 .center-page {
-  max-width: 1280px;
+  max-width: 1340px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 20px;
 }
 
 .profile-hero,
@@ -203,7 +203,7 @@ const items = ref([
 
 .center-body {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-columns: 220px minmax(0, 1fr);
   gap: 18px;
   margin-top: 20px;
   align-items: start;
@@ -215,6 +215,8 @@ const items = ref([
 
 .center-content {
   min-height: 640px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .center-content__inner {

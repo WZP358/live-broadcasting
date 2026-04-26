@@ -1,0 +1,7 @@
+numpy>=1.22,<2.0
+scipy>=1.10
+torch>=2.0,<3.0
+torchaudio>=2.0,<3.0
+websockets==13.1
+loguru>=0.5
+deepfilterlib>=0.5.6

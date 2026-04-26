@@ -15,11 +15,9 @@
               :before-upload="beforeUpload"
               @change="handleChange"
             >
-              <img class="avatar-img" v-if="imageUrl" :src="imageUrl" alt="avatar" />
-              <div v-else>
-                <loading-outlined v-if="loading"></loading-outlined>
-                <plus-outlined v-else></plus-outlined>
-                <div class="ant-upload-text">上传头像</div>
+              <img class="avatar-img" :src="displayAvatar" alt="avatar" />
+              <div v-if="loading" class="avatar-loading">
+                <loading-outlined />
               </div>
             </a-upload>
           </div>
@@ -78,24 +76,28 @@
 <script setup>
 import SecurityItem from "./SecurityItem.vue"
 import Authentication from "./Authentication.vue"
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons-vue"
+import { LoadingOutlined } from "@ant-design/icons-vue"
 import { useStore } from "@/stores"
 import { message } from "ant-design-vue"
 import { computed, onMounted, ref } from "vue"
+import { storeToRefs } from "pinia"
 
 const store = useStore()
 const userStore = store.user()
-const userInfo = userStore.userInfo
+const { userInfo } = storeToRefs(userStore)
 const fileList = ref([])
 const loading = ref(false)
 const imageUrl = ref("")
+
+const fallbackAvatar = "https://dummyimage.com/160x160/e2e8f0/64748b&text=LIVE"
+const displayAvatar = computed(() => imageUrl.value || fallbackAvatar)
 
 const userToken = computed(() => ({
   Authorization: `${store.user().userToken}`,
 }))
 
 onMounted(() => {
-  imageUrl.value = userInfo.avatar
+  imageUrl.value = userInfo.value.avatar
 })
 
 const handleChange = (info) => {
@@ -134,13 +136,16 @@ const beforeUpload = (file) => {
 
 .profile-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) 360px;
+  grid-template-columns: minmax(540px, 620px) minmax(360px, 1fr);
   gap: 18px;
+  min-width: 0;
+  align-items: start;
 }
 
 .profile-card {
   border-radius: 20px;
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.05);
+  min-width: 0;
 }
 
 .profile-card--summary {
@@ -179,10 +184,11 @@ const beforeUpload = (file) => {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
   margin-top: 28px;
+  max-width: 540px;
 }
 
 .summary-item {
-  padding: 16px 18px;
+  padding: 14px 16px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid #e2e8f0;
@@ -206,13 +212,42 @@ const beforeUpload = (file) => {
 .profile-side {
   display: grid;
   gap: 18px;
+  min-width: 0;
+}
+
+.summary-avatar {
+  width: 108px;
+  height: 108px;
+  flex: 0 0 108px;
 }
 
 .avatar-uploader {
-  :deep(.ant-upload) {
+  display: block;
+  width: 108px;
+  height: 108px;
+
+  :deep(.ant-upload-wrapper),
+  :deep(.ant-upload-list),
+  :deep(.ant-upload-list-item-container) {
     width: 108px;
     height: 108px;
-    border-radius: 50%;
+  }
+
+  :deep(.ant-upload-select) {
+    width: 108px !important;
+    height: 108px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    overflow: hidden;
+    background: transparent !important;
+  }
+
+  :deep(.ant-upload) {
+    width: 108px !important;
+    height: 108px !important;
+    position: relative;
+    border-radius: 50% !important;
     overflow: hidden;
   }
 }
@@ -222,6 +257,16 @@ const beforeUpload = (file) => {
   height: 108px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.avatar-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #1677ff;
+  background: rgba(255, 255, 255, 0.68);
 }
 
 @media (max-width: 960px) {

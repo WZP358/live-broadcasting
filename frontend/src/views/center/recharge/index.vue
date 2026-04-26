@@ -7,7 +7,7 @@
       </div>
       <div class="recharge-hero__tips">
         <QuestionCircleOutlined />
-        <span>默认使用本地联调充值接口</span>
+        <span>使用支付宝沙箱收银台完成充值</span>
       </div>
     </section>
 
@@ -33,7 +33,7 @@
       </div>
 
       <div class="recharge-actions">
-        <a-button type="primary" size="large" @click="recharge">前往收银台</a-button>
+        <a-button type="primary" size="large" :loading="paying" @click="recharge">前往收银台</a-button>
         <div class="agreement">
           <a-checkbox :checked="true">我已阅读并同意<a>《AntLive 开心果用户协议》</a></a-checkbox>
         </div>
@@ -43,12 +43,16 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { onBeforeUnmount, ref } from "vue"
+import { useRouter } from "vue-router"
 import WalletApi from "@/api/wallet"
 import { QuestionCircleOutlined } from "@ant-design/icons-vue"
 import { message } from "ant-design-vue"
 
+const router = useRouter()
 const currentSelect = ref(1)
+const paying = ref(false)
+let payWatcher = null
 const chargeList = ref([
   { id: 1, value: 6, fee: "6.00" },
   { id: 2, value: 10, fee: "10.00" },
@@ -64,12 +68,71 @@ const handleItemClick = (item) => {
   currentSelect.value = item.id
 }
 
-const recharge = () => {
-  const fee = chargeList.value[currentSelect.value - 1].fee
-  WalletApi.recharge({ fee }).then(() => {
-    message.success("充值成功")
-  })
+const readBalance = async () => {
+  const res = await WalletApi.getBalance()
+  return Number(res.data?.balance || 0)
 }
+
+const stopPayWatcher = () => {
+  if (payWatcher) {
+    window.clearInterval(payWatcher)
+    payWatcher = null
+  }
+}
+
+const watchPaymentResult = (cashierWindow, beforeBalance) => {
+  stopPayWatcher()
+  const startedAt = Date.now()
+  payWatcher = window.setInterval(async () => {
+    try {
+      const currentBalance = await readBalance()
+      if (currentBalance > beforeBalance) {
+        stopPayWatcher()
+        message.success("充值已到账")
+        router.push("/center/dollar/wallet")
+        return
+      }
+
+      if (cashierWindow.closed && Date.now() - startedAt > 15000) {
+        stopPayWatcher()
+        message.info("收银台已关闭，若已完成支付请返回钱包页刷新查看")
+      }
+      if (Date.now() - startedAt > 180000) {
+        stopPayWatcher()
+      }
+    } catch (error) {
+      // keep polling; notify callbacks can arrive a few seconds after page return
+    }
+  }, 3000)
+}
+
+const recharge = async () => {
+  const fee = chargeList.value[currentSelect.value - 1].fee
+  const cashierWindow = window.open("", "_blank")
+  if (!cashierWindow) {
+    message.warning("浏览器阻止了收银台弹窗，请允许弹窗后重试")
+    return
+  }
+
+  paying.value = true
+  try {
+    const beforeBalance = await readBalance()
+    const res = await WalletApi.recharge({ fee })
+    cashierWindow.document.open()
+    cashierWindow.document.write(res.data.payHtml)
+    cashierWindow.document.close()
+    message.success("已打开支付宝沙箱收银台，支付完成后余额会自动入账")
+    watchPaymentResult(cashierWindow, beforeBalance)
+  } catch (error) {
+    cashierWindow.close()
+  } finally {
+    paying.value = false
+  }
+}
+
+onBeforeUnmount(() => {
+  stopPayWatcher()
+})
 </script>
 
 <style lang="scss" scoped>

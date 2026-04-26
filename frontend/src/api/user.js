@@ -44,7 +44,7 @@ export default {
      */
     bindSecurityInfo(data) {
         return request({
-            url: '/api/v1/user/bind',
+            url: '/api/v1/user/extra/bind',
             method: 'post',
             data,
         })

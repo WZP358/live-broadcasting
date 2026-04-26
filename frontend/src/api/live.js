@@ -76,6 +76,18 @@ export default {
             method: 'post',
         })
     },
+    checkGuardFrame(roomId, file) {
+        const data = new FormData()
+        data.append('roomId', roomId)
+        data.append('file', file, 'frame.jpg')
+        return request({
+            url: '/api/v1/live/guard/check',
+            method: 'post',
+            data,
+            timeout: 30000,
+            headers: { 'Content-Type': 'multipart/form-data' },
+        })
+    },
     /**
      * 保存直播间信息
      * @param {*} data

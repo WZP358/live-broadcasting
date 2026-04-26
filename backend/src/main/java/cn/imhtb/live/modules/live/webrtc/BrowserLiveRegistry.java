@@ -81,6 +81,16 @@ public class BrowserLiveRegistry {
         }
     }
 
+    public void sendToRoom(Integer roomId, Object payload) {
+        if (roomId == null) {
+            return;
+        }
+        sessionMetas.values().stream()
+                .filter(meta -> roomId.equals(meta.getRoomId()))
+                .map(SessionMeta::getSessionId)
+                .forEach(sessionId -> send(sessionId, payload));
+    }
+
     public interface SessionRole {
         String BROADCASTER = "broadcaster";
         String VIEWER = "viewer";

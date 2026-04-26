@@ -1,0 +1,11 @@
+{
+  "name": "ant-live-local-media-server",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "node-media-server": "^2.7.0"
+  }
+}

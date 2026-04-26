@@ -13,6 +13,7 @@ import cn.imhtb.live.modules.server.netty.domain.req.ChatMsgReq;
 import cn.imhtb.live.modules.server.netty.domain.req.WsEnterReqDTO;
 import cn.imhtb.live.modules.server.netty.domain.resp.ChatMsgRespDTO;
 import cn.imhtb.live.modules.server.netty.domain.resp.GiftMsgRespDTO;
+import cn.imhtb.live.modules.server.netty.domain.resp.GuardViolationRespDTO;
 import cn.imhtb.live.modules.server.netty.domain.resp.WsMsgRespDTO;
 import cn.imhtb.live.modules.server.netty.service.IRoomChatService;
 import cn.imhtb.live.modules.user.service.IUserService;
@@ -228,6 +229,16 @@ public class RoomChatServiceImpl implements IRoomChatService {
 
     private void sendMessage(Channel channel, WsMsgRespDTO<?> wsMsgRespDTO) {
         channel.writeAndFlush(new TextWebSocketFrame(JSON.toJSONString(wsMsgRespDTO)));
+    }
+
+    @Override
+    public void sendGuardViolation(Integer roomId, GuardViolationRespDTO data) {
+        CopyOnWriteArraySet<Channel> channels = ONLINE_ROOM.get(roomId);
+        if (Objects.nonNull(channels)) {
+            for (Channel channel : channels) {
+                sendMessage(channel, WsMsgAssembly.buildGuardViolation(data));
+            }
+        }
     }
 
     private boolean messageTableExists() {

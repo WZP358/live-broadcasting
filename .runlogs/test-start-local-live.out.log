@@ -1,0 +1,9 @@
+
+> start
+> node server.js
+
+2026/4/26 08:51:19 9496 [INFO] Node Media Server v2.7.4
+2026/4/26 08:51:19 9496 [INFO] Node Media Rtmp Server started on port: 1935
+2026/4/26 08:51:19 9496 [INFO] Node Media Http Server started on port: 8080
+2026/4/26 08:51:19 9496 [INFO] Node Media WebSocket Server started on port: 8080
+2026/4/26 08:52:00 9496 [INFO] [rtmp disconnect] id=9D0KDC65

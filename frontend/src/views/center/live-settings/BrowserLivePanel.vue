@@ -67,6 +67,7 @@
       <span>房间号：{{ roomId || "--" }}</span>
       <span>当前观众连接：{{ state.viewerCount }}</span>
       <span>信令状态：{{ state.signalConnected ? "已连接" : "未连接" }}</span>
+      <span>违规检测：{{ state.guardActive ? "运行中" : "未开启" }}</span>
       <span v-if="state.message">{{ state.message }}</span>
     </div>
 
@@ -86,6 +87,7 @@ import { createLiveCaptionEngine, isLiveCaptionSupported } from "@/utils/liveCap
 import { createLiveDenoiseEngine, getLiveDenoiseServiceUrl } from "@/utils/liveDenoise"
 
 const HEARTBEAT_INTERVAL = 15000
+const GUARD_CHECK_INTERVAL = 2000
 const DENOISE_STORAGE_KEY = "live.browser.denoise.enabled"
 
 const props = defineProps({
@@ -119,12 +121,15 @@ const state = reactive({
   denoiseBackend: "",
   denoiseModelName: "",
   denoiseRuntimeInfo: "",
+  guardActive: false,
 })
 
 let signalSocket = null
 let captureStream = null
 let publishingStream = null
 let heartbeatTimer = null
+let guardTimer = null
+let guardChecking = false
 let captionEngine = null
 let denoiseEngine = null
 let auxiliaryStreams = []
@@ -269,6 +274,7 @@ const startBrowserLive = async (streamFactory) => {
     attachPreview()
     await connectSignal()
     state.liveActive = true
+    startGuardLoop()
     setMessage("网页直播已启动，观众正在通过低延迟通道进入房间")
     emit("status-change")
   } catch (error) {
@@ -555,6 +561,10 @@ const handleSignalMessage = async (data) => {
     state.subtitleText = ""
     return
   }
+  if (data.type === "guard-violation") {
+    await forceStopByGuard(formatGuardReason(data))
+    return
+  }
   if (data.type === "error") {
     setMessage(data.message || "直播信令服务返回异常")
     message.error(state.message)
@@ -696,16 +706,101 @@ const stopHeartbeat = () => {
   }
 }
 
+const startGuardLoop = () => {
+  stopGuardLoop()
+  state.guardActive = true
+  runGuardCheck()
+  guardTimer = window.setInterval(runGuardCheck, GUARD_CHECK_INTERVAL)
+}
+
+const stopGuardLoop = () => {
+  if (guardTimer) {
+    window.clearInterval(guardTimer)
+    guardTimer = null
+  }
+  guardChecking = false
+  state.guardActive = false
+}
+
+const captureGuardFrame = () =>
+  new Promise((resolve) => {
+    const video = previewRef.value
+    if (!video || !video.videoWidth || !video.videoHeight) {
+      resolve(null)
+      return
+    }
+    const maxWidth = 960
+    const scale = Math.min(1, maxWidth / video.videoWidth)
+    const canvas = document.createElement("canvas")
+    canvas.width = Math.max(1, Math.round(video.videoWidth * scale))
+    canvas.height = Math.max(1, Math.round(video.videoHeight * scale))
+    const context = canvas.getContext("2d")
+    if (!context) {
+      resolve(null)
+      return
+    }
+    context.drawImage(video, 0, 0, canvas.width, canvas.height)
+    canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.72)
+  })
+
+const runGuardCheck = async () => {
+  if (!state.liveActive || guardChecking || !props.roomId) {
+    return
+  }
+  guardChecking = true
+  try {
+    const frame = await captureGuardFrame()
+    if (!frame) {
+      return
+    }
+    const response = await liveAPI.checkGuardFrame(props.roomId, frame)
+    const result = response?.data || {}
+    if (result.banned) {
+      await forceStopByGuard(formatGuardReason(result))
+    }
+  } catch (error) {
+    console.warn("live guard check failed", error)
+  } finally {
+    guardChecking = false
+  }
+}
+
+const forceStopByGuard = async (reason) => {
+  message.error(reason)
+  setMessage(reason)
+  await stopBrowserLive({ skipApi: true, guardReason: reason })
+}
+
+const formatGuardReason = (payload = {}) => {
+  if (payload.reason) {
+    return payload.reason
+  }
+  const labelMap = {
+    WEAPON: "违规刀具",
+    VIOLENCE: "暴力行为",
+    EXPOSURE: "过于暴露",
+  }
+  const label = payload.violationLabel || labelMap[payload.violationType]
+  return label
+    ? `直播内容触发违规检测：${label}，直播间已封停`
+    : "直播内容触发违规检测，直播间已封停"
+}
+
 const sendSignal = (payload) => {
   if (signalSocket?.readyState === WebSocket.OPEN) {
     signalSocket.send(JSON.stringify(payload))
   }
 }
 
-const stopBrowserLive = async () => {
+const stopBrowserLive = async (options = {}) => {
   state.liveActive = false
   state.signalConnected = false
+  stopGuardLoop()
+  const stopMessage = options.guardReason || null
   setMessage("直播已停止")
+  if (stopMessage) {
+    setMessage(stopMessage)
+  }
   stopCaption()
   sendSignal({
     type: "leave",
@@ -719,7 +814,7 @@ const stopBrowserLive = async () => {
     previewRef.value.srcObject = null
   }
 
-  if (props.liveStatus === 1) {
+  if (!options.skipApi && props.liveStatus === 1) {
     try {
       await liveAPI.stopLive()
     } catch (error) {
@@ -799,6 +894,7 @@ const updateViewerCount = () => {
 syncIdleDenoiseHint()
 
 onBeforeUnmount(async () => {
+  stopGuardLoop()
   stopCaption()
   closeSignal()
   closeAllPeers()

@@ -8,7 +8,7 @@ public class RedisKey {
 
     public static final String BASE = "AntLive:";
 
-    public static final String VERIFY_CODE = "verifyCode:%s:%d";
+    public static final String VERIFY_CODE = "verifyCode:%s:%s";
 
     /**
      * 获取缓存键

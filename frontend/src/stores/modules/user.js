@@ -51,6 +51,13 @@ export const useUserStore = defineStore(
       }
     }
 
+    const updateSecurityInfo = (patch) => {
+      userInfo.value = {
+        ...userInfo.value,
+        ...patch,
+      }
+    }
+
     return {
       isLogin,
       userInfo,
@@ -60,6 +67,7 @@ export const useUserStore = defineStore(
       login,
       logout,
       updateAvatar,
+      updateSecurityInfo,
     }
   },
   {

@@ -56,6 +56,7 @@
 import MessageItem from "./MessageItem.vue"
 import { onBeforeMount, onMounted, ref, computed, nextTick, watch, onBeforeUnmount } from "vue"
 import { useStore } from "@/stores"
+import { message as antMessage } from "ant-design-vue"
 import ChatApi from "@/api/chat"
 import roomApi from "@/api/room"
 
@@ -216,12 +217,39 @@ const initWebSocket = () => {
       emits("sendGift", message.data)
       return
     }
+    if (message.method === "guardViolation") {
+      const reason = formatGuardReason(message.data)
+      data.value = data.value.concat({
+        nickname: "系统消息",
+        text: reason,
+      })
+      if (data.value.length > 40) {
+        data.value = data.value.slice(-40)
+      }
+      antMessage.error(reason)
+      return
+    }
     data.value = data.value.concat(message.data)
     // 裁剪消息列表长度
     if (data.value.length > 40) {
       data.value = data.value.slice(-40)
     }
   }
+}
+
+const formatGuardReason = (payload = {}) => {
+  if (payload.reason) {
+    return payload.reason
+  }
+  const labelMap = {
+    WEAPON: "违规刀具",
+    VIOLENCE: "暴力行为",
+    EXPOSURE: "过于暴露",
+  }
+  const label = payload.violationLabel || labelMap[payload.violationType]
+  return label
+    ? `直播内容触发违规检测：${label}，直播间已封停`
+    : "直播内容触发违规检测，直播间已封停"
 }
 
 /**

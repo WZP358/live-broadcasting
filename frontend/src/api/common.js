@@ -15,6 +15,7 @@ export default {
         return request({
             url: '/api/v1/common/sendVerifyCode',
             method: 'post',
+            timeout: 60 * 1000,
             data
         })
     }

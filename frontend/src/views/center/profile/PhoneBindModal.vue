@@ -18,7 +18,7 @@
         ]">
         <a-flex gap="small">
           <a-input v-model:value="formState.target" />
-          <a-button :disabled="sendBtnDisaled" style="width: 90px" @click="onSend" type="primary">
+          <a-button :disabled="sendBtnDisaled || sending" style="width: 90px" @click="onSend" type="primary">
             {{ !sendBtnDisaled ? "发送" : `${countdown}秒` }}
           </a-button>
         </a-flex>
@@ -37,13 +37,17 @@
 
 <script setup>
 import commonApi from "@/api/common"
+import userApi from "@/api/user"
+import { useStore } from "@/stores"
 import { message } from "ant-design-vue"
-import { ref, reactive } from "vue"
+import { nextTick, ref, reactive } from "vue"
 
 let timer = null
 const formRef = ref()
+const store = useStore()
 const visible = ref(false)
 const countdown = ref(10)
+const sending = ref(false)
 const sendBtnDisaled = ref(false)
 const formState = reactive({
   target: "",
@@ -57,13 +61,16 @@ const props = defineProps({
   },
 })
 
-const show = () => {
+const show = async () => {
   visible.value = true
-  formRef.value.resetFields()
+  await nextTick()
+  formRef.value?.resetFields()
+  formState.target = ""
+  formState.verifyCode = ""
 }
 
 const onSend = async () => {
-  if (timer) {
+  if (timer || sending.value) {
     return
   }
   try {
@@ -72,14 +79,22 @@ const onSend = async () => {
     return
   }
   sendBtnDisaled.value = true
-  let res = await commonApi.sendVerifyCode({ verifyType: "phone", target: formState.target })
-  if (res.code === 0) {
-    message.success("发送成功")
-  }
+  sending.value = true
   startTimer()
+  try {
+    let res = await commonApi.sendVerifyCode({ verifyType: "mobile", target: formState.target })
+    if (res.code === 0) {
+      message.success(res.msg || "发送成功")
+    }
+  } catch (e) {
+  } finally {
+    sending.value = false
+  }
 }
 
 const startTimer = () => {
+  timer && clearInterval(timer)
+  countdown.value = 10
   timer = setInterval(() => {
     if (countdown.value == 1) {
       sendBtnDisaled.value = false
@@ -92,8 +107,17 @@ const startTimer = () => {
   }, 1000)
 }
 
-const onFinish = (values) => {
-  console.log("Success:", values)
+const onFinish = async () => {
+  const res = await userApi.bindSecurityInfo({
+    type: "mobile",
+    val: formState.target,
+    verifyCode: formState.verifyCode,
+  })
+  if (res.code === 0) {
+    message.success("绑定成功")
+    store.user().updateSecurityInfo({ mobile: formState.target })
+    visible.value = false
+  }
 }
 
 defineExpose({ show })

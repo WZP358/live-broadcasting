@@ -28,7 +28,7 @@ const server = await createServer({
     port: 5174,
     proxy: {
       '/api': {
-        target: 'http://localhost:9000',
+        target: 'http://localhost:8088',
         changeOrigin: true,
         rewrite: p => p.replace(/^\/api/, ''),
       },

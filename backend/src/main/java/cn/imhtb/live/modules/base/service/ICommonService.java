@@ -24,6 +24,6 @@ public interface ICommonService {
      * @param req 验证码类型
      * @return 发送结果
      */
-    Boolean sendVerifyCode(VerifyCodeReq req);
+    String sendVerifyCode(VerifyCodeReq req);
 
 }

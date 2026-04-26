@@ -1,0 +1,18 @@
+
+> start
+> node server.js
+
+2026/4/26 08:35:52 25624 [INFO] Node Media Server v2.7.4
+2026/4/26 08:35:52 25624 [INFO] Node Media Rtmp Server started on port: 1935
+2026/4/26 08:35:52 25624 [INFO] Node Media Http Server started on port: 8080
+2026/4/26 08:35:52 25624 [INFO] Node Media WebSocket Server started on port: 8080
+2026/4/26 08:36:13 25624 [INFO] [rtmp disconnect] id=88VJJHGI
+2026/4/26 08:36:32 25624 [INFO] [http-flv connect] id=LWVF69QU ip=::ffff:127.0.0.1 args={}
+2026/4/26 08:36:32 25624 [INFO] [http-flv play] Stream not found. id=LWVF69QU streamPath=/live/1 
+2026/4/26 08:36:38 25624 [INFO] [http-flv play] Close stream. id=LWVF69QU streamPath=/live/1
+2026/4/26 08:36:38 25624 [INFO] [http-flv disconnect] id=LWVF69QU
+2026/4/26 08:39:11 25624 [INFO] [http-flv connect] id=6J8IAYFK ip=::ffff:127.0.0.1 args={}
+2026/4/26 08:39:11 25624 [INFO] [http-flv play] Stream not found. id=6J8IAYFK streamPath=/live/1 
+2026/4/26 08:39:21 25624 [INFO] [http-flv play] Close stream. id=6J8IAYFK streamPath=/live/1
+2026/4/26 08:39:21 25624 [INFO] [http-flv disconnect] id=6J8IAYFK
+2026/4/26 08:50:09 25624 [INFO] [rtmp disconnect] id=KJPOT1KC

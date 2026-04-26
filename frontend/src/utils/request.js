@@ -6,7 +6,7 @@ import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
 
 const service = axios.create({
     baseURL: '',
-    timeout: 10 * 1000,
+    timeout: 60 * 1000,
     headers: { 'Content-Type': 'application/json;charset=utf-8' },
 })
 

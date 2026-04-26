@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue"
+import { onBeforeUnmount, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 import walletApi from "@/api/wallet"
 
@@ -103,9 +103,26 @@ const listLogs = async () => {
   }
 }
 
-onMounted(() => {
+const refreshWallet = () => {
   getBalance()
   listLogs()
+}
+
+const handleVisibilityChange = () => {
+  if (document.visibilityState === "visible") {
+    refreshWallet()
+  }
+}
+
+onMounted(() => {
+  refreshWallet()
+  window.addEventListener("focus", refreshWallet)
+  document.addEventListener("visibilitychange", handleVisibilityChange)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener("focus", refreshWallet)
+  document.removeEventListener("visibilitychange", handleVisibilityChange)
 })
 </script>
 

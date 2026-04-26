@@ -29,6 +29,7 @@
         <guava.version>31.0.1-jre</guava.version>
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
         <alipay-sdk.version>4.22.67.ALL</alipay-sdk.version>
+        <aliyun-dypnsapi.version>2.0.0</aliyun-dypnsapi.version>
         <druid.version>1.2.11</druid.version>
         <fastjson.version>2.0.44</fastjson.version>
         <jjwt.version>0.9.1</jjwt.version>
@@ -109,6 +110,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -124,6 +126,11 @@
             <groupId>com.alipay.sdk</groupId>
             <artifactId>alipay-sdk-java</artifactId>
             <version>${alipay-sdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>dypnsapi20170525</artifactId>
+            <version>${aliyun-dypnsapi.version}</version>
         </dependency>
         <!--转账-->
         <dependency>

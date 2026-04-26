@@ -229,6 +229,15 @@ const handleSignal = async (data) => {
     statusText.value = "已连接到主播，等待音视频流..."
     return
   }
+  if (data.type === "guard-violation") {
+    const reason = formatGuardReason(data)
+    subtitleText.value = ""
+    statusText.value = reason
+    message.error(reason)
+    closeSignalOnly()
+    closePeer()
+    return
+  }
   if (data.type === "offer" && data.fromSessionId && data.sdp) {
     clearFallbackTimer()
     broadcasterSessionId = data.fromSessionId
@@ -246,6 +255,21 @@ const handleSignal = async (data) => {
   if (data.type === "subtitle-clear") {
     subtitleText.value = ""
   }
+}
+
+const formatGuardReason = (payload = {}) => {
+  if (payload.reason) {
+    return payload.reason
+  }
+  const labelMap = {
+    WEAPON: "违规刀具",
+    VIOLENCE: "暴力行为",
+    EXPOSURE: "过于暴露",
+  }
+  const label = payload.violationLabel || labelMap[payload.violationType]
+  return label
+    ? `直播内容触发违规检测：${label}，直播间已封停`
+    : "直播内容触发违规检测，直播间已封停"
 }
 
 const answerOffer = async (sdp) => {
