@@ -39,6 +39,7 @@ tools/local_live/node_modules/
 # Java / Maven
 target/
 backend/target/
+.m2repo/
 .mvn/timing.properties
 
 # Python / model services
