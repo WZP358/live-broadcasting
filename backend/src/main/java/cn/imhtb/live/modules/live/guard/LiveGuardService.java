@@ -27,6 +27,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -54,6 +55,7 @@ public class LiveGuardService {
     private final DbSchemaInspector dbSchemaInspector;
     private final RestTemplate restTemplate;
     private final Map<Integer, Long> lastCheckAt = new ConcurrentHashMap<>();
+    private volatile long lastUnavailableLogAt = 0L;
 
     public LiveGuardService(GuardConfig guardConfig,
                             IRoomService roomService,
@@ -156,16 +158,32 @@ public class LiveGuardService {
                     .violationLabel(violationLabel)
                     .evidence(evidence)
                     .build();
+        } catch (ResourceAccessException e) {
+            logGuardUnavailable(e);
+            return guardUnavailable();
         } catch (Exception e) {
-            log.warn("live guard check unavailable, endpoint={}", guardConfig.getEndpoint(), e);
-            return GuardCheckResult.builder()
-                    .status(STATUS_UNAVAILABLE)
-                    .safe(true)
-                    .banned(false)
-                    .skipped(true)
-                    .reason("Guard service unavailable")
-                    .build();
+            log.warn("live guard check failed, endpoint={}", guardConfig.getEndpoint(), e);
+            return guardUnavailable();
         }
+    }
+
+    private void logGuardUnavailable(ResourceAccessException e) {
+        long now = System.currentTimeMillis();
+        if (now - lastUnavailableLogAt < 30000L) {
+            return;
+        }
+        lastUnavailableLogAt = now;
+        log.warn("live guard service unavailable, endpoint={}, reason={}", guardConfig.getEndpoint(), e.getMostSpecificCause().getMessage());
+    }
+
+    private GuardCheckResult guardUnavailable() {
+        return GuardCheckResult.builder()
+                .status(STATUS_UNAVAILABLE)
+                .safe(true)
+                .banned(false)
+                .skipped(true)
+                .reason("Guard service unavailable")
+                .build();
     }
 
     private void banRoom(Room room,

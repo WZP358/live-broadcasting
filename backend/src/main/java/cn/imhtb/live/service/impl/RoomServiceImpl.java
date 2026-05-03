@@ -2,6 +2,7 @@ package cn.imhtb.live.service.impl;
 
 import cn.imhtb.live.common.PageData;
 import cn.imhtb.live.common.config.LalLiveConfig;
+import cn.imhtb.live.common.enums.LiveInfoStatusEnum;
 import cn.imhtb.live.common.enums.StatusEnum;
 import cn.imhtb.live.common.enums.LiveRoomStatusEnum;
 import cn.imhtb.live.common.enums.WatchTypeEnum;
@@ -9,9 +10,11 @@ import cn.imhtb.live.common.holder.UserHolder;
 import cn.imhtb.live.mappers.RoomMapper;
 import cn.imhtb.live.mappers.UserMapper;
 import cn.imhtb.live.modules.live.service.ICategoryService;
+import cn.imhtb.live.modules.live.service.ILiveInfoService;
 import cn.imhtb.live.modules.live.vo.RoomRespVo;
 import cn.imhtb.live.modules.live.webrtc.BrowserLiveRegistry;
 import cn.imhtb.live.modules.server.netty.live.NettyBrowserLiveService;
+import cn.imhtb.live.pojo.database.LiveInfo;
 import cn.imhtb.live.pojo.database.Room;
 import cn.imhtb.live.pojo.database.User;
 import cn.imhtb.live.pojo.database.Category;
@@ -22,7 +25,6 @@ import cn.imhtb.live.service.IRoomService;
 import cn.imhtb.live.service.ITokenService;
 import cn.imhtb.live.service.IWatchService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +46,7 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements IR
     private final ITokenService tokenService;
     private final IWatchService watchService;
     private final ICategoryService categoryService;
+    private final ILiveInfoService liveInfoService;
     private final LalLiveConfig lalLiveConfig;
     private final BrowserLiveRegistry browserLiveRegistry;
     private final NettyBrowserLiveService nettyBrowserLiveService;
@@ -102,18 +106,26 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements IR
 
     @Override
     public PageData<RoomRespVo> getLivingRooms(Integer cid, Integer pageNo, Integer pageSize) {
-        Page<Room> page = this.page(new Page<>(pageNo, pageSize), new LambdaQueryWrapper<Room>()
+        int currentPage = pageNo == null || pageNo < 1 ? 1 : pageNo;
+        int size = pageSize == null || pageSize < 1 ? 10 : pageSize;
+
+        List<Room> livingRooms = list(new LambdaQueryWrapper<Room>()
                 .eq(cid != null, Room::getCategoryId, cid)
                 .eq(Room::getStatus, LiveRoomStatusEnum.LIVING.getCode())
-                .eq(Room::getDisabled, StatusEnum.YES.getCode()));
+                .eq(Room::getDisabled, StatusEnum.YES.getCode()))
+                .stream()
+                .filter(this::isRoomReallyLiving)
+                .collect(Collectors.toList());
 
-        List<RoomRespVo> collect = page.getRecords().stream()
+        List<RoomRespVo> collect = livingRooms.stream()
+                .skip((long) (currentPage - 1) * size)
+                .limit(size)
                 .map(this::packageRoomResponse)
                 .collect(Collectors.toList());
 
         PageData<RoomRespVo> pageData = new PageData<>();
         pageData.setList(collect);
-        pageData.setTotal(page.getTotal());
+        pageData.setTotal((long) livingRooms.size());
         return pageData;
     }
 
@@ -191,6 +203,26 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements IR
             return lalLiveConfig.getFlvPullStream() + room.getId() + ".flv";
         }
         return null;
+    }
+
+    private boolean isRoomReallyLiving(Room room) {
+        if (room == null || room.getId() == null) {
+            return false;
+        }
+        if (browserLiveRegistry.isBrowserLive(room.getId()) || nettyBrowserLiveService.isBrowserLive(room.getId())) {
+            return true;
+        }
+
+        LiveInfo liveInfo = liveInfoService.getOne(new LambdaQueryWrapper<LiveInfo>()
+                        .eq(LiveInfo::getRoomId, room.getId())
+                        .eq(LiveInfo::getStatus, LiveInfoStatusEnum.LIVING.getCode())
+                        .orderByDesc(LiveInfo::getCreateTime)
+                        .last("limit 1"),
+                false);
+        if (liveInfo == null || liveInfo.getStartTime() == null) {
+            return false;
+        }
+        return liveInfo.getStartTime().isAfter(LocalDateTime.now().minusHours(12));
     }
 
 }

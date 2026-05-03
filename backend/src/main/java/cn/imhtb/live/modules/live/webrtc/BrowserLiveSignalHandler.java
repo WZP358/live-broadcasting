@@ -1,6 +1,7 @@
 package cn.imhtb.live.modules.live.webrtc;
 
 import cn.imhtb.live.common.utils.JwtUtil;
+import cn.imhtb.live.modules.live.service.LiveLifecycleService;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import java.util.Map;
 public class BrowserLiveSignalHandler extends TextWebSocketHandler {
 
     private final BrowserLiveRegistry registry;
+    private final LiveLifecycleService liveLifecycleService;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
@@ -76,6 +78,9 @@ public class BrowserLiveSignalHandler extends TextWebSocketHandler {
         // 网页开播优先保证本地可用性，不强依赖 websocket token 鉴权。
         Integer userId = parseUserId(session, role);
         registry.register(session, roomId, role, userId);
+        if (BrowserLiveRegistry.SessionRole.BROADCASTER.equals(role)) {
+            liveLifecycleService.markLiveStarted(roomId, userId);
+        }
         log.info("browser-live joined, sessionId={}, roomId={}, role={}, userId={}", session.getId(), roomId, role, userId);
         sendToSession(session, joinedMessage(roomId, role, session.getId()));
 
@@ -124,6 +129,7 @@ public class BrowserLiveSignalHandler extends TextWebSocketHandler {
             for (String viewerSessionId : registry.getViewerSessionIds(meta.getRoomId())) {
                 registry.send(viewerSessionId, message("broadcaster-offline", meta.getRoomId(), session.getId()));
             }
+            liveLifecycleService.markLiveStopped(meta.getRoomId());
             return;
         }
         String broadcasterSessionId = registry.getBroadcasterSessionId(meta.getRoomId());

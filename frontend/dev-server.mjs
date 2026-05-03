@@ -28,7 +28,7 @@ const server = await createServer({
     port: 5174,
     proxy: {
       '/api': {
-        target: 'http://localhost:8088',
+        target: process.env.VITE_BACKEND_URL || 'http://localhost:9000',
         changeOrigin: true,
         rewrite: p => p.replace(/^\/api/, ''),
       },

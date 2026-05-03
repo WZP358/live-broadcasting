@@ -11,7 +11,7 @@
     <groupId>cn.imhtb.live</groupId>
     <artifactId>backend</artifactId>
     <version>1.0.0.RELEASE</version>
-    <name>ant-live</name>
+    <name>pulselive</name>
     <description>Live project for Spring Boot</description>
 
     <developers>

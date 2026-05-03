@@ -66,7 +66,7 @@ const handleLogout = () => {
       <div class="site-header__brand" @click="handleGoHome">
         <div class="brand-mark">A</div>
         <div class="brand-copy">
-          <strong>Ant Live</strong>
+          <strong>PulseLive</strong>
           <span>直播与运营一体平台</span>
         </div>
       </div>

@@ -3,21 +3,31 @@ import request from "@/utils/request"
 export default {
   getPageAuths(params) {
     return request({
-      url: "/admin/auth/list",
+      url: "/api/v1/system/auth/page",
       method: "get",
-      params,
+      params: {
+        pageNo: params?.page,
+        pageSize: params?.limit,
+        status: params?.status,
+        userId: params?.userId,
+      },
     })
   },
   updateStatus(type, ids) {
+    const statusMap = {
+      pass: 1,
+      reset: 0,
+      reject: 3,
+    }
     return request({
-      url: `/admin/auth/pass/${type}`,
+      url: "/api/v1/system/auth/status",
       method: "post",
-      data: { ids },
+      data: { ids, type: statusMap[type] },
     })
   },
   deleteAuths(ids) {
     return request({
-      url: "/admin/auth/del",
+      url: "/api/v1/system/auth/delete",
       method: "post",
       data: { ids },
     })

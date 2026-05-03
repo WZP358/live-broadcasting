@@ -42,7 +42,7 @@ export default defineConfig((mode) => {
       // open: true,
       proxy: {
         [env.VITE_APP_BASE_API]: {
-          target: 'http://localhost:8088',
+          target: env.VITE_BACKEND_URL || 'http://localhost:9000',
           changeOrigin: true
         }
       }

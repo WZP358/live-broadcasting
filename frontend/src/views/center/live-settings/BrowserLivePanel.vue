@@ -85,10 +85,12 @@ import liveAPI from "@/api/live"
 import { createBrowserLiveFallbackUrls, createPeerConnection } from "@/utils/browserLive"
 import { createLiveCaptionEngine, isLiveCaptionSupported } from "@/utils/liveCaption"
 import { createLiveDenoiseEngine, getLiveDenoiseServiceUrl } from "@/utils/liveDenoise"
+import { createAlignedLatencyStream } from "@/utils/mediaLatency"
 
 const HEARTBEAT_INTERVAL = 15000
 const GUARD_CHECK_INTERVAL = 2000
 const DENOISE_STORAGE_KEY = "live.browser.denoise.enabled"
+const LIVE_SYNC_LATENCY_MS = 1000
 
 const props = defineProps({
   roomId: {
@@ -132,6 +134,7 @@ let guardTimer = null
 let guardChecking = false
 let captionEngine = null
 let denoiseEngine = null
+let latencyAlignedStream = null
 let auxiliaryStreams = []
 const peerMap = new Map()
 
@@ -291,10 +294,11 @@ const startBrowserLive = async (streamFactory) => {
 }
 
 const buildPublishingStream = async (stream) => {
+  let baseStream = stream
   if (!state.denoiseEnabled) {
     resetDenoiseState()
     describeAudioProcessingState(stream)
-    return stream
+    return alignPublishingLatency(stream)
   }
 
   denoiseEngine = createLiveDenoiseEngine({
@@ -315,8 +319,9 @@ const buildPublishingStream = async (stream) => {
     state.denoiseModelName = result.modelName || ""
     state.denoiseDetail = `DeepFilterNet3 已接入，后端：${result.backend || "unknown"}，模型：${result.modelName || "unknown"}`
     state.denoiseUsingEnhanced = false
-    describeAudioProcessingState(result.stream)
-    return result.stream
+    baseStream = result.stream
+    describeAudioProcessingState(baseStream)
+    return alignPublishingLatency(baseStream)
   } catch (error) {
     state.denoiseStatus = "error"
     state.denoiseDetail = `DeepFilterNet3 服务不可用，已回退原始音频：${error.message}`
@@ -327,7 +332,43 @@ const buildPublishingStream = async (stream) => {
     message.warning(state.denoiseDetail)
     await denoiseEngine.stop()
     denoiseEngine = null
-    return stream
+    return alignPublishingLatency(stream)
+  }
+}
+
+const alignPublishingLatency = async (stream) => {
+  await stopLatencyAlignment({ stopDerivedTracks: true, protectedStreams: [captureStream, stream] })
+  latencyAlignedStream = await createAlignedLatencyStream(stream, LIVE_SYNC_LATENCY_MS)
+  setMessage(`音视频已统一延迟为 ${LIVE_SYNC_LATENCY_MS / 1000}s`)
+  return latencyAlignedStream
+}
+
+const getProtectedTrackIds = (streams = []) => {
+  const ids = new Set()
+  streams.forEach((stream) => {
+    stream?.getTracks?.().forEach((track) => ids.add(track.id))
+  })
+  return ids
+}
+
+const stopUnprotectedTracks = (stream, protectedStreams = []) => {
+  const protectedTrackIds = getProtectedTrackIds(protectedStreams)
+  stream?.getTracks?.().forEach((track) => {
+    if (!protectedTrackIds.has(track.id)) {
+      track.stop()
+    }
+  })
+}
+
+const stopLatencyAlignment = async ({ stopDerivedTracks = false, protectedStreams = [] } = {}) => {
+  if (!latencyAlignedStream) {
+    return
+  }
+  const stream = latencyAlignedStream
+  latencyAlignedStream = null
+  await stream.stopLatencyAlignment?.()
+  if (stopDerivedTracks) {
+    stopUnprotectedTracks(stream, protectedStreams)
   }
 }
 
@@ -347,6 +388,9 @@ const replacePeerTrack = async (kind, nextTrack) => {
 const updatePreviewStream = () => {
   if (previewRef.value) {
     previewRef.value.srcObject = publishingStream
+    previewRef.value.muted = true
+    previewRef.value.playsInline = true
+    previewRef.value.play?.().catch(() => {})
   }
 }
 
@@ -366,7 +410,7 @@ const switchPublishingStream = async (nextStream) => {
   }
 
   if (previousStream && previousStream !== captureStream && previousStream !== nextStream) {
-    previousStream.getTracks().forEach((track) => track.stop())
+    stopUnprotectedTracks(previousStream, [captureStream, nextStream])
   }
 }
 
@@ -391,7 +435,8 @@ const enableDenoiseDuringLive = async () => {
 
   try {
     const result = await denoiseEngine.start(captureStream)
-    await switchPublishingStream(result.stream)
+    const alignedStream = await alignPublishingLatency(result.stream)
+    await switchPublishingStream(alignedStream)
     state.denoiseStatus = "warming"
     state.denoiseBackend = result.backend || ""
     state.denoiseModelName = result.modelName || ""
@@ -417,7 +462,8 @@ const enableDenoiseDuringLive = async () => {
 }
 
 const disableDenoiseDuringLive = async () => {
-  await switchPublishingStream(captureStream)
+  const alignedStream = await alignPublishingLatency(captureStream)
+  await switchPublishingStream(alignedStream)
   if (denoiseEngine) {
     await denoiseEngine.stop()
     denoiseEngine = null
@@ -454,6 +500,9 @@ const getMediaErrorMessage = (error) => {
 const attachPreview = () => {
   if (previewRef.value) {
     previewRef.value.srcObject = publishingStream
+    previewRef.value.muted = true
+    previewRef.value.playsInline = true
+    previewRef.value.play?.().catch(() => {})
   }
   const [videoTrack] = captureStream?.getVideoTracks?.() || []
   if (videoTrack) {
@@ -611,11 +660,15 @@ const createOfferForViewer = async (viewerSessionId) => {
 
 const toggleCaption = async () => {
   if (!state.captionSupported) {
-    message.warning("当前浏览器不支持实时字幕")
+    message.warning("当前浏览器不支持实时字幕，请使用最新版 Chrome 或 Edge")
     return
   }
   if (!state.liveActive) {
     message.warning("请先开播，再开启实时字幕")
+    return
+  }
+  if (!captureStream?.getAudioTracks?.().some((track) => track.readyState === "live")) {
+    message.warning("未检测到可用麦克风音轨，请重新开启摄像头直播")
     return
   }
   if (state.captionActive) {
@@ -633,14 +686,29 @@ const toggleCaption = async () => {
         text,
       })
     },
-    onError: () => {
+    onError: (event, options = {}) => {
+      const error = event?.error || event?.message || ""
+      if (options.recoverable) {
+        setMessage(error === "no-speech" ? "实时字幕等待主播说话..." : "实时字幕正在自动恢复")
+        return
+      }
       state.captionActive = false
-      message.warning("字幕识别已中断，请检查麦克风权限后重试")
+      captionEngine = null
+      const hint =
+        error === "not-allowed" || error === "service-not-allowed"
+          ? "字幕识别没有麦克风权限，请在浏览器地址栏允许麦克风后重试"
+          : error === "audio-capture"
+            ? "字幕识别没有可用麦克风，请检查设备后重试"
+            : error === "network"
+              ? "字幕识别服务连接失败，请稍后重试"
+              : "字幕识别已中断，请检查麦克风权限后重试"
+      message.warning(hint)
+      setMessage(hint)
     },
   })
 
   if (!captionEngine) {
-    message.warning("当前浏览器不支持实时字幕")
+    message.warning("当前浏览器不支持实时字幕，请使用最新版 Chrome 或 Edge")
     return
   }
 
@@ -649,7 +717,9 @@ const toggleCaption = async () => {
     state.captionActive = true
     setMessage("实时字幕识别已开启")
   } catch (error) {
-    message.error("实时字幕启动失败，请检查麦克风权限")
+    const hint = "实时字幕启动失败，请检查麦克风权限"
+    message.error(hint)
+    setMessage(hint)
   }
 }
 
@@ -827,6 +897,8 @@ const stopBrowserLive = async (options = {}) => {
 
 const releaseMediaResources = async () => {
   const captureTrackIds = new Set(captureStream?.getTracks?.().map((track) => track.id) || [])
+
+  await stopLatencyAlignment({ stopDerivedTracks: true, protectedStreams: [captureStream] })
 
   if (publishingStream) {
     publishingStream.getTracks().forEach((track) => {

@@ -17,6 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -41,7 +42,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) {
         User user = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username), false);
         if (Objects.isNull(user)){
-            return null;
+            throw new UsernameNotFoundException("User not found: " + username);
         }
         AntLiveUserBo antLiveUserBo = new AntLiveUserBo();
         BeanUtils.copyProperties(user, antLiveUserBo);

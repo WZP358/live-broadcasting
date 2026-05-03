@@ -1,5 +1,6 @@
 package cn.imhtb.live.modules.server.netty.live;
 
+import cn.imhtb.live.modules.live.service.LiveLifecycleService;
 import cn.imhtb.live.modules.server.netty.AttrUtil;
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.Channel;
@@ -17,6 +18,7 @@ import java.util.Map;
 public class NettyBrowserLiveService {
 
     private final NettyBrowserLiveRegistry registry;
+    private final LiveLifecycleService liveLifecycleService;
 
     public boolean supports(JSONObject body) {
         String type = body.getString("type");
@@ -80,6 +82,7 @@ public class NettyBrowserLiveService {
             for (String viewerSessionId : registry.getViewerSessionIds(meta.getRoomId())) {
                 registry.send(viewerSessionId, message("broadcaster-offline", meta.getRoomId(), meta.getSessionId()));
             }
+            liveLifecycleService.markLiveStopped(meta.getRoomId());
             return;
         }
 
@@ -103,6 +106,9 @@ public class NettyBrowserLiveService {
 
         Integer userId = AttrUtil.getAttr(channel, AttrUtil.USER_ID);
         registry.register(channel, roomId, role, userId);
+        if (NettyBrowserLiveRegistry.SessionRole.BROADCASTER.equals(role)) {
+            liveLifecycleService.markLiveStarted(roomId, userId);
+        }
         String sessionId = channel.id().asLongText();
         registry.send(sessionId, joinedMessage(roomId, role, sessionId));
 

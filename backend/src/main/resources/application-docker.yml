@@ -1,59 +1,60 @@
 server:
-  port: 8088
+  port: ${SERVER_PORT:8088}
 
 spring:
   datasource:
-    username: root
-    password: Kishi...015
-    url: jdbc:mysql://localhost:3306/ant-live?characterEncoding=utf-8&serverTimezone=GMT%2b8
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/ant-live?characterEncoding=utf-8&serverTimezone=GMT%2b8}
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
-      max-wait: 60000
-      initial-size: 5
-      min-idle: 5
-      max-active: 20
+      max-wait: ${DB_DRUID_MAX_WAIT:60000}
+      initial-size: ${DB_DRUID_INITIAL_SIZE:5}
+      min-idle: ${DB_DRUID_MIN_IDLE:5}
+      max-active: ${DB_DRUID_MAX_ACTIVE:20}
 
   mail:
-    host: smtp.qq.com
-    username: xxx@qq.com
-    password: xxx
-    default-encoding: UTF-8
-    port: 465
-    protocol: smtps
+    host: ${MAIL_HOST:smtp.qq.com}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    default-encoding: ${MAIL_ENCODING:UTF-8}
+    port: ${MAIL_PORT:465}
+    protocol: ${MAIL_PROTOCOL:smtps}
 
   redis:
-    database: 0
-    host: localhost
-    port: 6379
-    password: 
+    database: ${REDIS_DATABASE:0}
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
     jedis:
       pool:
-        max-active: 8
-        max-idle: 8
-    timeout: 5000
+        max-active: ${REDIS_POOL_MAX_ACTIVE:8}
+        max-idle: ${REDIS_POOL_MAX_IDLE:8}
+    timeout: ${REDIS_TIMEOUT:5000}
 
   servlet:
     multipart:
       enabled: true
-      max-file-size: 4096MB
-      max-request-size: 4096MB
+      max-file-size: ${UPLOAD_MAX_FILE_SIZE:4096MB}
+      max-request-size: ${UPLOAD_MAX_REQUEST_SIZE:4096MB}
 
 tencent:
   sms:
-    appid: 000
-    appKey: 000
-    templateId: 000
-    templateNoticeId: 000
-    smsSign: 000
+    appid: ${TENCENT_SMS_APPID:}
+    appKey: ${TENCENT_SMS_APP_KEY:}
+    templateId: ${TENCENT_SMS_TEMPLATE_ID:}
+    templateNoticeId: ${TENCENT_SMS_TEMPLATE_NOTICE_ID:}
+    smsSign: ${TENCENT_SMS_SIGN:}
   live:
-    domain: live.imhtb.cn
-    appName: live
-    secretId: 000
-    secretKey: 000
+    liveDomain: ${TENCENT_LIVE_DOMAIN:live.imhtb.cn}
+    playDomain: ${TENCENT_PLAY_DOMAIN:play.imhtb.cn}
+    appName: ${TENCENT_LIVE_APP_NAME:live}
+    secretId: ${TENCENT_LIVE_SECRET_ID:}
+    secretKey: ${TENCENT_LIVE_SECRET_KEY:}
   cos:
-    bucketName: 000
-    path: https://xxx.cos.ap-chengdu.myqcloud.com/
+    bucketName: ${TENCENT_COS_BUCKET_NAME:}
+    path: ${TENCENT_COS_PATH:}
 
 mybatis-plus:
   global-config:
@@ -64,26 +65,26 @@ mybatis-plus:
       logic-delete-value: 1
 
 alipay:
-  path: Q:/Learning/Live/BackEnd/AntLive/src/main/resources/static/
+  path: ${ALIPAY_STATIC_PATH:}
 
 minio:
-  endpoint: ${minio_endpoint}
-  ip: ${minio_ip}
-  port: ${minio_port}
-  accessKey: ${minio_access_key}
-  secretKey: ${minio_secret_key}
-  bucketName: live.file.bucket
+  endpoint: ${MINIO_ENDPOINT:}
+  ip: ${MINIO_IP:}
+  port: ${MINIO_PORT:9000}
+  accessKey: ${MINIO_ACCESS_KEY:}
+  secretKey: ${MINIO_SECRET_KEY:}
+  bucketName: ${MINIO_BUCKET_NAME:live.file.bucket}
 
 dromara:
   x-file-storage:
-    default-platform: huawei-obs-1 # 默认使用的存储平台
-    thumbnail-suffix: ".min.jpg" # 缩略图后缀
+    default-platform: ${FILE_STORAGE_DEFAULT_PLATFORM:minio-1}
+    thumbnail-suffix: ${FILE_STORAGE_THUMBNAIL_SUFFIX:.min.jpg}
     minio:
       - platform: minio-1
-        enable-storage: true
-        access-key: ${minio_access_key}
-        secret-key: ${minio_secret_key}
-        end-point: ${minio_endpoint}
-        bucket-name: live.file.bucket
-        domain: http://localhost:9000/live.file.bucket/ # 访问域名，注意“/”结尾，例如：http://minio.abc.com/abc/
-        base-path:  # 基础路径 xx/
+        enable-storage: ${FILE_STORAGE_MINIO_ENABLED:false}
+        access-key: ${MINIO_ACCESS_KEY:}
+        secret-key: ${MINIO_SECRET_KEY:}
+        end-point: ${MINIO_ENDPOINT:}
+        bucket-name: ${MINIO_BUCKET_NAME:live.file.bucket}
+        domain: ${MINIO_DOMAIN:http://localhost:9000/live.file.bucket/}
+        base-path: ${MINIO_BASE_PATH:}

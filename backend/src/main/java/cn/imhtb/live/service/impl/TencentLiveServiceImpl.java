@@ -43,7 +43,7 @@ public class TencentLiveServiceImpl implements ITencentLiveService {
         this.liveInfoMapper = liveInfoMapper;
     }
 
-    private static final String KEY = "9e57e2310202990ba3c470e250385784";
+    private static final String KEY = "";
 
     private static final char[] DIGITS_LOWER =
             {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};

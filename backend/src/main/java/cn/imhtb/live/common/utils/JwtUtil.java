@@ -19,7 +19,7 @@ public class JwtUtil {
     /**
      * 发行者
      */
-    private static final String SUBJECT = "Ant Live";
+    private static final String SUBJECT = "PulseLive";
 
     /**
      * 固定header头部key值

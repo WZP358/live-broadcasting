@@ -49,7 +49,7 @@ const goHome = () => {
       <div class="login-brand">
         <button class="brand-mark" type="button" @click="goHome">A</button>
         <div>
-          <div class="brand-name">Ant Live</div>
+          <div class="brand-name">PulseLive</div>
           <div class="brand-desc">统一登录后，系统会根据账号权限自动进入用户端或管理后台。</div>
         </div>
       </div>

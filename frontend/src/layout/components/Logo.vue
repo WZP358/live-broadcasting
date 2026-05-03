@@ -1,8 +1,8 @@
 <template>
   <section class="logo-wrapper">
-    <div class="logo-badge">AL</div>
+    <div class="logo-badge">PL</div>
     <div class="logo-copy">
-      <strong>Ant-Live</strong>
+      <strong>PulseLive</strong>
       <span>后台管理系统</span>
     </div>
   </section>

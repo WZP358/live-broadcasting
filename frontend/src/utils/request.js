@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { useStore } from '@/stores'
-import { Modal, message } from 'ant-design-vue'
-import { createVNode } from 'vue'
-import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+
+let redirectingToLogin = false
 
 const service = axios.create({
     baseURL: '',
@@ -33,9 +33,9 @@ service.interceptors.response.use((response) => {
     }
 
     if (code === 401) {
-        localStorage.clear()
+        handleUnauthorized(msg)
     } else {
-        message.error(msg || 'This is an error message', 2.5)
+        message.error(msg || '请求失败', 2.5)
     }
 
     return Promise.reject(new Error(msg || 'Error'))
@@ -43,23 +43,34 @@ service.interceptors.response.use((response) => {
     const msg = error?.response?.data?.msg
 
     if (error?.response?.status === 401) {
-        Modal.confirm({
-            title: '登录提示',
-            icon: createVNode(ExclamationCircleOutlined),
-            content: '您的登录状态已过期，请重新登录',
-            cancelText: '取消',
-            okText: '重新登录',
-            onOk() {
-                localStorage.clear()
-                window.location.href = '/#/login'
-            },
-            onCancel() {},
-        })
+        handleUnauthorized(msg)
         return Promise.reject(new Error(msg || 'Unauthorized'))
     }
 
     message.error(msg || '网络异常，请稍后重试', 2.5)
     return Promise.reject(new Error(msg || 'Network Error'))
 })
+
+const handleUnauthorized = (msg) => {
+    localStorage.clear()
+    sessionStorage.clear()
+
+    if (redirectingToLogin) {
+        return
+    }
+
+    redirectingToLogin = true
+    message.warning(msg || '登录已过期，请重新登录', 2)
+
+    const currentHash = window.location.hash || '#/'
+    const currentPath = currentHash.replace(/^#/, '') || '/'
+    const redirect = currentPath && currentPath !== '/login'
+        ? `?redirect=${encodeURIComponent(currentPath)}`
+        : ''
+
+    setTimeout(() => {
+        window.location.href = `/#/login${redirect}`
+    }, 300)
+}
 
 export default service

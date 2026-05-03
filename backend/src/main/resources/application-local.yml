@@ -1,12 +1,12 @@
 spring:
   redis:
-    password: ""
+    password: ${REDIS_PASSWORD:}
 
 verify-code:
-  local-mail-fallback: true
+  local-mail-fallback: ${VERIFY_CODE_LOCAL_MAIL_FALLBACK:true}
 
 lal:
-  secret: local-ant-live
-  rtmpPushStream: rtmp://127.0.0.1:1935/live/
-  flvPullStream: http://127.0.0.1:8080/live/
-  hlsPullStream:
+  secret: ${LAL_SECRET:local-pulselive}
+  rtmpPushStream: ${LAL_RTMP_PUSH_STREAM:rtmp://127.0.0.1:1935/live/}
+  flvPullStream: ${LAL_FLV_PULL_STREAM:http://127.0.0.1:8080/live/}
+  hlsPullStream: ${LAL_HLS_PULL_STREAM:}

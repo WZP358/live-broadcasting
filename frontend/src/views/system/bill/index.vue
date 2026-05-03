@@ -106,11 +106,11 @@ const typeMeta = (type) => {
 
 const getData = async () => {
   const res = await request({
-    url: "/admin/bill/list",
+    url: "/api/v1/system/bill/page",
     method: "get",
     params: {
-      page: current.value,
-      limit: pageSize.value,
+      pageNo: current.value,
+      pageSize: pageSize.value,
       type: formState.type,
       mark: formState.mark || undefined,
     },

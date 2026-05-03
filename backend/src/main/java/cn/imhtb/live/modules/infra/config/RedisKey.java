@@ -6,7 +6,7 @@ package cn.imhtb.live.modules.infra.config;
  */
 public class RedisKey {
 
-    public static final String BASE = "AntLive:";
+    public static final String BASE = "PulseLive:";
 
     public static final String VERIFY_CODE = "verifyCode:%s:%s";
 

@@ -76,16 +76,8 @@ public class LalLiveServiceImpl implements ILiveService {
         room.setSecret(pushSecret);
         room.setPushUrl(lalLiveConfig.getRtmpPushStream());
         room.setPullUrl(lalLiveConfig.getFlvPullStream() + room.getId() + ".flv");
-        room.setStatus(LiveRoomStatusEnum.LIVING.getCode());
         roomService.updateById(room);
         redisUtil.remove(getLiveViewerKey(room.getId()));
-
-        LiveInfo liveInfo = new LiveInfo();
-        liveInfo.setUserId(userId);
-        liveInfo.setRoomId(room.getId());
-        liveInfo.setStatus(LiveInfoStatusEnum.LIVING.getCode());
-        liveInfo.setStartTime(LocalDateTime.now());
-        liveInfoService.save(liveInfo);
 
         StartOpenLiveVo startOpenLiveVo = new StartOpenLiveVo();
         startOpenLiveVo.setPushUrl(lalLiveConfig.getRtmpPushStream());
@@ -99,12 +91,17 @@ public class LalLiveServiceImpl implements ILiveService {
         Integer userId = tokenService.getUserId();
         Room room = roomService.getOrInitRoomByUserId(userId);
         if (Objects.isNull(room) || room.getStatus() != LiveRoomStatusEnum.LIVING.getCode()) {
-            throw new RuntimeException("关闭直播失败");
+            log.info("stop live ignored, room is already stopped, userId = {}", userId);
+            return buildEmptyStopLiveStats();
         }
 
         LiveInfo historyLiveInfo = getHistoryLiveInfo(room);
         if (Objects.isNull(historyLiveInfo)) {
-            throw new RuntimeException("关闭直播失败");
+            room.setStatus(LiveRoomStatusEnum.STOP.getCode());
+            roomService.updateById(room);
+            redisUtil.remove(getLiveViewerKey(room.getId()));
+            log.info("stop live repaired room status without active live info, roomId = {}, userId = {}", room.getId(), userId);
+            return buildEmptyStopLiveStats();
         }
         historyLiveInfo.setStatus(LiveInfoStatusEnum.FINISHED.getCode());
         historyLiveInfo.setEndTime(LocalDateTime.now());
@@ -203,6 +200,15 @@ public class LalLiveServiceImpl implements ILiveService {
             return 0L;
         }
         return Math.max(Duration.between(liveInfo.getStartTime(), liveInfo.getEndTime()).getSeconds(), 0L);
+    }
+
+    private StopLiveStatsVo buildEmptyStopLiveStats() {
+        return StopLiveStatsVo.builder()
+                .presentAmount(BigDecimal.ZERO)
+                .danMuCount(0L)
+                .totalViewCount(0L)
+                .liveDurationSeconds(0L)
+                .build();
     }
 
     private String getLiveViewerKey(Integer roomId) {

@@ -19,6 +19,9 @@ export const createLiveCaptionEngine = ({ lang = "zh-CN", onText, onError } = {}
   recognition.interimResults = true
 
   let active = false
+  let manuallyStopped = false
+
+  const fatalErrors = new Set(["audio-capture", "not-allowed", "service-not-allowed", "network"])
 
   recognition.onresult = (event) => {
     let text = ""
@@ -29,15 +32,21 @@ export const createLiveCaptionEngine = ({ lang = "zh-CN", onText, onError } = {}
   }
 
   recognition.onerror = (event) => {
-    onError?.(event)
+    const error = event?.error || "unknown"
+    if (fatalErrors.has(error)) {
+      active = false
+      onError?.(event)
+      return
+    }
+    onError?.(event, { recoverable: true })
   }
 
   recognition.onend = () => {
-    if (active) {
+    if (active && !manuallyStopped) {
       try {
         recognition.start()
       } catch (error) {
-        onError?.(error)
+        onError?.(error, { recoverable: true })
       }
     }
   }
@@ -45,10 +54,12 @@ export const createLiveCaptionEngine = ({ lang = "zh-CN", onText, onError } = {}
   return {
     start() {
       active = true
+      manuallyStopped = false
       recognition.start()
     },
     stop() {
       active = false
+      manuallyStopped = true
       recognition.stop()
     },
   }

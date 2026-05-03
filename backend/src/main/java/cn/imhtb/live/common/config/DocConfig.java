@@ -12,9 +12,6 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 
-/**
- * @author pinteh
- */
 @Configuration
 @EnableKnife4j
 @EnableSwagger2WebMvc
@@ -24,9 +21,9 @@ public class DocConfig {
     public Docket defaultApi2() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(new ApiInfoBuilder()
-                        .title("")
-                        .description("# AntLive服务接口文档")
-                        .contact(new Contact("PinTeh", "", "794409767@qq.com"))
+                        .title("PulseLive")
+                        .description("# PulseLive API")
+                        .contact(new Contact("PulseLive", "", ""))
                         .version("1.0.0")
                         .build())
                 .groupName("1.0.0")
@@ -35,5 +32,4 @@ public class DocConfig {
                 .paths(PathSelectors.any())
                 .build();
     }
-
 }
