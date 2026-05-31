@@ -33,18 +33,18 @@
       <a-list size="small" :data-source="data">
         <template #renderItem="{ item }">
           <a-list-item>
-            <MessageItem :data="item" />
+            <MessageItem :data="item" :is-moderator="isModerator" @mute-user="handleMuteUser" @kick-user="handleKickUser" />
           </a-list-item>
         </template>
       </a-list>
     </div>
     <div class="chat-footer">
       <a-flex vertical>
-        <a-textarea class="chat-box" v-model:value="messageText" :placeholder="isLogin ? '发个弹幕呗～' : '需要登陆才能发送弹幕哦～'"
-          show-count :maxlength="20" :disabled="!isLogin" :auto-size="{ minRows: 2, maxRows: 2 }" />
+        <a-textarea class="chat-box" v-model:value="messageText" :placeholder="mutedUntil > Date.now() ? '你已被禁言' : isLogin ? '发个弹幕，别刷屏' : '登录后才能发送弹幕'"
+          show-count :maxlength="20" :disabled="!isLogin || mutedUntil > Date.now()" :auto-size="{ minRows: 2, maxRows: 2 }" />
         <div class="chat-btn-wrapper">
           <span class="popularity">{{ popularity || 0 }}人在线</span>
-          <a-button type="primary" size="small" @click="handleMessageSend" :disabled="!isLogin">发送</a-button>
+          <a-button type="primary" size="small" @click="handleMessageSend" :disabled="!isLogin || mutedUntil > Date.now()">发送</a-button>
         </div>
       </a-flex>
     </div>
@@ -56,14 +56,19 @@
 import MessageItem from "./MessageItem.vue"
 import { onBeforeMount, onMounted, ref, computed, nextTick, watch, onBeforeUnmount } from "vue"
 import { useStore } from "@/stores"
-import { message as antMessage } from "ant-design-vue"
+import $modal from "@/utils/message"
 import ChatApi from "@/api/chat"
 import roomApi from "@/api/room"
+import moderatorApi from "@/api/moderator"
 
 const props = defineProps({
   roomId: {
     type: Number,
     default: null,
+  },
+  isModerator: {
+    type: Boolean,
+    default: false,
   },
 })
 
@@ -75,7 +80,7 @@ const scrollContainer = ref(null)
 const isUserScrolling = ref(false)
 const roomId = computed(() => props.roomId)
 const store = useStore()
-const isLogin = useStore().user().isLogin
+const isLogin = computed(() => store.user().isLogin)
 const popularity = ref(1)
 const rankList = ref([])
 const showRankDropdown = ref(false)
@@ -87,6 +92,7 @@ const heartBeatTimer = ref()
 const popularityInterval = ref()
 
 const messageText = ref("")
+const mutedUntil = ref(0) // timestamp when mute expires
 
 const data = ref([])
 const createPlaceholderRank = (rankNo) => ({
@@ -106,7 +112,14 @@ const displayRanks = computed(() => {
 })
 
 onMounted(async () => {
-  initWebSocket()
+  if (isLogin.value) {
+    initWebSocket()
+  } else {
+    data.value = [{
+      nickname: "系统消息",
+      text: "游客可以观看直播，登录后可发送弹幕、送礼和参与亲密榜。",
+    }]
+  }
   getPopularity()
   getIntimacyRank()
 })
@@ -139,6 +152,10 @@ const handleScroll = () => { }
  * 发送消息
  */
 const handleMessageSend = () => {
+  if (!isLogin.value) {
+    $modal.msgWarning("登录后才能发送弹幕")
+    return
+  }
   if (messageText.value.trim() === "") {
     return
   }
@@ -151,11 +168,15 @@ const handleMessageSend = () => {
 }
 
 const getIntimacyRank = async () => {
-  const res = await roomApi.getIntimacyRank({ roomId: roomId.value })
-  rankList.value = (res.data || []).map((item, index) => ({
-    ...item,
-    rankNo: item.rankNo || index + 1,
-  }))
+  try {
+    const res = await roomApi.getIntimacyRank({ roomId: roomId.value })
+    rankList.value = (res.data || []).map((item, index) => ({
+      ...item,
+      rankNo: item.rankNo || index + 1,
+    }))
+  } catch (error) {
+    rankList.value = []
+  }
 }
 
 const formatIntimacy = (value) => {
@@ -171,8 +192,12 @@ const formatIntimacy = (value) => {
  */
 const getPopularity = () => {
   popularityInterval.value = setInterval(async () => {
-    let res = await ChatApi.getPopularity({ roomId: roomId.value })
-    popularity.value = res.data
+    try {
+      const res = await ChatApi.getPopularity({ roomId: roomId.value })
+      popularity.value = res?.data ?? 0
+    } catch (error) {
+      // silently ignore polling errors
+    }
   }, 10000)
 }
 
@@ -180,7 +205,11 @@ const getPopularity = () => {
  * 初始化 WebSocket连接
  */
 const initWebSocket = () => {
-  let wsUrl = "ws://" + location.hostname + ":10022?token=" + encodeURIComponent(store.user().userToken)
+  const token = store.user().userToken
+  if (!token) {
+    return
+  }
+  let wsUrl = "ws://" + location.hostname + ":10022?token=" + encodeURIComponent(token)
   websocket = new WebSocket(wsUrl)
   websocket.onopen = () => {
     console.log("WebSocket连接成功!")
@@ -203,8 +232,12 @@ const initWebSocket = () => {
     // WebSocket连接时发生错误
   }
   websocket.onmessage = (event) => {
-    console.log("Message from server:", event.data)
-    let message = JSON.parse(event.data)
+    let message
+    try {
+      message = JSON.parse(event.data)
+    } catch (e) {
+      return
+    }
     if (message.method === "intimacyRank") {
       rankList.value = (message.data || []).map((item, index) => ({
         ...item,
@@ -226,7 +259,24 @@ const initWebSocket = () => {
       if (data.value.length > 40) {
         data.value = data.value.slice(-40)
       }
-      antMessage.error(reason)
+      $modal.msgError(reason)
+      return
+    }
+    if (message.method === "muteUser") {
+      data.value = data.value.concat({
+        nickname: "系统消息",
+        text: message.data,
+      })
+      // 从消息内容中提取禁言时长
+      const match = message.data && message.data.match(/(\d+)\s*秒/)
+      mutedUntil.value = Date.now() + (match ? parseInt(match[1]) * 1000 : 60 * 1000)
+      $modal.msgWarning(message.data)
+      return
+    }
+    if (message.method === "kickUser") {
+      $modal.msgError(message.data)
+      // 踢出后断开 WebSocket
+      websocket && websocket.close(1000)
       return
     }
     data.value = data.value.concat(message.data)
@@ -303,6 +353,20 @@ const reconnectWebSocket = () => {
     maxReconnectCount.value--
     lockReconnect.value = false
   }, 5000)
+}
+
+const handleMuteUser = async (targetUserId, duration) => {
+  try {
+    await moderatorApi.mute({ roomId: roomId.value, targetUserId, duration: duration || 60 })
+    $modal.msgSuccess('已禁言')
+  } catch (e) { $modal.msgError('禁言失败') }
+}
+
+const handleKickUser = async (targetUserId) => {
+  try {
+    await moderatorApi.kick({ roomId: roomId.value, targetUserId })
+    $modal.msgSuccess('已踢出')
+  } catch (e) { $modal.msgError('踢出失败') }
 }
 
 const close = () => {

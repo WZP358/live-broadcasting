@@ -5,6 +5,8 @@ import cn.imhtb.live.common.enums.WatchTypeEnum;
 import cn.imhtb.live.mappers.RoomMapper;
 import cn.imhtb.live.mappers.UserMapper;
 import cn.imhtb.live.mappers.WatchMapper;
+import cn.imhtb.live.modules.live.event.FollowedEvent;
+import cn.imhtb.live.modules.live.event.LiveEventBus;
 import cn.imhtb.live.pojo.database.Room;
 import cn.imhtb.live.pojo.database.User;
 import cn.imhtb.live.pojo.database.Watch;
@@ -32,6 +34,7 @@ public class IWatchServiceImpl extends ServiceImpl<WatchMapper, Watch> implement
 
     private final RoomMapper roomMapper;
     private final UserMapper userMapper;
+    private final LiveEventBus eventBus;
 
     @Override
     public PageData<WatchResponse> listWatches(Integer userId, Integer type, Integer limit, Integer page) {
@@ -74,7 +77,14 @@ public class IWatchServiceImpl extends ServiceImpl<WatchMapper, Watch> implement
         watch.setUserId(userId);
         watch.setRoomId(roomId);
         watch.setWatchType(WatchTypeEnum.FOLLOW.getCode());
-        return save(watch);
+        boolean saved = save(watch);
+        if (saved) {
+            Room room = roomMapper.selectById(roomId);
+            if (room != null) {
+                eventBus.publish(new FollowedEvent(roomId, room.getUserId(), userId));
+            }
+        }
+        return saved;
     }
 
     @Override
@@ -91,22 +101,20 @@ public class IWatchServiceImpl extends ServiceImpl<WatchMapper, Watch> implement
 
 
     private List<WatchResponse> packageWatch(List<Watch> watches) {
-        if (watches.isEmpty()) {
-            return null;
+        if (watches == null || watches.isEmpty()) {
+            return new ArrayList<>();
         }
         List<WatchResponse> list = new ArrayList<>();
-        List<Integer> ids = watches.stream().map(Watch::getRoomId).collect(Collectors.toList());
-        List<Integer> uIds = roomMapper.selectBatchIds(ids).stream().map(Room::getUserId).collect(Collectors.toList());
-        List<String> nickNames = userMapper.selectBatchIds(uIds).stream().map(User::getNickname).collect(Collectors.toList());
-        for (int i = 0; i < watches.size(); i++) {
-            WatchResponse response = new WatchResponse();
-            response.setId(watches.get(i).getId());
-            Room room = roomMapper.selectById(watches.get(i).getRoomId());
-            if (Objects.isNull(room)){
+        for (Watch watch : watches) {
+            Room room = roomMapper.selectById(watch.getRoomId());
+            if (Objects.isNull(room)) {
                 continue;
             }
+            User user = userMapper.selectById(room.getUserId());
+            WatchResponse response = new WatchResponse();
+            response.setId(watch.getId());
             response.setCover(room.getCover());
-            response.setName(nickNames.get(i));
+            response.setName(user != null && user.getNickname() != null ? user.getNickname() : "主播");
             response.setTitle(room.getTitle());
             response.setRoomId(room.getId());
             response.setLiveStatus(room.getStatus());

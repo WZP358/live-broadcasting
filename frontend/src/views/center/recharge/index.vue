@@ -47,7 +47,7 @@ import { onBeforeUnmount, ref } from "vue"
 import { useRouter } from "vue-router"
 import WalletApi from "@/api/wallet"
 import { QuestionCircleOutlined } from "@ant-design/icons-vue"
-import { message } from "ant-design-vue"
+import $modal from "@/utils/message"
 
 const router = useRouter()
 const currentSelect = ref(1)
@@ -88,14 +88,14 @@ const watchPaymentResult = (cashierWindow, beforeBalance) => {
       const currentBalance = await readBalance()
       if (currentBalance > beforeBalance) {
         stopPayWatcher()
-        message.success("充值已到账")
+        $modal.msgSuccess("充值已到账")
         router.push("/center/dollar/wallet")
         return
       }
 
       if (cashierWindow.closed && Date.now() - startedAt > 15000) {
         stopPayWatcher()
-        message.info("收银台已关闭，若已完成支付请返回钱包页刷新查看")
+        $modal.msg("收银台已关闭，若已完成支付请返回钱包页刷新查看")
       }
       if (Date.now() - startedAt > 180000) {
         stopPayWatcher()
@@ -110,7 +110,7 @@ const recharge = async () => {
   const fee = chargeList.value[currentSelect.value - 1].fee
   const cashierWindow = window.open("", "_blank")
   if (!cashierWindow) {
-    message.warning("浏览器阻止了收银台弹窗，请允许弹窗后重试")
+    $modal.msgWarning("浏览器阻止了收银台弹窗，请允许弹窗后重试")
     return
   }
 
@@ -121,7 +121,7 @@ const recharge = async () => {
     cashierWindow.document.open()
     cashierWindow.document.write(res.data.payHtml)
     cashierWindow.document.close()
-    message.success("已打开支付宝沙箱收银台，支付完成后余额会自动入账")
+    $modal.msgSuccess("已打开支付宝沙箱收银台，支付完成后余额会自动入账")
     watchPaymentResult(cashierWindow, beforeBalance)
   } catch (error) {
     cashierWindow.close()

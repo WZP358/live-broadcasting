@@ -3,6 +3,9 @@ package cn.imhtb.live.modules.live.service;
 import cn.imhtb.live.common.enums.LiveInfoStatusEnum;
 import cn.imhtb.live.common.enums.LiveRoomStatusEnum;
 import cn.imhtb.live.mappers.RoomMapper;
+import cn.imhtb.live.modules.live.event.LiveEventBus;
+import cn.imhtb.live.modules.live.event.LiveStartedEvent;
+import cn.imhtb.live.modules.live.event.LiveStoppedEvent;
 import cn.imhtb.live.pojo.database.LiveInfo;
 import cn.imhtb.live.pojo.database.Room;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -20,6 +23,8 @@ public class LiveLifecycleService {
 
     private final RoomMapper roomMapper;
     private final ILiveInfoService liveInfoService;
+    private final LiveEventBus eventBus;
+    private final ILiveReplayService replayService;
 
     @Transactional(rollbackFor = Exception.class)
     public void markLiveStarted(Integer roomId, Integer userId) {
@@ -48,6 +53,15 @@ public class LiveLifecycleService {
         newLiveInfo.setStatus(LiveInfoStatusEnum.LIVING.getCode());
         newLiveInfo.setStartTime(LocalDateTime.now());
         liveInfoService.save(newLiveInfo);
+
+        // 开始录制回放
+        try {
+            replayService.startRecording(roomId, newLiveInfo.getId());
+        } catch (Exception e) {
+            log.error("开始录制回放失败: roomId={}", roomId, e);
+        }
+
+        eventBus.publish(new LiveStartedEvent(roomId, newLiveInfo.getUserId()));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -61,12 +75,21 @@ public class LiveLifecycleService {
             liveInfo.setStatus(LiveInfoStatusEnum.FINISHED.getCode());
             liveInfo.setEndTime(LocalDateTime.now());
             liveInfoService.updateById(liveInfo);
+
+            // 停止录制，生成回放
+            try {
+                replayService.stopRecording(liveInfo.getId());
+            } catch (Exception e) {
+                log.error("停止录制回放失败: roomId={}", roomId, e);
+            }
         }
 
         Room updateRoom = new Room();
         updateRoom.setId(roomId);
         updateRoom.setStatus(LiveRoomStatusEnum.STOP.getCode());
         roomMapper.updateById(updateRoom);
+
+        eventBus.publish(new LiveStoppedEvent(roomId));
     }
 
     private LiveInfo getLivingInfo(Integer roomId) {

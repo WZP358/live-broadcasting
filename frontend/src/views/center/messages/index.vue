@@ -11,126 +11,159 @@
     <section class="messages-panel">
       <a-tabs v-model:activeKey="activeTab" @change="handleTabChange">
         <a-tab-pane key="system" tab="系统消息">
-          <div class="message-list">
-            <article
-              v-for="item in systemMessages"
-              :key="item.id"
-              class="message-card"
-              :class="{ 'message-card--unread': !item.isRead }"
-              @click="markAsRead(item)"
-            >
-              <div class="message-card__head">
-                <h3>{{ item.title }}</h3>
-                <a-tag v-if="!item.isRead" color="error">未读</a-tag>
-              </div>
-              <p>{{ item.content }}</p>
-              <span>{{ formatTime(item.createTime) }}</span>
-            </article>
-          </div>
+          <a-spin :spinning="loading.system">
+            <div v-if="systemMessages.length" class="message-list">
+              <article
+                v-for="item in systemMessages"
+                :key="item.id"
+                class="message-card"
+                :class="{ 'message-card--unread': item.isRead === 0 }"
+                @click="markAsRead(item)"
+              >
+                <div class="message-card__head">
+                  <h3>{{ item.title }}</h3>
+                  <a-tag v-if="item.isRead === 0" color="error">未读</a-tag>
+                </div>
+                <p>{{ item.content }}</p>
+                <span>{{ formatTime(item.createTime) }}</span>
+              </article>
+            </div>
+            <a-empty v-else description="暂无系统消息" />
+          </a-spin>
         </a-tab-pane>
 
         <a-tab-pane key="notice" tab="通知消息">
-          <div class="message-list">
-            <article
-              v-for="item in noticeMessages"
-              :key="item.id"
-              class="message-card"
-              :class="{ 'message-card--unread': !item.isRead }"
-              @click="markAsRead(item)"
-            >
-              <div class="message-card__head">
-                <h3>{{ item.title }}</h3>
-                <a-tag v-if="!item.isRead" color="error">未读</a-tag>
-              </div>
-              <p>{{ item.content }}</p>
-              <span>{{ formatTime(item.createTime) }}</span>
-            </article>
-          </div>
+          <a-spin :spinning="loading.notice">
+            <div v-if="noticeMessages.length" class="message-list">
+              <article
+                v-for="item in noticeMessages"
+                :key="item.id"
+                class="message-card"
+                :class="{ 'message-card--unread': item.isRead === 0 }"
+                @click="markAsRead(item)"
+              >
+                <div class="message-card__head">
+                  <h3>{{ item.title }}</h3>
+                  <a-tag v-if="item.isRead === 0" color="error">未读</a-tag>
+                </div>
+                <p>{{ item.content }}</p>
+                <span>{{ formatTime(item.createTime) }}</span>
+              </article>
+            </div>
+            <a-empty v-else description="暂无通知消息" />
+          </a-spin>
         </a-tab-pane>
       </a-tabs>
+
+      <section class="messages-panel__footer">
+        <a-pagination
+          :current="pagination[activeTab].current"
+          :total="pagination[activeTab].total"
+          :page-size="pagination[activeTab].pageSize"
+          show-less-items
+          @change="handlePageChange"
+        />
+      </section>
     </section>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from "vue"
-import { message } from "ant-design-vue"
+import { computed, onMounted, reactive, ref, watch } from "vue"
+import { useRouter } from "vue-router"
+import $modal from "@/utils/message"
+import notificationApi from "@/api/notification"
+import { useNotificationStore } from "@/stores/modules/notification"
 import dayjs from "dayjs"
+
+const router = useRouter()
+const notificationStore = useNotificationStore()
 
 const activeTab = ref("system")
 const systemMessages = ref([])
 const noticeMessages = ref([])
+const loading = reactive({ system: false, notice: false })
 const pagination = reactive({
-  current: 1,
-  pageSize: 10,
+  system: { current: 1, pageSize: 10, total: 0 },
+  notice: { current: 1, pageSize: 10, total: 0 },
 })
 
-const hasUnreadMessages = computed(() => {
-  const currentMessages = activeTab.value === "system" ? systemMessages.value : noticeMessages.value
-  return currentMessages.some((item) => !item.isRead)
-})
+const currentMessages = computed(() =>
+  activeTab.value === "system" ? systemMessages.value : noticeMessages.value
+)
+
+const hasUnreadMessages = computed(() =>
+  currentMessages.value.some((item) => item.isRead === 0)
+)
 
 const formatTime = (time) => dayjs(time).format("YYYY-MM-DD HH:mm:ss")
 
-const fetchMessages = async () => {
-  const now = new Date()
-  systemMessages.value = [
-    {
-      id: 1,
-      title: "系统维护通知",
-      content: "平台将在今晚 22:00 后进行例行维护，请提前确认直播安排和后台配置。",
-      isRead: false,
-      createTime: now.toISOString(),
-    },
-    {
-      id: 2,
-      title: "功能更新提醒",
-      content: "新的统一登录入口和后台界面已上线，后续请从同一登录页进入不同系统。",
-      isRead: true,
-      createTime: new Date(now.getTime() - 86400000).toISOString(),
-    },
-  ]
-
-  noticeMessages.value = [
-    {
-      id: 3,
-      title: "直播互动提醒",
-      content: "你关注的主播已开播，当前直播间互动热度较高，建议及时查看。",
-      isRead: false,
-      createTime: now.toISOString(),
-    },
-    {
-      id: 4,
-      title: "账号安全提示",
-      content: "检测到你的账号在新设备登录，如非本人操作请尽快修改密码。",
-      isRead: true,
-      createTime: new Date(now.getTime() - 3600000 * 8).toISOString(),
-    },
-  ]
-}
-
-const markAsRead = (item) => {
-  if (!item.isRead) {
-    item.isRead = true
-    message.success("消息已标记为已读")
+const fetchMessages = async (tab) => {
+  const tabKey = tab || activeTab.value
+  loading[tabKey] = true
+  try {
+    const pg = pagination[tabKey]
+    const type = tabKey === "system" ? "system" : "live_started,followed"
+    const res = await notificationApi.getNotifications({ type, page: pg.current, limit: pg.pageSize })
+    if (res && res.code === 0 && res.data) {
+      const data = res.data.list || []
+      if (tabKey === "system") {
+        systemMessages.value = data
+      } else {
+        noticeMessages.value = data
+      }
+      pg.total = res.data.total || 0
+    }
+  } catch (e) {
+    // ignore
+  } finally {
+    loading[tabKey] = false
   }
 }
 
-const markAllAsRead = () => {
-  const currentMessages = activeTab.value === "system" ? systemMessages.value : noticeMessages.value
-  currentMessages.forEach((item) => {
-    item.isRead = true
-  })
-  message.success("已全部标记为已读")
+const markAsRead = async (item) => {
+  if (item.isRead === 0) {
+    try {
+      await notificationApi.markRead({ notificationId: item.id })
+      item.isRead = 1
+      notificationStore.markRead(item.id)
+      $modal.msgSuccess("消息已标记为已读")
+    } catch (e) {
+      // ignore
+    }
+  }
+  // 点击通知跳转到直播间
+  if (item.type === "live_started" && item.relatedId) {
+    router.push("/room/" + item.relatedId)
+  }
+}
+
+const markAllAsRead = async () => {
+  try {
+    await notificationApi.markAllRead()
+    currentMessages.value.forEach((item) => {
+      item.isRead = 1
+    })
+    notificationStore.markAllRead()
+    $modal.msgSuccess("已全部标记为已读")
+  } catch (e) {
+    // ignore
+  }
 }
 
 const handleTabChange = (key) => {
   activeTab.value = key
-  pagination.current = 1
+  fetchMessages(key)
+}
+
+const handlePageChange = (page) => {
+  pagination[activeTab.value].current = page
+  fetchMessages()
 }
 
 onMounted(() => {
-  fetchMessages()
+  fetchMessages("system")
+  fetchMessages("notice")
 })
 </script>
 
@@ -214,6 +247,12 @@ onMounted(() => {
   margin: 10px 0 12px;
   color: #475569;
   line-height: 1.75;
+}
+
+.messages-panel__footer {
+  display: flex;
+  justify-content: center;
+  padding-top: 18px;
 }
 
 .message-card span {

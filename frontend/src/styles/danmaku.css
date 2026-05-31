@@ -1,0 +1,133 @@
+/* ===== 弹幕特效样式 ===== */
+
+/* --- 用户等级颜色 --- */
+.danmaku-level-1  { color: #999; }        /* Lv1-10: 灰色 */
+.danmaku-level-10 { color: #4fc3f7; }      /* Lv10-20: 浅蓝 */
+.danmaku-level-20 { color: #66bb6a; }      /* Lv20-30: 绿色 */
+.danmaku-level-30 { color: #ffa726; }      /* Lv30-40: 橙色 */
+.danmaku-level-40 { color: #ab47bc; }      /* Lv40-50: 紫色 */
+.danmaku-level-50 { color: #ef5350; }      /* Lv50+: 红色 */
+
+.danmaku-level-20 .ant-tag,
+.danmaku-level-30 .ant-tag,
+.danmaku-level-40 .ant-tag,
+.danmaku-level-50 .ant-tag {
+  font-weight: 700;
+  text-shadow: 0 0 3px currentColor;
+}
+
+/* --- 守护徽章 --- */
+.guardian-badge {
+  display: inline-block;
+  padding: 0 4px;
+  font-size: 10px;
+  line-height: 16px;
+  border-radius: 2px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.guardian-badge-bronze  { background: #cd7f32; color: #fff; }
+.guardian-badge-silver  { background: linear-gradient(135deg, #b0bec5, #78909c); color: #fff; }
+.guardian-badge-gold    { background: linear-gradient(135deg, #ffd54f, #ff8f00); color: #5d4037; }
+
+/* --- 房管标识 --- */
+.moderator-badge {
+  display: inline-block;
+  padding: 0 4px;
+  font-size: 10px;
+  line-height: 16px;
+  border-radius: 2px;
+  margin-left: 4px;
+  background: #1890ff;
+  color: #fff;
+  vertical-align: middle;
+}
+
+/* --- 礼物消息特殊样式 --- */
+.chat-gift-message {
+  background: linear-gradient(90deg, rgba(255,215,0,0.12), transparent);
+  border-left: 3px solid #ffd700;
+  padding-left: 8px !important;
+}
+.chat-gift-message .gift-icon {
+  display: inline-block;
+  margin: 0 2px;
+  animation: gift-bounce 0.6s ease;
+}
+@keyframes gift-bounce {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.4); }
+  60% { transform: scale(0.9); }
+}
+
+/* --- 进场特效消息 --- */
+.chat-enter-message {
+  color: #999;
+  font-size: 12px;
+  text-align: center;
+}
+.chat-enter-message.vip-enter {
+  color: #ffd700;
+  animation: vip-glow 1.5s ease;
+}
+@keyframes vip-glow {
+  0% { text-shadow: 0 0 0 transparent; }
+  50% { text-shadow: 0 0 8px #ffd700; }
+  100% { text-shadow: 0 0 0 transparent; }
+}
+
+/* --- 系统消息 --- */
+.chat-system-message {
+  text-align: center;
+  color: #ff9800;
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+/* --- 被禁言提示 --- */
+.muted-notice {
+  color: #ff4d4f;
+  font-size: 12px;
+  text-align: center;
+  padding: 4px 0;
+}
+
+/* --- 弹幕容器特效 --- */
+.chat-wrapper {
+  position: relative;
+}
+.chat-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* --- 满屏礼物特效（预留） --- */
+.fullscreen-gift-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: gift-overlay-in 0.5s ease, gift-overlay-out 0.5s ease 2.5s forwards;
+}
+.fullscreen-gift-overlay .gift-animation {
+  font-size: 120px;
+  animation: gift-fullscreen-bounce 1s ease infinite;
+}
+@keyframes gift-overlay-in {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes gift-overlay-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes gift-fullscreen-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}

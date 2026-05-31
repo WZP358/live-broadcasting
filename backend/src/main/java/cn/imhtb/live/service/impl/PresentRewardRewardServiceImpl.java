@@ -46,6 +46,7 @@ public class PresentRewardRewardServiceImpl extends ServiceImpl<PresentRewardMap
     private final ITokenService tokenService;
     private final IRoomChatService roomChatService;
     private final IPresentService presentService;
+    private final cn.imhtb.live.modules.live.service.IUserLevelService userLevelService;
 
 
     @Override
@@ -137,6 +138,9 @@ public class PresentRewardRewardServiceImpl extends ServiceImpl<PresentRewardMap
         int rt = billMapper.insert(toBill);
 
         if (rf == 1 && rs == 1 && rt == 1){
+            // 送礼加经验 (1开心果 = 1exp)
+            try { userLevelService.addExp(userId, totalPrice.longValue()); } catch (Exception ignored) {}
+            try { userLevelService.addExp(toId, totalPrice.longValue() / 2); } catch (Exception ignored) {}
             return null;
         }
         return "未知错误";
@@ -157,6 +161,7 @@ public class PresentRewardRewardServiceImpl extends ServiceImpl<PresentRewardMap
         String msgFormat = "%s赠送了%s * %d";
         String text = String.format(msgFormat, user.getNickname(), present.getName(), rewardReqVo.getNumber());
         roomChatService.sendGiftMsg(text, room.getId(), user.getId(), rewardReqVo.getPresentId());
+        try { userLevelService.addExp(userId, present.getPrice().longValue() * rewardReqVo.getNumber()); } catch (Exception ignored) {}
     }
 
 }

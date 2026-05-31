@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { useStore } from '@/stores'
-import { message } from 'ant-design-vue'
+import $modal from '@/utils/message'
 
 let redirectingToLogin = false
 
@@ -34,11 +34,11 @@ service.interceptors.response.use((response) => {
 
     if (code === 401) {
         handleUnauthorized(msg)
-    } else {
-        message.error(msg || '请求失败', 2.5)
+        return Promise.reject(new Error(msg || 'Unauthorized'))
     }
 
-    return Promise.reject(new Error(msg || 'Error'))
+    // 业务错误不在此处弹提示，由调用方决定如何展示
+    return Promise.reject(new Error(msg || '请求失败'))
 }, (error) => {
     const msg = error?.response?.data?.msg
 
@@ -47,8 +47,18 @@ service.interceptors.response.use((response) => {
         return Promise.reject(new Error(msg || 'Unauthorized'))
     }
 
-    message.error(msg || '网络异常，请稍后重试', 2.5)
-    return Promise.reject(new Error(msg || 'Network Error'))
+    const errMsg = msg || error.message || ''
+    if (errMsg === 'Network Error') {
+        $modal.msgError('后端服务连接异常')
+    } else if (errMsg.includes('timeout')) {
+        $modal.msgError('系统接口请求超时')
+    } else if (error?.response?.status >= 500) {
+        $modal.msgError('服务器繁忙，请稍后重试')
+    } else {
+        $modal.msgError('网络异常，请稍后重试')
+    }
+
+    return Promise.reject(new Error(msg || error.message || '网络异常'))
 })
 
 const handleUnauthorized = (msg) => {
@@ -60,7 +70,7 @@ const handleUnauthorized = (msg) => {
     }
 
     redirectingToLogin = true
-    message.warning(msg || '登录已过期，请重新登录', 2)
+    $modal.msgWarning(msg || '登录已过期，请重新登录')
 
     const currentHash = window.location.hash || '#/'
     const currentPath = currentHash.replace(/^#/, '') || '/'

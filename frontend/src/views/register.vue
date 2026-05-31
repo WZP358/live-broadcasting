@@ -39,7 +39,7 @@
 
 <script setup>
 import { reactive, ref } from "vue"
-import { message } from "ant-design-vue"
+import $modal from "@/utils/message"
 import { useRouter } from "vue-router"
 import userApi from "@/api/user"
 
@@ -78,7 +78,7 @@ const submitForm = () => {
     .then(() => {
       userApi.register(formState).then((res) => {
         if (res.code === 0) {
-          message.success("注册成功")
+          $modal.msgSuccess("注册成功")
           success.value = true
         }
       })

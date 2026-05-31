@@ -33,6 +33,14 @@
             <strong>{{ roomInfo.categoryId || "--" }}</strong>
           </div>
           <div class="info-row">
+            <span>标签</span>
+            <div class="tag-edit-row">
+              <a-tag v-for="t in tags" :key="t.id" closable @close="removeTag(t)">{{ t.tagName }}</a-tag>
+              <a-input v-if="tagInputVisible" ref="tagInputRef" v-model:value="tagInputValue" size="small" style="width:80px" @blur="addTag" @pressEnter="addTag" />
+              <a-tag v-else color="processing" @click="showTagInput" style="cursor:pointer">+ 新标签</a-tag>
+            </div>
+          </div>
+          <div class="info-row">
             <span>公告</span>
             <strong>{{ roomInfo.notice || "--" }}</strong>
           </div>
@@ -65,23 +73,68 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue"
+import { computed, nextTick, onMounted, ref } from "vue"
 import liveAPI from "@/api/live"
+import tagApi from "@/api/tag"
+import $modal from "@/utils/message"
 import BrowserLivePanel from "./BrowserLivePanel.vue"
 
 const roomInfo = ref({})
 const roomLiveInfo = ref({})
+const tags = ref([])
+const tagInputVisible = ref(false)
+const tagInputValue = ref('')
 
 const liveStatusText = computed(() => (Number(roomLiveInfo.value?.liveStatus || 0) === 1 ? "直播中" : "未开播"))
 
 const getRoomInfo = async () => {
   const res = await liveAPI.getRoomSettingsInfo()
   roomInfo.value = res.data || {}
+  if (roomInfo.value.id) loadTags()
 }
 
 const getLiveStatus = async () => {
   const res = await liveAPI.getLiveStatus()
   roomLiveInfo.value = res.data || {}
+}
+
+const loadTags = async () => {
+  try {
+    const res = await tagApi.listByRoom(roomInfo.value.id)
+    tags.value = res.data || []
+  } catch (e) { tags.value = [] }
+}
+
+const showTagInput = () => {
+  tagInputVisible.value = true
+  nextTick(() => {
+    const el = document.querySelector('.tag-edit-row input')
+    if (el) el.focus()
+  })
+}
+
+const addTag = async () => {
+  const name = tagInputValue.value.trim()
+  tagInputVisible.value = false
+  tagInputValue.value = ''
+  if (!name) return
+  if (tags.value.some(t => t.tagName === name)) { $modal.msgWarning('标签已存在'); return }
+  if (tags.value.length >= 5) { $modal.msgWarning('最多5个标签'); return }
+  const newTags = [...tags.value.map(t => t.tagName), name]
+  try {
+    await tagApi.save({ roomId: roomInfo.value.id, tags: newTags })
+    loadTags()
+    $modal.msgSuccess('标签已更新')
+  } catch (e) { $modal.msgError('保存失败') }
+}
+
+const removeTag = async (tag) => {
+  const newTags = tags.value.filter(t => t.id !== tag.id).map(t => t.tagName)
+  try {
+    await tagApi.save({ roomId: roomInfo.value.id, tags: newTags })
+    loadTags()
+    $modal.msgSuccess('标签已删除')
+  } catch (e) { $modal.msgError('删除失败') }
 }
 
 const refreshState = async () => {

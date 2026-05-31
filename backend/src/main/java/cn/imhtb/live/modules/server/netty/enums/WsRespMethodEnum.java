@@ -20,6 +20,9 @@ public enum WsRespMethodEnum {
     INTIMACY_RANK("intimacyRank", "亲密榜"),
     STATS("statsMessage", "状态"),
     GUARD_VIOLATION("guardViolation", "违规检测"),
+    NOTIFICATION("notification", "通知"),
+    MUTE_USER("muteUser", "禁言"),
+    KICK_USER("kickUser", "踢出"),
     ;
 
     private final String method;

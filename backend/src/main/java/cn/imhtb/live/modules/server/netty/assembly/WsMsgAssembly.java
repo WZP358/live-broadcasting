@@ -57,12 +57,42 @@ public class WsMsgAssembly {
     }
 
     /**
+     * 构建通知信息
+     */
+    public static WsMsgRespDTO<cn.imhtb.live.modules.server.netty.domain.resp.NotificationRespDTO> buildNotification(cn.imhtb.live.modules.server.netty.domain.resp.NotificationRespDTO data) {
+        WsMsgRespDTO<cn.imhtb.live.modules.server.netty.domain.resp.NotificationRespDTO> wsMsgRespDTO = new WsMsgRespDTO<>();
+        wsMsgRespDTO.setMethod(WsRespMethodEnum.NOTIFICATION.getMethod());
+        wsMsgRespDTO.setData(data);
+        return wsMsgRespDTO;
+    }
+
+    /**
      * 构建违规信息
      */
     public static WsMsgRespDTO<cn.imhtb.live.modules.server.netty.domain.resp.GuardViolationRespDTO> buildGuardViolation(cn.imhtb.live.modules.server.netty.domain.resp.GuardViolationRespDTO data){
         WsMsgRespDTO<cn.imhtb.live.modules.server.netty.domain.resp.GuardViolationRespDTO> wsMsgRespDTO = new WsMsgRespDTO<>();
         wsMsgRespDTO.setMethod(WsRespMethodEnum.GUARD_VIOLATION.getMethod());
         wsMsgRespDTO.setData(data);
+        return wsMsgRespDTO;
+    }
+
+    /**
+     * 构建禁言通知
+     */
+    public static WsMsgRespDTO<String> buildMuteNotify(String reason) {
+        WsMsgRespDTO<String> wsMsgRespDTO = new WsMsgRespDTO<>();
+        wsMsgRespDTO.setMethod(WsRespMethodEnum.MUTE_USER.getMethod());
+        wsMsgRespDTO.setData(reason);
+        return wsMsgRespDTO;
+    }
+
+    /**
+     * 构建踢出通知
+     */
+    public static WsMsgRespDTO<String> buildKickNotify(String reason) {
+        WsMsgRespDTO<String> wsMsgRespDTO = new WsMsgRespDTO<>();
+        wsMsgRespDTO.setMethod(WsRespMethodEnum.KICK_USER.getMethod());
+        wsMsgRespDTO.setData(reason);
         return wsMsgRespDTO;
     }
 

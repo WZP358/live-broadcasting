@@ -38,14 +38,16 @@ export const createAlignedLatencyStream = async (
         Math.max(1, targetLatencySeconds + 0.25),
       );
       const destinationNode = audioContext.createMediaStreamDestination();
+      const delayedAudioTracks = destinationNode.stream.getAudioTracks();
       delayNode.delayTime.value = targetLatencySeconds;
       sourceNode.connect(delayNode);
       delayNode.connect(destinationNode);
-      outputTracks.push(...destinationNode.stream.getAudioTracks());
+      outputTracks.push(...delayedAudioTracks);
       cleanupTasks.push(async () => {
         closeAudioNode(sourceNode);
         closeAudioNode(delayNode);
         closeAudioNode(destinationNode);
+        delayedAudioTracks.forEach((track) => track.stop?.());
         await audioContext.close().catch(() => {});
       });
     } else {

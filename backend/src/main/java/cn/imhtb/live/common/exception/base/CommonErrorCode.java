@@ -17,7 +17,7 @@ public enum CommonErrorCode implements IErrorCode {
     /**
      * 服务错误
      */
-    SERVICE_ERROR(1, "Service error"),
+    SERVICE_ERROR(1, "系统服务异常，请稍后重试"),
     /**
      * 未认证错误
      */

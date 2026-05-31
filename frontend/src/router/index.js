@@ -101,7 +101,7 @@ const routes = [
       {
         path: "/home",
         component: () => import("@/views/home.vue"),
-        meta: { title: "首页" },
+        meta: { title: "首页", requiresAuth: true },
       },
       {
         path: "/room/:id",
@@ -178,6 +178,30 @@ const routes = [
             path: "messages",
             component: () => import("@/views/center/messages/index.vue"),
             meta: { title: "消息中心", requiresAuth: true },
+          },
+          {
+            path: "messages/messages",
+            redirect: "/center/messages",
+          },
+          {
+            path: "messages/pm",
+            component: () => import("@/views/center/messages/pm.vue"),
+            meta: { title: "私信", requiresAuth: true },
+          },
+          {
+            path: "live/guardian",
+            component: () => import("@/views/center/live/guardian.vue"),
+            meta: { title: "守护管理", requiresAuth: true },
+          },
+          {
+            path: "live/dashboard",
+            component: () => import("@/views/center/live/dashboard.vue"),
+            meta: { title: "数据看板", requiresAuth: true },
+          },
+          {
+            path: "dollar/settlement",
+            component: () => import("@/views/center/dollar/settlement.vue"),
+            meta: { title: "收益结算", requiresAuth: true },
           },
         ],
       },

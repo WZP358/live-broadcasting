@@ -42,7 +42,7 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { AudioMutedOutlined, SoundOutlined } from "@ant-design/icons-vue"
-import { message } from "ant-design-vue"
+import $modal from "@/utils/message"
 import Hls from "hls.js"
 import flvjs from "flv.js"
 import { createBrowserLiveFallbackUrls, createPeerConnection } from "@/utils/browserLive"
@@ -363,7 +363,7 @@ const handleSignal = async (data) => {
     const reason = formatGuardReason(data)
     subtitleText.value = ""
     statusText.value = reason
-    message.error(reason)
+    $modal.msgError(reason)
     closeSignalOnly()
     closePeer()
     return
@@ -479,7 +479,7 @@ const playHls = () => {
     return
   }
   if (!Hls.isSupported()) {
-    message.error("当前浏览器不支持 HLS 播放")
+    $modal.msgError("当前浏览器不支持 HLS 播放")
     return
   }
   hlsPlayer.value = new Hls({
@@ -501,7 +501,7 @@ const playHls = () => {
 
 const playFlv = () => {
   if (!flvjs.isSupported()) {
-    message.error("当前浏览器不支持 FLV 播放")
+    $modal.msgError("当前浏览器不支持 FLV 播放")
     return
   }
   statusText.value = "正在播放 FLV 直播流"

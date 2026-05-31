@@ -1,6 +1,6 @@
 <script setup>
 import { computed, reactive, ref } from "vue"
-import { message } from "ant-design-vue"
+import $modal from "@/utils/message"
 import { useRouter, useRoute } from "vue-router"
 import { useStore } from "@/stores"
 
@@ -26,12 +26,13 @@ const submitForm = async () => {
     await formRef.value.validateFields()
     const result = await store.user().login(formState)
     if (!result) {
+      $modal.msgError("账号或密码错误")
       return
     }
 
     const userStore = store.user()
     const target = userStore.isAdmin ? redirect.value || "/system/dashboard" : redirect.value || "/"
-    message.success(userStore.isAdmin ? "管理员登录成功" : "登录成功")
+    $modal.msgSuccess(userStore.isAdmin ? "管理员登录成功" : "登录成功")
     router.push(target)
   } catch (error) {
     // validation error handled by form

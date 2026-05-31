@@ -1,0 +1,9 @@
+{
+  "name": "live-simulator",
+  "private": true,
+  "description": "模拟开播脚本 — 30 个用户同时开摄像头直播",
+  "dependencies": {
+    "jsonwebtoken": "^9.0.0",
+    "ws": "^8.16.0"
+  }
+}

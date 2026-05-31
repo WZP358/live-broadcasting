@@ -57,6 +57,8 @@ public class RoomChatServiceImpl implements IRoomChatService {
 
     private final JdbcTemplate jdbcTemplate;
 
+    private final cn.imhtb.live.modules.live.service.IUserLevelService userLevelService;
+
     /**
      * 所有的会话信息维护
      */
@@ -69,6 +71,10 @@ public class RoomChatServiceImpl implements IRoomChatService {
      * 用户会话维护
      */
     private static final ConcurrentHashMap<Integer, CopyOnWriteArraySet<Channel>> ONLINE_USER = new ConcurrentHashMap<>();
+    /**
+     * 禁言记录: key = "roomId:userId", value = 禁言到期时间戳 (System.currentTimeMillis() + duration)
+     */
+    private static final ConcurrentHashMap<String, Long> MUTED_USERS = new ConcurrentHashMap<>();
 
 
     @Override
@@ -127,22 +133,22 @@ public class RoomChatServiceImpl implements IRoomChatService {
 //        log.info("chanel = {}，关闭", channel.id());
 
         channel.close();
-        // 获取当前通道的附加信息
         WsChannelExtraInfoDTO channelExtraInfoDto = ONLINE_ALL.get(channel);
         if (Objects.nonNull(channelExtraInfoDto)) {
             Set<Integer> roomIds = channelExtraInfoDto.getRoomIds();
-            // 移除房间会话
             for (Integer roomId : roomIds) {
                 CopyOnWriteArraySet<Channel> channels = ONLINE_ROOM.get(roomId);
-                channels.remove(channel);
+                if (channels != null) {
+                    channels.remove(channel);
+                }
             }
-            // 移除用户会话
             Integer userId = channelExtraInfoDto.getUserId();
-            if (Objects.nonNull(userId)){
+            if (Objects.nonNull(userId)) {
                 CopyOnWriteArraySet<Channel> channels = ONLINE_USER.get(userId);
-                channels.remove(channel);
+                if (channels != null) {
+                    channels.remove(channel);
+                }
             }
-            // 移除会话
             ONLINE_ALL.remove(channel);
         }
     }
@@ -166,6 +172,20 @@ public class RoomChatServiceImpl implements IRoomChatService {
         User userInfo = userService.getUserInfo();
         Integer userId = userInfo.getId();
         Integer roomId = chatMsgReq.getRoomId();
+
+        // 检查是否被禁言
+        String muteKey = roomId + ":" + userId;
+        Long muteExpiry = MUTED_USERS.get(muteKey);
+        if (muteExpiry != null) {
+            if (System.currentTimeMillis() < muteExpiry) {
+                long remaining = (muteExpiry - System.currentTimeMillis()) / 1000;
+                sendToUser(userId, WsMsgAssembly.buildMuteNotify("你已被禁言，剩余 " + remaining + " 秒"));
+                return;
+            } else {
+                MUTED_USERS.remove(muteKey);
+            }
+        }
+
         CopyOnWriteArraySet<Channel> channels = ONLINE_ROOM.get(roomId);
         if (Objects.nonNull(channels)){
             for (Channel channel : channels) {
@@ -188,6 +208,8 @@ public class RoomChatServiceImpl implements IRoomChatService {
         }
         roomIntimacyRankService.addChatIntimacy(roomId, userId);
         broadcastIntimacyRank(roomId);
+        // 发言加经验
+        try { userLevelService.addExp(userId, 5); } catch (Exception ignored) {}
     }
 
     @Override
@@ -228,7 +250,9 @@ public class RoomChatServiceImpl implements IRoomChatService {
     }
 
     private void sendMessage(Channel channel, WsMsgRespDTO<?> wsMsgRespDTO) {
-        channel.writeAndFlush(new TextWebSocketFrame(JSON.toJSONString(wsMsgRespDTO)));
+        if (channel != null && channel.isActive() && channel.isWritable()) {
+            channel.writeAndFlush(new TextWebSocketFrame(JSON.toJSONString(wsMsgRespDTO)));
+        }
     }
 
     @Override
@@ -237,6 +261,69 @@ public class RoomChatServiceImpl implements IRoomChatService {
         if (Objects.nonNull(channels)) {
             for (Channel channel : channels) {
                 sendMessage(channel, WsMsgAssembly.buildGuardViolation(data));
+            }
+        }
+    }
+
+    @Override
+    public void sendToUser(Integer userId, cn.imhtb.live.modules.server.netty.domain.resp.WsMsgRespDTO<?> message) {
+        CopyOnWriteArraySet<Channel> channels = ONLINE_USER.get(userId);
+        if (Objects.nonNull(channels)) {
+            for (Channel channel : channels) {
+                sendMessage(channel, message);
+            }
+        }
+    }
+
+    @Override
+    public void muteUser(Integer roomId, Integer targetUserId, Integer durationSeconds) {
+        String muteKey = roomId + ":" + targetUserId;
+        long expiry = System.currentTimeMillis() + (long) durationSeconds * 1000;
+        MUTED_USERS.put(muteKey, expiry);
+        sendToUser(targetUserId, WsMsgAssembly.buildMuteNotify("你已被房管禁言 " + durationSeconds + " 秒"));
+
+        // 广播禁言消息到房间
+        CopyOnWriteArraySet<Channel> channels = ONLINE_ROOM.get(roomId);
+        if (channels != null) {
+            for (Channel ch : channels) {
+                sendMessage(ch, WsMsgAssembly.buildChat(
+                        new cn.imhtb.live.modules.server.netty.domain.resp.ChatMsgRespDTO() {{
+                            setNickname("系统消息");
+                            setText("用户 " + targetUserId + " 已被禁言 " + durationSeconds + " 秒");
+                        }}
+                ));
+            }
+        }
+    }
+
+    @Override
+    public void kickUser(Integer roomId, Integer targetUserId) {
+        CopyOnWriteArraySet<Channel> userChannels = ONLINE_USER.get(targetUserId);
+        if (userChannels != null) {
+            for (Channel ch : userChannels) {
+                // 检查这个 channel 是否在目标房间中
+                WsChannelExtraInfoDTO extra = ONLINE_ALL.get(ch);
+                if (extra != null && extra.getRoomIds().contains(roomId)) {
+                    sendToUser(targetUserId, WsMsgAssembly.buildKickNotify("你已被房管踢出直播间"));
+                    // 从房间中移除但不关闭连接
+                    CopyOnWriteArraySet<Channel> roomChannels = ONLINE_ROOM.get(roomId);
+                    if (roomChannels != null) {
+                        roomChannels.remove(ch);
+                    }
+                    extra.getRoomIds().remove(roomId);
+                }
+            }
+        }
+        // 广播踢出消息
+        CopyOnWriteArraySet<Channel> channels = ONLINE_ROOM.get(roomId);
+        if (channels != null) {
+            for (Channel ch : channels) {
+                sendMessage(ch, WsMsgAssembly.buildChat(
+                        new cn.imhtb.live.modules.server.netty.domain.resp.ChatMsgRespDTO() {{
+                            setNickname("系统消息");
+                            setText("用户 " + targetUserId + " 已被踢出直播间");
+                        }}
+                ));
             }
         }
     }

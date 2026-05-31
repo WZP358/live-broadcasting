@@ -74,4 +74,29 @@ public interface IRoomChatService {
      */
     void sendGuardViolation(Integer roomId, cn.imhtb.live.modules.server.netty.domain.resp.GuardViolationRespDTO data);
 
+    /**
+     * 发送消息给指定用户
+     *
+     * @param userId  用户id
+     * @param message 消息
+     */
+    void sendToUser(Integer userId, cn.imhtb.live.modules.server.netty.domain.resp.WsMsgRespDTO<?> message);
+
+    /**
+     * 禁言用户
+     *
+     * @param roomId          房间id
+     * @param targetUserId    被禁言用户id
+     * @param durationSeconds 禁言时长(秒)
+     */
+    void muteUser(Integer roomId, Integer targetUserId, Integer durationSeconds);
+
+    /**
+     * 踢出用户
+     *
+     * @param roomId       房间id
+     * @param targetUserId 被踢出用户id
+     */
+    void kickUser(Integer roomId, Integer targetUserId);
+
 }

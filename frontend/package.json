@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --mode dev",
     "prod": "vite --mode prod",
+    "test": "node --test tests/unit/mediaLatency.test.mjs tests/unit/liveRoomPresenter.test.mjs tests/unit/stores.test.mjs tests/bdd/mediaLatency.spec.mjs tests/bdd/userFlows.spec.mjs",
     "build": "vite build",
     "preview": "vite preview"
   },

@@ -1,11 +1,30 @@
 <template>
-  <div class="app-container">
-    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="small" :inline="true" label-width="88px">
+  <div class="app-container pulse-crud-page">
+    <el-form
+      v-show="showSearch"
+      ref="queryForm"
+      :model="queryParams"
+      size="small"
+      :inline="true"
+      label-width="88px"
+    >
       <el-form-item v-for="field in searchFields" :key="field.prop" :label="field.label" :prop="field.prop">
-        <el-select v-if="field.type === 'select'" v-model="queryParams[field.prop]" clearable :placeholder="'请选择' + field.label">
+        <el-select
+          v-if="field.type === 'select'"
+          v-model="queryParams[field.prop]"
+          clearable
+          filterable
+          :placeholder="'请选择' + field.label"
+        >
           <el-option v-for="option in field.options" :key="option.value" :label="option.label" :value="option.value" />
         </el-select>
-        <el-input v-else v-model="queryParams[field.prop]" clearable :placeholder="'请输入' + field.label" @keyup.enter.native="handleQuery" />
+        <el-input
+          v-else
+          v-model="queryParams[field.prop]"
+          clearable
+          :placeholder="'请输入' + field.label"
+          @keyup.enter.native="handleQuery"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -26,21 +45,36 @@
       <el-col :span="1.5">
         <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" />
     </el-row>
 
     <el-table v-loading="loading" :data="rows" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column v-for="column in columns" :key="column.prop" :label="column.label" :prop="column.prop" :width="column.width" :show-overflow-tooltip="true">
+      <el-table-column
+        v-for="column in columns"
+        :key="column.prop"
+        :label="column.label"
+        :prop="column.prop"
+        :width="column.width"
+        :show-overflow-tooltip="column.type !== 'image'"
+        align="center"
+      >
         <template slot-scope="scope">
-          <el-tag v-if="column.type === 'tag'" :type="tagType(scope.row[column.prop])">{{ formatColumn(column, scope.row[column.prop]) }}</el-tag>
-          <el-image v-else-if="column.type === 'image'" :src="scope.row[column.prop]" fit="cover" class="table-image">
-            <div slot="error" class="image-slot"><i class="el-icon-picture-outline"></i></div>
-          </el-image>
+          <dict-tag
+            v-if="column.type === 'tag' || column.type === 'dict'"
+            :options="toDictOptions(column.options)"
+            :value="scope.row[column.prop]"
+          />
+          <image-preview
+            v-else-if="column.type === 'image' && scope.row[column.prop]"
+            :src="scope.row[column.prop]"
+            :width="52"
+            :height="52"
+          />
           <span v-else>{{ formatColumn(column, scope.row[column.prop]) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="160">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
@@ -48,16 +82,40 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNo" :limit.sync="queryParams.pageSize" @pagination="getList" />
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="queryParams.pageNo"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
+    />
 
-    <el-dialog :title="title" :visible.sync="open" width="620px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="96px">
+    <el-dialog :title="title" :visible.sync="open" width="640px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item v-for="field in formFields" :key="field.prop" :label="field.label" :prop="field.prop">
-          <el-select v-if="field.type === 'select'" v-model="form[field.prop]" clearable :placeholder="'请选择' + field.label">
+          <el-select
+            v-if="field.type === 'select'"
+            v-model="form[field.prop]"
+            clearable
+            filterable
+            :placeholder="'请选择' + field.label"
+          >
             <el-option v-for="option in field.options" :key="option.value" :label="option.label" :value="option.value" />
           </el-select>
           <el-input-number v-else-if="field.type === 'number'" v-model="form[field.prop]" controls-position="right" :min="0" />
-          <el-input v-else-if="field.type === 'textarea'" v-model="form[field.prop]" type="textarea" :rows="3" :placeholder="'请输入' + field.label" />
+          <image-upload
+            v-else-if="field.type === 'imageUpload'"
+            v-model="form[field.prop]"
+            :limit="field.limit || 1"
+            :file-size="field.fileSize || 5"
+          />
+          <el-input
+            v-else-if="field.type === 'textarea'"
+            v-model="form[field.prop]"
+            type="textarea"
+            :rows="3"
+            :placeholder="'请输入' + field.label"
+          />
           <el-input v-else v-model="form[field.prop]" :placeholder="'请输入' + field.label" />
         </el-form-item>
       </el-form>
@@ -145,7 +203,7 @@ export default {
     handleAdd() {
       this.reset()
       this.open = true
-      this.title = `添加${this.moduleName}`
+      this.title = `新增${this.moduleName}`
     },
     handleUpdate(row) {
       this.reset()
@@ -166,7 +224,7 @@ export default {
     },
     handleDelete(row) {
       const ids = row.id ? [row.id] : this.ids
-      this.$modal.confirm(`是否确认删除${this.moduleName}编号为"${ids.join(',')}"的数据项？`).then(() => {
+      this.$modal.confirm(`是否确认删除${this.moduleName}编号为 "${ids.join(',')}" 的数据项？`).then(() => {
         return delResource(this.baseUrl, ids)
       }).then(() => {
         this.getList()
@@ -174,40 +232,40 @@ export default {
       }).catch(() => {})
     },
     handleExport() {
-      this.$modal.msgWarning('导出接口尚未接入，已保留若依生成器风格按钮。')
+      this.$modal.msgWarning('当前模块尚未接入导出接口')
     },
     cancel() {
       this.open = false
       this.reset()
     },
     formatColumn(column, value) {
-      if (!column.options) return value === undefined || value === null || value === '' ? '-' : value
+      if (value === undefined || value === null || value === '') return '-'
+      if (!column.options) return value
       const option = column.options.find(item => item.value === value)
       return option ? option.label : value
     },
-    tagType(value) {
+    toDictOptions(options = []) {
+      return options.map(item => ({
+        label: item.label,
+        value: item.value,
+        raw: {
+          listClass: item.listClass || this.resolveListClass(item.value),
+          cssClass: item.cssClass || ''
+        }
+      }))
+    },
+    resolveListClass(value) {
       if (value === 0 || value === '0') return 'success'
-      if (value === 1 || value === '1') return 'info'
+      if (value === 1 || value === '1') return 'primary'
       if (value === -1 || value === '-1') return 'danger'
-      return ''
+      return 'default'
     }
   }
 }
 </script>
 
 <style scoped>
-.table-image {
-  width: 48px;
-  height: 48px;
-  border-radius: 4px;
-  background: #f5f7fa;
-}
-.image-slot {
-  display: flex;
-  width: 48px;
-  height: 48px;
-  align-items: center;
-  justify-content: center;
-  color: #c0c4cc;
+.pulse-crud-page ::v-deep .el-dialog__body {
+  padding-bottom: 8px;
 }
 </style>

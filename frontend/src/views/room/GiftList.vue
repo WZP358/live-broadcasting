@@ -10,7 +10,7 @@
               <span name>{{ item.name }}</span>
               <span price>{{ item.price }}开心果</span>
             </div>
-            <span describe>{{ item.description || "投喂即可加入主播的粉丝团" }}</span>
+            <span describe>{{ item.description || "送礼会增加本房间亲密值" }}</span>
           </a-flex>
         </a-flex>
         <a-divider />
@@ -31,7 +31,7 @@
   <div class="wallet-wrapper">
     <div class="footer-item" vertical align="center" @click="handleWalletClick">
       <img src="../../../src/assets/img/开心果.png" alt="" />
-      <span price style="margin-top: 10px">{{ isLogin ? `余额:${wallet.balance || "0"}个` : "未登录" }}</span>
+      <span price style="margin-top: 10px">{{ isLogin ? `余额:${wallet.balance || "0"}个` : "登录后送礼" }}</span>
     </div>
   </div>
 </template>
@@ -42,6 +42,7 @@ import walletApi from "@/api/wallet"
 import { useStore } from "@/stores"
 import { onMounted, ref, defineProps, computed } from "vue"
 import { useRouter } from "vue-router"
+import $modal from "@/utils/message"
 
 onMounted(async () => {
   getGiftList()
@@ -64,22 +65,31 @@ const props = defineProps({
   },
 })
 
+const emits = defineEmits(["requireLogin"])
+
 const handleWalletClick = () => {
   if (isLogin.value) {
     router.push("/center/dollar/wallet")
+    return
   }
+  emits("requireLogin")
 }
 
 const handleItemClick = async (num, item) => {
-  // TODO: 调用购买接口
-  // message.success(`赠送${num}个${item.name}成功`)
-  await giftApi.rewardGift({
-    presentId: item.id,
-    number: num,
-    roomId: props.roomId,
-  })
-  if (isLogin.value) {
+  if (!isLogin.value) {
+    emits("requireLogin")
+    return
+  }
+  try {
+    await giftApi.rewardGift({
+      presentId: item.id,
+      number: num,
+      roomId: props.roomId,
+    })
+    $modal.msgSuccess(`已送出 ${num} 个${item.name}`)
     await getWallet()
+  } catch (error) {
+    $modal.msgError("送礼失败，请稍后重试")
   }
 }
 
@@ -87,17 +97,25 @@ const handleItemClick = async (num, item) => {
  * 获取礼物列表
  */
 const getGiftList = async () => {
-  const res = await giftApi.getGiftList()
-  const { data } = res
-  giftList.value = data
+  try {
+    const res = await giftApi.getGiftList()
+    const { data } = res
+    giftList.value = data || []
+  } catch (error) {
+    giftList.value = []
+  }
 }
 
 /**
  * 获取用户钱包
  */
 const getWallet = async () => {
-  const res = await walletApi.getBalance()
-  wallet.value = res.data
+  try {
+    const res = await walletApi.getBalance()
+    wallet.value = res.data || {}
+  } catch (error) {
+    wallet.value = {}
+  }
 }
 </script>
 

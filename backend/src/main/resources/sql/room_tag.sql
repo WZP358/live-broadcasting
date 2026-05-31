@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS `room_tag` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `room_id` INT NOT NULL,
+  `tag_name` VARCHAR(32) NOT NULL COMMENT '标签名',
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX `idx_room` (`room_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='房间标签表';

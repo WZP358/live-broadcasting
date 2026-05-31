@@ -85,7 +85,11 @@ const items = ref([
     icon: () => h(PlaySquareOutlined),
     label: "直播中心",
     title: "直播中心",
-    children: [{ key: "live-settings", label: "开播设置", title: "开播设置" }],
+    children: [
+      { key: "live-settings", label: "开播设置", title: "开播设置" },
+      { key: "dashboard", label: "数据看板", title: "数据看板" },
+      { key: "guardian", label: "守护管理", title: "守护管理" },
+    ],
   },
   {
     key: "dollar",
@@ -95,6 +99,7 @@ const items = ref([
     children: [
       { key: "wallet", label: "我的钱包", title: "我的钱包" },
       { key: "recharge", label: "充值", title: "充值" },
+      { key: "settlement", label: "收益结算", title: "收益结算" },
       { key: "bill", label: "交易记录", title: "交易记录" },
     ],
   },
@@ -114,6 +119,9 @@ const items = ref([
     icon: () => h(MessageOutlined),
     label: "消息中心",
     title: "消息中心",
+    children: [
+      { key: "pm", label: "私信", title: "私信" },
+    ],
   },
 ])
 </script>

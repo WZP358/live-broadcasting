@@ -39,7 +39,7 @@
 import commonApi from "@/api/common"
 import userApi from "@/api/user"
 import { useStore } from "@/stores"
-import { message } from "ant-design-vue"
+import $modal from "@/utils/message"
 import { nextTick, ref, reactive } from "vue"
 
 let timer = null
@@ -84,7 +84,7 @@ const onSend = async () => {
   try {
     let res = await commonApi.sendVerifyCode({ verifyType: "email", target: formState.target })
     if (res.code === 0) {
-      message.success(res.msg || "发送成功")
+      $modal.msgSuccess(res.msg || "发送成功")
     }
   } catch (e) {
   } finally {
@@ -114,7 +114,7 @@ const onFinish = async () => {
     verifyCode: formState.verifyCode,
   })
   if (res.code === 0) {
-    message.success("绑定成功")
+    $modal.msgSuccess("绑定成功")
     store.user().updateSecurityInfo({ email: formState.target })
     visible.value = false
   }

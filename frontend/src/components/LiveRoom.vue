@@ -9,10 +9,14 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  enableHeatPolling: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const roomId = computed(() => Number(props.room?.id || 0))
-const popularity = ref(0)
+const popularity = ref(Number(props.room?.popularity || props.room?.heat || 0))
 const popularityTimer = ref(null)
 const fallbackCover = "https://dummyimage.com/640x360/e2e8f0/64748b&text=LIVE"
 const fallbackAvatar = "https://dummyimage.com/96x96/e2e8f0/64748b&text=A"
@@ -35,13 +39,17 @@ const formatPopularity = (value) => {
   return `${count}`
 }
 
-const roomSubtitle = computed(() => props.room?.introduce || props.room?.notice || "低延迟观看、实时互动、礼物和聊天能力已接入")
+const roomSubtitle = computed(() => props.room?.introduce || props.room?.notice || "进房可看弹幕，登录后可关注、发言和送礼")
 const anchorName = computed(() => props.room?.userInfo?.name || props.room?.userInfo?.nickName || "主播")
 const categoryName = computed(() => props.room?.categoryInfo?.name || "推荐")
 const qualityText = computed(() => (props.room?.browserLive ? "低延迟" : "稳定播放"))
 const isBrowserLive = computed(() => Boolean(props.room?.browserLive))
 
 const loadPopularity = async () => {
+  if (!props.enableHeatPolling || document.visibilityState === "hidden") {
+    popularity.value = Number(props.room?.popularity || props.room?.heat || 0)
+    return
+  }
   if (!roomId.value) {
     popularity.value = 0
     return
@@ -64,6 +72,9 @@ const clearPopularityTimer = () => {
 const startPopularityPolling = () => {
   clearPopularityTimer()
   loadPopularity()
+  if (!props.enableHeatPolling) {
+    return
+  }
   popularityTimer.value = setInterval(() => {
     loadPopularity()
   }, 12000)
@@ -76,6 +87,15 @@ onMounted(() => {
 watch(roomId, () => {
   startPopularityPolling()
 })
+
+watch(
+  () => props.room?.popularity,
+  (value) => {
+    if (!props.enableHeatPolling) {
+      popularity.value = Number(value || props.room?.heat || 0)
+    }
+  },
+)
 
 onBeforeUnmount(() => {
   clearPopularityTimer()
@@ -105,12 +125,16 @@ onBeforeUnmount(() => {
 
       <div class="room-subtitle">{{ roomSubtitle }}</div>
 
+      <div class="room-tags" v-if="room.tags && room.tags.length">
+        <a-tag v-for="t in room.tags" :key="t" size="small" color="blue">{{ t }}</a-tag>
+      </div>
+
       <div class="bottom">
         <div class="anchor-meta">
           <img class="avatar" :src="room.userInfo?.avatar || fallbackAvatar" />
           <div class="anchor-copy">
             <span class="nick-name">{{ anchorName }}</span>
-            <span class="anchor-tag">{{ isBrowserLive ? "网页直播优先" : "拉流回退可用" }}</span>
+          <span class="anchor-tag">{{ isBrowserLive ? "低延迟直播" : "标准直播" }}</span>
           </div>
         </div>
         <span class="fire">
@@ -128,17 +152,17 @@ onBeforeUnmount(() => {
 .live-room-card {
   overflow: hidden;
   border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 18px;
+  border-radius: 8px;
   background: #fff;
   cursor: pointer;
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
-  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
 }
 
 .live-room-card:hover {
   transform: translateY(-4px);
   border-color: rgba(0, 174, 236, 0.26);
-  box-shadow: 0 22px 42px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.1);
 }
 
 .card-cover-wrap {

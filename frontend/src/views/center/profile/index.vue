@@ -78,7 +78,7 @@ import SecurityItem from "./SecurityItem.vue"
 import Authentication from "./Authentication.vue"
 import { LoadingOutlined } from "@ant-design/icons-vue"
 import { useStore } from "@/stores"
-import { message } from "ant-design-vue"
+import $modal from "@/utils/message"
 import { computed, onMounted, ref } from "vue"
 import { storeToRefs } from "pinia"
 
@@ -112,18 +112,18 @@ const handleChange = (info) => {
   }
   if (info.file.status === "error") {
     loading.value = false
-    message.error("头像上传失败")
+    $modal.msgError("头像上传失败")
   }
 }
 
 const beforeUpload = (file) => {
   const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png"
   if (!isJpgOrPng) {
-    message.error("只能上传 JPG 或 PNG 图片")
+    $modal.msgError("只能上传 JPG 或 PNG 图片")
   }
   const isLt2M = file.size / 1024 / 1024 < 2
   if (!isLt2M) {
-    message.error("上传文件大小不能超过 2MB")
+    $modal.msgError("上传文件大小不能超过 2MB")
   }
   return isJpgOrPng && isLt2M
 }

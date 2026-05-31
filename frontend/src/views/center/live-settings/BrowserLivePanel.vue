@@ -80,7 +80,7 @@
 
 <script setup>
 import { computed, onBeforeUnmount, reactive, ref } from "vue"
-import { message } from "ant-design-vue"
+import $modal from "@/utils/message"
 import liveAPI from "@/api/live"
 import { createBrowserLiveFallbackUrls, createPeerConnection } from "@/utils/browserLive"
 import { createLiveCaptionEngine, isLiveCaptionSupported } from "@/utils/liveCaption"
@@ -261,7 +261,7 @@ const startCameraLive = async () => {
 
 const startBrowserLive = async (streamFactory) => {
   if (!props.roomId) {
-    message.error("房间信息未初始化完成，暂时无法开播")
+    $modal.msgError("房间信息未初始化完成，暂时无法开播")
     return
   }
 
@@ -287,7 +287,7 @@ const startBrowserLive = async (streamFactory) => {
     stopCaption()
     const errorMessage = getMediaErrorMessage(error)
     setMessage(errorMessage)
-    message.error(errorMessage)
+    $modal.msgError(errorMessage)
   } finally {
     state.starting = false
   }
@@ -329,7 +329,7 @@ const buildPublishingStream = async (stream) => {
     state.denoiseModelName = ""
     state.denoiseUsingEnhanced = false
     state.denoiseRuntimeInfo = ""
-    message.warning(state.denoiseDetail)
+    $modal.msgWarning(state.denoiseDetail)
     await denoiseEngine.stop()
     denoiseEngine = null
     return alignPublishingLatency(stream)
@@ -451,7 +451,7 @@ const enableDenoiseDuringLive = async () => {
     state.denoiseModelName = ""
     state.denoiseUsingEnhanced = false
     state.denoiseRuntimeInfo = ""
-    message.warning(state.denoiseDetail)
+    $modal.msgWarning(state.denoiseDetail)
     if (denoiseEngine) {
       await denoiseEngine.stop()
       denoiseEngine = null
@@ -616,7 +616,7 @@ const handleSignalMessage = async (data) => {
   }
   if (data.type === "error") {
     setMessage(data.message || "直播信令服务返回异常")
-    message.error(state.message)
+    $modal.msgError(state.message)
   }
 }
 
@@ -660,15 +660,15 @@ const createOfferForViewer = async (viewerSessionId) => {
 
 const toggleCaption = async () => {
   if (!state.captionSupported) {
-    message.warning("当前浏览器不支持实时字幕，请使用最新版 Chrome 或 Edge")
+    $modal.msgWarning("当前浏览器不支持实时字幕，请使用最新版 Chrome 或 Edge")
     return
   }
   if (!state.liveActive) {
-    message.warning("请先开播，再开启实时字幕")
+    $modal.msgWarning("请先开播，再开启实时字幕")
     return
   }
   if (!captureStream?.getAudioTracks?.().some((track) => track.readyState === "live")) {
-    message.warning("未检测到可用麦克风音轨，请重新开启摄像头直播")
+    $modal.msgWarning("未检测到可用麦克风音轨，请重新开启摄像头直播")
     return
   }
   if (state.captionActive) {
@@ -702,13 +702,13 @@ const toggleCaption = async () => {
             : error === "network"
               ? "字幕识别服务连接失败，请稍后重试"
               : "字幕识别已中断，请检查麦克风权限后重试"
-      message.warning(hint)
+      $modal.msgWarning(hint)
       setMessage(hint)
     },
   })
 
   if (!captionEngine) {
-    message.warning("当前浏览器不支持实时字幕，请使用最新版 Chrome 或 Edge")
+    $modal.msgWarning("当前浏览器不支持实时字幕，请使用最新版 Chrome 或 Edge")
     return
   }
 
@@ -718,7 +718,7 @@ const toggleCaption = async () => {
     setMessage("实时字幕识别已开启")
   } catch (error) {
     const hint = "实时字幕启动失败，请检查麦克风权限"
-    message.error(hint)
+    $modal.msgError(hint)
     setMessage(hint)
   }
 }
@@ -836,7 +836,7 @@ const runGuardCheck = async () => {
 }
 
 const forceStopByGuard = async (reason) => {
-  message.error(reason)
+  $modal.msgError(reason)
   setMessage(reason)
   await stopBrowserLive({ skipApi: true, guardReason: reason })
 }

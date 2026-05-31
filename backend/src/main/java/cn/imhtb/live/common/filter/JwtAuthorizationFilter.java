@@ -5,6 +5,8 @@ import cn.imhtb.live.common.utils.JwtUtil;
 import cn.imhtb.live.modules.user.service.impl.UserDetailsServiceImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -61,7 +63,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
                 return userDetails.isEnabled() ? usernamePasswordAuthenticationToken : null;
             }
-        } catch (ExpiredJwtException | MalformedJwtException | IllegalArgumentException exception) {
+        } catch (ExpiredJwtException | MalformedJwtException | SignatureException | UnsupportedJwtException | IllegalArgumentException exception) {
             logger.warn("Request to parse JWT with invalid signature . Detail : " + exception.getMessage());
         }
         return null;
