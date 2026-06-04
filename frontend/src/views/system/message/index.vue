@@ -25,7 +25,7 @@
           <a-button @click="getData">刷新</a-button>
         </template>
         <template #right>
-          <span>消息表缺失时已做后端降级处理，不会再把整个后台页面带崩</span>
+          <span>消息为空时页面会保持可用，便于继续筛选和刷新</span>
         </template>
       </AdminToolbar>
 

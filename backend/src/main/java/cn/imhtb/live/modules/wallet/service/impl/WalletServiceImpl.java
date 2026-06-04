@@ -25,6 +25,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -325,5 +328,19 @@ public class WalletServiceImpl extends ServiceImpl<WalletMapper, Wallet> impleme
         if (count == null || count == 0) {
             jdbcTemplate.execute(ddl);
         }
+    }
+
+    @Override
+    public List<Map<String, Object>> getRechargeTiers() {
+        List<Map<String, Object>> tiers = new ArrayList<>();
+        int[] amounts = {6, 10, 50, 100, 128, 256, 328, 648};
+        for (int i = 0; i < amounts.length; i++) {
+            Map<String, Object> tier = new LinkedHashMap<>();
+            tier.put("id", i + 1);
+            tier.put("value", amounts[i]);
+            tier.put("fee", String.format("%.2f", (double) amounts[i]));
+            tiers.add(tier);
+        }
+        return tiers;
     }
 }

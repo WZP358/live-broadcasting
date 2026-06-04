@@ -1,5 +1,5 @@
 <template>
-  <AdminPageLayout title="控制台" description="统一查看直播平台的核心运行指标、常用后台入口和当前治理重点，整体布局向若依后台的工作台体验收口。">
+  <AdminPageLayout title="控制台" description="统一查看直播平台的核心运行指标、常用后台入口和当前运营重点。">
     <template #header-extra>
       <a-space>
         <a-button @click="loadSummary">刷新数据</a-button>
@@ -33,7 +33,7 @@
     </div>
 
     <div class="dashboard-grid dashboard-grid--secondary">
-      <AdminCard title="本轮重点" subtitle="先把当前项目最影响可用性的部分收进标准后台结构中。">
+      <AdminCard title="本轮重点" subtitle="聚焦当前最影响运营效率和用户体验的事项。">
         <div class="focus-list">
           <article v-for="item in focusItems" :key="item.title" class="focus-item">
             <div class="focus-item__meta">
@@ -45,11 +45,11 @@
         </div>
       </AdminCard>
 
-      <AdminCard title="治理建议" subtitle="结合当前项目状态，给出继续完善后台和前台的落地方向。">
+      <AdminCard title="运营建议" subtitle="结合当前平台状态，给出继续完善直播运营的方向。">
         <ul class="dashboard-notes">
-          <li>统一登录入口已经合并，后续只保留按角色分流，不再维护双登录页。</li>
-          <li>后台列表页优先复用同一套查询区、工具栏、表格容器和分页组件。</li>
-          <li>直播链路相关页面尽量只做外层重构，不破坏推流、播放、降噪和字幕能力。</li>
+          <li>保持登录入口清晰，根据账号角色进入对应的观看、开播或管理页面。</li>
+          <li>高频管理动作优先放在列表页和工作台，减少运营人员来回跳转。</li>
+          <li>开播、观看、降噪和字幕能力要保持稳定，并持续优化主播侧提示。</li>
         </ul>
       </AdminCard>
     </div>
@@ -79,20 +79,20 @@ const metricCards = computed(() =>
 
 const focusItems = [
   {
-    title: "后台列表标准化",
-    description: "统一查询卡、工具栏、结果提示和分页结构，提升维护效率。",
+    title: "管理列表优化",
+    description: "统一筛选、批量操作、结果提示和分页体验，提升运营效率。",
     status: "进行中",
     color: "processing",
   },
   {
-    title: "用户端视觉重做",
-    description: "继续把个人中心内页和直播相关页面改成统一品牌样式。",
+    title: "用户端体验优化",
+    description: "继续统一个人中心、开播和直播间相关页面的品牌样式。",
     status: "持续优化",
     color: "gold",
   },
   {
     title: "直播能力增强",
-    description: "在现有开播链路上兼容字幕、实时降噪等增强能力。",
+    description: "持续完善实时字幕、降噪等主播辅助能力，让开播更省心。",
     status: "已接入",
     color: "success",
   },

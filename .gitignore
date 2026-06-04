@@ -34,7 +34,7 @@ admin-frontend/node_modules/
 admin-frontend/dist/
 admin-frontend/.vite/
 admin-frontend/.cache/
-tools/local_live/node_modules/
+local-services/live-server/node_modules/
 
 # Java / Maven
 target/
@@ -48,9 +48,12 @@ __pycache__/
 .venv/
 venv/
 env/
-models/live_check/venv/
-models/live_check/.ultralytics/
-models/DeepFilterNet/.tmp/
+ai-services/vision-guard/server/venv/
+ai-services/vision-guard/server/.ultralytics/
+ai-services/deepfilternet3/engine/.tmp/
+ai-services/deepfilternet3/engine/.vendor/
+ai-services/deepfilternet3/engine/.wheelhouse/
+ai-services/deepfilternet3/engine/.pip-user/
 
 # Local dependency/download caches
 .pythonlibs/

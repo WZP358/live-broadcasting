@@ -13,9 +13,7 @@ export const useNotificationStore = defineStore("notification", () => {
             if (res && res.code === 0) {
                 unreadCount.value = res.data || 0
             }
-        } catch (e) {
-            // ignore fetch errors
-        }
+        } catch (e) {}
     }
 
     const incrementUnread = () => {
@@ -23,22 +21,24 @@ export const useNotificationStore = defineStore("notification", () => {
     }
 
     const markRead = async (notificationId) => {
+        const previousCount = unreadCount.value
         try {
             await notificationApi.markRead({ notificationId })
             if (unreadCount.value > 0) {
                 unreadCount.value--
             }
         } catch (e) {
-            // ignore
+            unreadCount.value = previousCount
         }
     }
 
     const markAllRead = async () => {
+        const previousCount = unreadCount.value
         try {
             await notificationApi.markAllRead()
             unreadCount.value = 0
         } catch (e) {
-            // ignore
+            unreadCount.value = previousCount
         }
     }
 
@@ -47,7 +47,9 @@ export const useNotificationStore = defineStore("notification", () => {
         if (latestNotifications.value.length > 50) {
             latestNotifications.value.pop()
         }
-        unreadCount.value++
+        if (!notification || notification.isRead !== 1) {
+            unreadCount.value++
+        }
     }
 
     const setWsConnected = (connected) => {

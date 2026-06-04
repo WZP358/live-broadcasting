@@ -3,7 +3,7 @@
     <section class="messages-header">
       <div>
         <h2>消息中心</h2>
-        <p>把系统通知和互动提醒收在统一视图里，支持未读态标记和快速处理。</p>
+        <p>系统通知和互动提醒都会收在这里，未读消息可以快速处理。</p>
       </div>
       <a-button type="primary" :disabled="!hasUnreadMessages" @click="markAllAsRead">全部标记已读</a-button>
     </section>
@@ -176,10 +176,10 @@ onMounted(() => {
 
 .messages-header,
 .messages-panel {
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
 }
 
 .messages-header {
@@ -192,13 +192,14 @@ onMounted(() => {
 
 .messages-header h2 {
   margin: 0 0 8px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 24px;
+  font-weight: 900;
 }
 
 .messages-header p {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   line-height: 1.7;
 }
 
@@ -213,8 +214,8 @@ onMounted(() => {
 
 .message-card {
   padding: 18px 20px;
-  border-radius: 18px;
-  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 8px;
+  border: 1px solid var(--border);
   background: #fff;
   cursor: pointer;
   transition: 0.2s ease;
@@ -226,8 +227,8 @@ onMounted(() => {
 }
 
 .message-card--unread {
-  background: linear-gradient(135deg, rgba(239, 246, 255, 0.9), rgba(255, 255, 255, 1));
-  border-color: rgba(59, 130, 246, 0.26);
+  background: linear-gradient(135deg, rgba(255, 248, 220, 0.96), #fff);
+  border-color: rgba(255, 153, 0, 0.3);
 }
 
 .message-card__head {
@@ -239,13 +240,13 @@ onMounted(() => {
 
 .message-card__head h3 {
   margin: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 17px;
 }
 
 .message-card p {
   margin: 10px 0 12px;
-  color: #475569;
+  color: var(--text-secondary);
   line-height: 1.75;
 }
 
@@ -256,7 +257,7 @@ onMounted(() => {
 }
 
 .message-card span {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 13px;
 }
 

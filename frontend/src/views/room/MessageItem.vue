@@ -1,21 +1,27 @@
 <template>
-  <div class="message-wrapper" :class="[levelClass, msgTypeClass]" @mouseenter="showActions = true" @mouseleave="showActions = false">
-    <span class="guardian-badge" v-if="data.guardianLevel" :class="'guardian-badge-' + guardianBadgeClass"></span>
+  <div
+    class="message-wrapper"
+    :class="[levelClass, msgTypeClass, { 'is-self': isSelf }]"
+    @mouseenter="showActions = true"
+    @mouseleave="showActions = false"
+  >
+    <span class="guardian-badge" v-if="data.guardianLevel" :class="'guardian-badge-' + guardianBadgeClass">
+      {{ guardianLabel }}
+    </span>
     <span class="moderator-badge" v-if="data.isModerator">房管</span>
-    <span class="name"> {{ showName || "观众" }}：</span>
+    <span class="name">{{ showName || "观众" }}：</span>
     <span class="msg">{{ data.text || "" }}</span>
     <span class="mod-actions" v-if="isModerator && showActions && data.fromUserId && data.fromUserId !== userId">
-      <a-button type="link" size="small" @click.stop="$emit('muteUser', data.fromUserId, 60)">禁言60s</a-button>
-      <a-button type="link" size="small" @click.stop="$emit('muteUser', data.fromUserId, 300)">禁言5m</a-button>
-      <a-button type="link" size="small" danger @click.stop="$emit('kickUser', data.fromUserId)">踢出</a-button>
+      <button type="button" @click.stop="$emit('muteUser', data.fromUserId, 60)">禁言60s</button>
+      <button type="button" @click.stop="$emit('muteUser', data.fromUserId, 300)">禁言5m</button>
+      <button type="button" class="danger" @click.stop="$emit('kickUser', data.fromUserId)">踢出</button>
     </span>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from "@/stores"
-import { computed } from "vue"
 
 const props = defineProps({
   data: { type: Object, default: () => ({}) },
@@ -26,12 +32,13 @@ defineEmits(['muteUser', 'kickUser'])
 
 const showActions = ref(false)
 
-const userInfo = useStore().user().userInfo
+const userInfo = useStore().user().userInfo || {}
 const userId = computed(() => userInfo.userId)
+const isSelf = computed(() => Boolean(userId.value && props.data.fromUserId && userId.value === props.data.fromUserId))
 
 const showName = computed(() => {
   if (userId.value && props.data.fromUserId) {
-    return userId.value === props.data.fromUserId ? "我" : props.data.nickname
+    return isSelf.value ? "我" : props.data.nickname
   }
   return props.data.nickname
 })
@@ -55,26 +62,161 @@ const guardianBadgeClass = computed(() => {
   return 'bronze'
 })
 
+const guardianLabel = computed(() => {
+  const lv = props.data.guardianLevel || 0
+  if (lv >= 3) return "金"
+  if (lv >= 2) return "银"
+  return "守"
+})
+
 const msgTypeClass = computed(() => {
-  if (props.data.isGift) return 'chat-gift-message'
+  const text = props.data.text || ""
+  if (props.data.isGift || /送出了?|赠送了/.test(text)) return 'chat-gift-message'
   if (props.data.isEnter) return 'chat-enter-message'
-  if (props.data.isSystem) return 'chat-system-message'
+  if (props.data.isSystem || props.data.nickname === "系统消息") return 'chat-system-message'
   return ''
 })
 </script>
 
 <style lang="scss" scoped>
 .message-wrapper {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 4px;
   position: relative;
-  .name { font-size: 14px; color: $font-color-light; }
-  .msg { font-size: 14px; color: $font-color; }
+  width: 100%;
+  min-height: 28px;
+  padding: 5px 7px;
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.45;
+  transition:
+    background 0.16s ease,
+    box-shadow 0.16s ease;
+
+  &:hover {
+    background: #fff;
+    box-shadow: 0 1px 6px rgba(21, 24, 32, 0.06);
+  }
+
+  .name {
+    max-width: 110px;
+    overflow: hidden;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .msg {
+    min-width: 0;
+    color: var(--text-primary);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
 }
+
+.is-self {
+  background: var(--accent-light);
+}
+
+.guardian-badge,
+.moderator-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 18px;
+}
+
+.guardian-badge-bronze {
+  background: linear-gradient(135deg, #b8753f, #8d4f25);
+}
+
+.guardian-badge-silver {
+  background: linear-gradient(135deg, #a8b2c0, #6f7b8a);
+}
+
+.guardian-badge-gold {
+  background: linear-gradient(135deg, #f6c65b, #d58b12);
+}
+
+.moderator-badge {
+  background: #111827;
+}
+
+.danmaku-level-10 .name { color: #ff9900; }
+.danmaku-level-20 .name { color: #e58a00; }
+.danmaku-level-30 .name { color: #c97800; }
+.danmaku-level-40 .name { color: #ad6700; }
+.danmaku-level-50 .name { color: #8f5600; }
+
+.chat-system-message {
+  color: #8a5a1f;
+  background: #fff7e8;
+
+  .name {
+    color: #c26a00;
+  }
+
+  .msg {
+    color: #8a5a1f;
+  }
+}
+
+.chat-gift-message {
+  border: 1px solid rgba(255, 153, 0, 0.2);
+  background: linear-gradient(90deg, #fff8dc, #fff);
+
+  .name {
+    color: #d97706;
+  }
+
+  .msg {
+    color: #a15c00;
+    font-weight: 800;
+  }
+}
+
+.chat-enter-message {
+  color: #3f7a66;
+  background: #effaf6;
+
+  .name,
+  .msg {
+    color: #28745d;
+  }
+}
+
 .mod-actions {
-  margin-left: 8px;
+  display: inline-flex;
+  gap: 4px;
+  margin-left: auto;
   white-space: nowrap;
-  opacity: 0.8;
+}
+
+.mod-actions button {
+  height: 22px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 4px;
+  color: var(--accent);
+  background: var(--accent-light);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.mod-actions button.danger {
+  color: var(--danger);
+  background: #fff1f0;
 }
 </style>

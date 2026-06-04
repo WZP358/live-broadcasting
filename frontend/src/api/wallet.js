@@ -12,6 +12,15 @@ export default {
         })
     },
     /**
+     * 获取充值金额档位
+     */
+    getRechargeTiers() {
+        return request({
+            url: '/api/v1/wallet/recharge-tiers',
+            method: 'get'
+        })
+    },
+    /**
      * 获取钱包明细
      * @returns 
      */

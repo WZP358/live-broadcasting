@@ -38,12 +38,12 @@ const itemClick = () => {
 
 <style lang="scss" scoped>
 .history-item {
-  width: 248px;
+  width: 100%;
   overflow: hidden;
-  border-radius: 22px;
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.06);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow: var(--shadow);
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -65,8 +65,8 @@ const itemClick = () => {
   align-items: center;
   gap: 4px;
   padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(22, 163, 74, 0.92);
+  border-radius: 4px;
+  background: #ff9900;
   color: #fff;
   font-size: 12px;
   font-weight: 600;
@@ -105,13 +105,13 @@ const itemClick = () => {
 }
 
 .history-item__meta strong {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 15px;
 }
 
 .history-item__meta span {
   margin-top: 4px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 </style>

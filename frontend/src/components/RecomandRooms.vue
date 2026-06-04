@@ -1,6 +1,7 @@
 <script setup>
 import LiveRoom from "@/components/LiveRoom.vue"
 import { useRouter } from "vue-router"
+import { FALLBACK_AVATAR } from "@/utils/fallback"
 
 const router = useRouter()
 
@@ -14,7 +15,7 @@ const roomClick = () => {
   <div class="recommend-content-wrapper">
     <div class="header">
       <img
-        src="http://localhost:9000/live.file.bucket/%E3%80%90%E6%8A%A5%E7%BA%B8%E5%A5%B3%E5%AD%A9%E3%80%912024-09-03%2007_35_35_1725495031.png"
+        :src="FALLBACK_AVATAR"
         alt="" />
       <h1 title>王者荣耀</h1>
       <span @click="handleMoreClick">更多</span>

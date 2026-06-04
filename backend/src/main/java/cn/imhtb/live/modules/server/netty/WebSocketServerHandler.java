@@ -34,7 +34,11 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("WebSocket 异常, channel={}", ctx.channel().id(), cause);
+        if (cause instanceof java.io.IOException) {
+            log.debug("WebSocket 客户端断开, channel={}", ctx.channel().id());
+        } else {
+            log.error("WebSocket 异常, channel={}", ctx.channel().id(), cause);
+        }
         getBrowserLiveBean().handleDisconnect(ctx.channel());
         getRoomChatBean().exit(ctx.channel());
         ctx.close();

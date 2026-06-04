@@ -17,7 +17,7 @@
       </a-form>
     </AdminCard>
 
-    <AdminCard title="字典列表" subtitle="保留原有系统接口，重构为统一的列表与弹窗交互">
+    <AdminCard title="字典列表" subtitle="统一维护类型、标签、排序和启停状态">
       <AdminToolbar>
         <template #left>
           <a-space>

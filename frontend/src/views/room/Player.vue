@@ -26,22 +26,12 @@
         点击开启声音
       </button>
     </div>
-    <div class="player-volume">
-      <a-button size="small" class="volume-btn" @click="toggleMute">
-        <template #icon>
-          <AudioMutedOutlined v-if="volumeMuted || volumeValue === 0" />
-          <SoundOutlined v-else />
-        </template>
-      </a-button>
-      <a-slider :min="0" :max="100" :value="volumeValue" class="volume-slider" @change="handleVolumeChange" />
-    </div>
     <div v-if="subtitleVisible && subtitleText" class="subtitle-overlay">{{ subtitleText }}</div>
   </div>
 </template>
 
 <script setup>
 import { onBeforeUnmount, onMounted, ref, watch } from "vue"
-import { AudioMutedOutlined, SoundOutlined } from "@ant-design/icons-vue"
 import $modal from "@/utils/message"
 import Hls from "hls.js"
 import flvjs from "flv.js"
@@ -149,10 +139,10 @@ const startPlaybackWatch = () => {
     }
 
     stalledTicks += 1
-    await ensureVideoPlayback("正在播放网页直播")
+    await ensureVideoPlayback("正在播放直播")
     if (stalledTicks >= STALL_RECONNECT_THRESHOLD) {
       stalledTicks = 0
-      statusText.value = "网页直播画面卡住，正在重新连接..."
+      statusText.value = "直播画面卡住，正在重新连接..."
       closePeer()
       closeSignalOnly()
       connectBrowserLiveViewer()
@@ -168,7 +158,7 @@ const stopPlaybackWatch = () => {
   stalledTicks = 0
 }
 
-const ensureVideoPlayback = async (hintText = "正在播放网页直播") => {
+const ensureVideoPlayback = async (hintText = "正在播放直播") => {
   const video = videoElementRef.value
   if (!video) {
     return
@@ -185,10 +175,10 @@ const ensureVideoPlayback = async (hintText = "正在播放网页直播") => {
       await video.play()
       startLatencySync()
       playbackBlocked.value = true
-      statusText.value = "正在播放网页直播，点击开启声音"
+      statusText.value = "正在播放直播，点击开启声音"
     } catch (mutedError) {
       playbackBlocked.value = true
-      statusText.value = "已收到音视频流，请点击播放器开始播放"
+      statusText.value = "直播画面已准备好，请点击播放器开始观看"
     }
   }
 }
@@ -206,10 +196,14 @@ const handleVolumeChange = (nextValue) => {
   if (!video) {
     return
   }
-  const normalized = Number(nextValue) / 100
+  const normalized = Math.max(0, Math.min(100, Number(nextValue) || 0)) / 100
   video.muted = normalized === 0 ? true : false
   video.volume = normalized
   syncVolumeState()
+}
+
+const setVolume = (nextValue) => {
+  handleVolumeChange(nextValue)
 }
 
 const toggleMute = () => {
@@ -278,6 +272,8 @@ onBeforeUnmount(() => {
   destroy()
 })
 
+defineExpose({ setVolume, toggleMute })
+
 const playLive = () => {
   destroy()
   if (props.roomId) {
@@ -294,7 +290,7 @@ const connectBrowserLiveViewer = () => {
   signalUrlIndex = 0
   browserLiveFallbackTimer = window.setTimeout(() => {
     if (!remoteStream) {
-      fallbackToPullStream("网页直播暂未连上，正在切换到拉流播放...")
+      fallbackToPullStream("直播连接较慢，正在重新加载画面...")
     }
   }, props.browserLive ? 4000 : 1200)
   connectNextSignal()
@@ -304,7 +300,7 @@ const connectNextSignal = () => {
   const urls = createBrowserLiveFallbackUrls()
   const signalUrl = urls[signalUrlIndex]
   if (!signalUrl) {
-    fallbackToPullStream("直播信令服务不可用")
+    fallbackToPullStream("直播连接暂不可用")
     return
   }
 
@@ -335,7 +331,7 @@ const connectNextSignal = () => {
         connectNextSignal()
         return
       }
-      fallbackToPullStream("直播信令连接已断开")
+      fallbackToPullStream("直播连接已断开")
     }
   }
 }
@@ -356,7 +352,7 @@ const handleSignal = async (data) => {
   }
   if (data.type === "broadcaster-online") {
     broadcasterSessionId = data.sessionId
-    statusText.value = "已连接到主播，等待音视频流..."
+    statusText.value = "已连接到主播，正在等待直播画面..."
     return
   }
   if (data.type === "guard-violation") {
@@ -397,7 +393,7 @@ const formatGuardReason = (payload = {}) => {
     EXPOSURE: "过于暴露",
   }
   const label = payload.violationLabel || labelMap[payload.violationType]
-  return label ? `直播内容触发违规检测：${label}，直播间已封停` : "直播内容触发违规检测，直播间已封停"
+  return label ? `直播内容不符合平台规范：${label}，直播间已关闭` : "直播内容不符合平台规范，直播间已关闭"
 }
 
 const answerOffer = async (sdp) => {
@@ -427,9 +423,9 @@ const answerOffer = async (sdp) => {
       }
     }
     const audioTrackCount = remoteStream.getAudioTracks().length
-    statusText.value = `正在播放网页直播${audioTrackCount ? "，音频已接入" : "，等待音频"}`
+    statusText.value = `正在播放直播${audioTrackCount ? "，声音已接入" : "，等待声音"}`
     clearFallbackTimer()
-    ensureVideoPlayback("正在播放网页直播")
+    ensureVideoPlayback("正在播放直播")
     startPlaybackWatch()
   }
 
@@ -471,15 +467,15 @@ const playHls = () => {
   if (!video) {
     return
   }
-  statusText.value = "正在播放 HLS 直播流"
+  statusText.value = "正在加载直播画面"
   if (video.canPlayType("application/vnd.apple.mpegurl")) {
     video.src = props.pullUrl
     syncVolumeState()
-    ensureVideoPlayback("正在播放 HLS 直播流")
+    ensureVideoPlayback("正在播放直播")
     return
   }
   if (!Hls.isSupported()) {
-    $modal.msgError("当前浏览器不支持 HLS 播放")
+    $modal.msgError("当前浏览器暂不支持播放直播")
     return
   }
   hlsPlayer.value = new Hls({
@@ -492,19 +488,19 @@ const playHls = () => {
   hlsPlayer.value.loadSource(props.pullUrl)
   hlsPlayer.value.attachMedia(video)
   hlsPlayer.value.on(Hls.Events.MANIFEST_PARSED, () => {
-    ensureVideoPlayback("正在播放 HLS 直播流")
+    ensureVideoPlayback("正在播放直播")
   })
   hlsPlayer.value.on(Hls.Events.ERROR, () => {
-    statusText.value = "HLS 流加载失败"
+    statusText.value = "直播画面加载失败"
   })
 }
 
 const playFlv = () => {
   if (!flvjs.isSupported()) {
-    $modal.msgError("当前浏览器不支持 FLV 播放")
+    $modal.msgError("当前浏览器暂不支持播放直播")
     return
   }
-  statusText.value = "正在播放 FLV 直播流"
+  statusText.value = "正在加载直播画面"
   flvPlayer.value = flvjs.createPlayer(
     {
       type: "flv",
@@ -522,17 +518,17 @@ const playFlv = () => {
   flvPlayer.value.attachMediaElement(videoElementRef.value)
   flvPlayer.value.load()
   syncVolumeState()
-  ensureVideoPlayback("正在播放 FLV 直播流")
+  ensureVideoPlayback("正在播放直播")
 }
 
 const fallbackToPullStream = (fallbackMessage = "") => {
   clearFallbackTimer()
   subtitleText.value = ""
   if (!props.pullUrl || !videoElementRef.value) {
-    statusText.value = fallbackMessage || "暂时没有可播放的直播流"
+    statusText.value = fallbackMessage || "暂时没有可观看的直播画面"
     return
   }
-  statusText.value = fallbackMessage || "正在切换到拉流播放..."
+  statusText.value = fallbackMessage || "正在重新加载直播画面..."
   closeSignalOnly()
   closePeer()
   if (props.pullUrl.endsWith(".m3u8")) {
@@ -637,14 +633,19 @@ const destroy = () => {
 .player-shell {
   position: relative;
   isolation: isolate;
+  min-height: 552px;
+  background: #02040a;
 }
 
 #videoElement {
   display: block;
   width: 100%;
-  height: 510px;
+  height: clamp(360px, 56vw, 620px);
+  min-height: 552px;
   object-fit: cover;
-  background: #020617;
+  background:
+    linear-gradient(135deg, rgba(255, 153, 0, 0.09), transparent 34%),
+    #02040a;
 }
 
 #videoElement.is-unmute-blocked {
@@ -669,11 +670,25 @@ const destroy = () => {
 }
 
 .status-chip {
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.7);
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  background: rgba(5, 6, 9, 0.64);
+  backdrop-filter: blur(10px);
   color: #fff;
   font-size: 12px;
+  font-weight: 800;
+}
+
+.caption-btn {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  color: #fff;
+  background: rgba(5, 6, 9, 0.52);
+  backdrop-filter: blur(10px);
 }
 
 .subtitle-overlay {
@@ -683,8 +698,9 @@ const destroy = () => {
   transform: translateX(-50%);
   max-width: calc(100% - 60px);
   padding: 10px 18px;
-  border-radius: 14px;
-  background: rgba(15, 23, 42, 0.76);
+  border-radius: 4px;
+  background: rgba(5, 6, 9, 0.76);
+  backdrop-filter: blur(10px);
   color: #fff;
   font-size: 18px;
   line-height: 1.6;
@@ -697,7 +713,7 @@ const destroy = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(2, 6, 23, 0.28);
+  background: rgba(2, 6, 23, 0.34);
   pointer-events: auto;
   z-index: 20;
   cursor: pointer;
@@ -706,8 +722,8 @@ const destroy = () => {
 .playback-unmute-btn {
   appearance: none;
   border: 0;
-  border-radius: 6px;
-  background: #1677ff;
+  border-radius: 20px;
+  background: var(--accent);
   color: #fff;
   cursor: pointer;
   font-size: 16px;
@@ -718,50 +734,11 @@ const destroy = () => {
 }
 
 .playback-unmute-btn:hover {
-  background: #4096ff;
+  background: var(--accent-strong);
 }
 
 .playback-unmute-btn:active {
-  background: #0958d9;
-}
-
-.player-volume {
-  position: absolute;
-  right: 14px;
-  bottom: 18px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.78);
-  pointer-events: auto;
-  z-index: 6;
-}
-
-.volume-btn {
-  flex: 0 0 auto;
-}
-
-.volume-slider {
-  width: 120px;
-  margin: 0;
-}
-
-.player-volume :deep(.ant-slider) {
-  margin: 0;
-}
-
-.player-volume :deep(.ant-slider-rail) {
-  background: rgba(255, 255, 255, 0.24);
-}
-
-.player-volume :deep(.ant-slider-track) {
-  background: #60a5fa;
-}
-
-.player-volume :deep(.ant-slider-handle::after) {
-  box-shadow: 0 0 0 2px #60a5fa;
+  background: var(--accent-strong);
 }
 
 video::-webkit-media-controls-timeline,
@@ -771,16 +748,10 @@ video::-webkit-media-controls-play-button {
 }
 
 @media (max-width: 768px) {
-  .player-volume {
-    left: 14px;
-    right: 14px;
-    bottom: 14px;
+  .player-shell,
+  #videoElement {
+    min-height: 360px;
   }
 
-  .volume-slider {
-    width: 100%;
-  }
 }
 </style>
-
-

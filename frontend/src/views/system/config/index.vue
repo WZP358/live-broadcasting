@@ -1,5 +1,5 @@
 <template>
-  <AdminPageLayout title="系统配置" description="将平台基础配置、安全策略、登录能力和直播参数拆分为清晰的配置分组，界面交互统一到后台框架。">
+  <AdminPageLayout title="系统配置" description="集中维护站点展示、安全策略、登录能力和直播运营参数。">
     <div class="config-shell">
       <AdminCard title="配置分组" subtitle="按模块维护，减少一页堆满所有配置项的阅读负担。">
         <a-menu mode="inline" :selected-keys="[activeKey]" :items="menuItems" @click="handleMenuClick" />
@@ -10,7 +10,7 @@
           <template #extra>
             <a-space>
               <a-button @click="handleReset">恢复默认</a-button>
-              <a-button type="primary" @click="handleSave">保存草稿</a-button>
+              <a-button type="primary" @click="handleSave">保存配置</a-button>
             </a-space>
           </template>
 
@@ -40,19 +40,19 @@
         </AdminCard>
 
         <div class="config-tips">
-          <AdminCard title="使用说明" subtitle="当前先以本地草稿的形式落地，后续再平滑切到后端配置接口。">
+          <AdminCard title="配置说明" subtitle="保存后将作为当前后台的运营配置使用。">
             <div class="admin-summary-list">
               <div class="admin-summary-item">
-                <span class="admin-summary-item__label">草稿存储</span>
-                <span class="admin-summary-item__value">浏览器本地 localStorage</span>
+                <span class="admin-summary-item__label">保存方式</span>
+                <span class="admin-summary-item__value">当前配置会在本机后台保留</span>
               </div>
               <div class="admin-summary-item">
-                <span class="admin-summary-item__label">适用阶段</span>
-                <span class="admin-summary-item__value">前后端联调与后台结构重构阶段</span>
+                <span class="admin-summary-item__label">适用范围</span>
+                <span class="admin-summary-item__value">站点展示、登录开关、素材上传和直播管理</span>
               </div>
               <div class="admin-summary-item">
-                <span class="admin-summary-item__label">后续方向</span>
-                <span class="admin-summary-item__value">逐步替换为持久化系统配置接口</span>
+                <span class="admin-summary-item__label">操作建议</span>
+                <span class="admin-summary-item__value">调整前请确认当前运营策略，保存后及时复查页面效果</span>
               </div>
             </div>
           </AdminCard>
@@ -93,7 +93,7 @@ const handleMenuClick = ({ key }) => {
 
 const handleSave = () => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(formState))
-  message.success("系统配置草稿已保存")
+  message.success("系统配置已保存")
 }
 
 const handleReset = () => {

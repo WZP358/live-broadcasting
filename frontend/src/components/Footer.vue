@@ -6,7 +6,7 @@ const handleClick = () => {
 
 <template>
   <div class="footer">
-    <span @click="handleClick()">Copyright (c) 2026 PulseLive</span>
+    <span @click="handleClick()">PulseLive · 弹幕互动直播平台</span>
   </div>
 </template>
 

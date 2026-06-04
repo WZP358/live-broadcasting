@@ -152,10 +152,10 @@ const columns = reactive([
 
 .data-panel__header,
 .data-panel__body {
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
 }
 
 .data-panel__header {
@@ -168,13 +168,14 @@ const columns = reactive([
 
 .data-panel__header h2 {
   margin: 0 0 8px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 24px;
+  font-weight: 900;
 }
 
 .data-panel__header p {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   line-height: 1.7;
 }
 

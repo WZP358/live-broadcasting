@@ -2,7 +2,7 @@
   <div class="header-right-bar">
     <a-dropdown v-if="userStore.isLogin" placement="bottomRight" :trigger="['hover']">
       <div class="user-info">
-        <a-avatar :size="34" :src="userStore.userInfo.avatar" :style="{ backgroundColor: '#1677ff' }">
+        <a-avatar :size="34" :src="userStore.userInfo.avatar" :style="{ backgroundColor: '#ff9900' }">
           {{ userStore.userInfo.username?.charAt(0)?.toUpperCase() }}
         </a-avatar>
         <div class="user-meta">

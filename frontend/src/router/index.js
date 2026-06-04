@@ -101,7 +101,12 @@ const routes = [
       {
         path: "/home",
         component: () => import("@/views/home.vue"),
-        meta: { title: "首页", requiresAuth: true },
+        meta: { title: "首页" },
+      },
+      {
+        path: "/search",
+        component: () => import("@/views/search.vue"),
+        meta: { title: "搜索" },
       },
       {
         path: "/room/:id",
@@ -214,7 +219,7 @@ const routes = [
   },
   {
     path: "/:pathMatch(.*)*",
-    component: () => import("@/views/default/403.vue"),
+    component: () => import("@/views/default/404.vue"),
     meta: { title: "页面不存在" },
   },
 ]

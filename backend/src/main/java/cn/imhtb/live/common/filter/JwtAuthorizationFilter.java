@@ -64,7 +64,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 return userDetails.isEnabled() ? usernamePasswordAuthenticationToken : null;
             }
         } catch (ExpiredJwtException | MalformedJwtException | SignatureException | UnsupportedJwtException | IllegalArgumentException exception) {
-            logger.warn("Request to parse JWT with invalid signature . Detail : " + exception.getMessage());
+            logger.debug("Request to parse JWT with invalid signature . Detail : " + exception.getMessage());
         }
         return null;
     }

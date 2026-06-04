@@ -25,7 +25,7 @@
       </div>
     </div>
 
-    <AdminCard title="管理入口" subtitle="统一展示后台基础管理模块，风格与若依式工作台对齐。">
+    <AdminCard title="管理入口" subtitle="统一展示后台基础管理模块，方便快速进入常用功能。">
       <div class="entry-grid">
         <article v-for="entry in entries" :key="entry.path" class="entry-card">
           <div class="entry-card__head">
@@ -51,12 +51,12 @@
       <AdminCard title="推荐动作" subtitle="当前版本更适合优先完成这些基础治理工作。">
         <ul class="manage-list">
           <li>先完善菜单、角色与权限映射，确保后台导航和页面权限一致。</li>
-          <li>逐步把配置页从本地草稿迁移到后端系统参数表，避免环境切换丢失配置。</li>
+          <li>完善配置保存与复查流程，避免运营设置在切换设备后不一致。</li>
           <li>字典能力收口后，可继续扩展到礼物状态、直播审核状态等公共枚举。</li>
         </ul>
       </AdminCard>
 
-      <AdminCard title="当前状态" subtitle="用于说明哪些模块已经完成重构，哪些仍在规划。">
+      <AdminCard title="当前状态" subtitle="用于说明哪些模块已经可用，哪些仍在规划。">
         <div class="admin-summary-list">
           <div class="admin-summary-item">
             <span class="admin-summary-item__label">菜单管理</span>
@@ -85,8 +85,8 @@ const router = useRouter()
 
 const summaryCards = [
   { title: "基础模块", value: "4", hint: "菜单、角色、字典、配置" },
-  { title: "重构方式", value: "组件复用", hint: "查询卡 + 工具栏 + 列表容器" },
-  { title: "风格目标", value: "若依化", hint: "统一后台视觉与交互语言" },
+  { title: "管理方式", value: "统一维护", hint: "筛选、操作、列表集中处理" },
+  { title: "体验目标", value: "清晰高效", hint: "统一后台视觉与交互语言" },
 ]
 
 const entries = [

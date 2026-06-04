@@ -1,5 +1,5 @@
 <template>
-  <AdminPageLayout title="菜单管理" description="统一维护后台导航菜单、父子层级和状态信息，页面结构与若依式菜单管理保持一致，但适配当前 Vue 3 + Ant Design 技术栈。">
+  <AdminPageLayout title="菜单管理" description="统一维护后台导航菜单、父子层级和状态信息，保证管理入口清晰可用。">
     <AdminCard title="筛选条件" subtitle="按菜单名称快速检索">
       <a-form ref="formRef" :model="formState" @finish="loadMenus">
         <div class="admin-query-grid">

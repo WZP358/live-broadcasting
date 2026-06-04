@@ -1,5 +1,5 @@
 <template>
-  <AdminPageLayout title="分类管理" description="统一维护直播分类名称、图标与排序，列表与表单完全解耦，便于继续扩展父子分类等能力。">
+  <AdminPageLayout title="分类管理" description="统一维护直播分类名称、图标与排序，支持频道筛选和内容推荐。">
     <AdminCard title="筛选条件" subtitle="支持按分类名称快速检索">
       <a-form ref="formRef" :model="formState" @finish="getData">
         <div class="admin-query-grid">
@@ -29,7 +29,7 @@
 
       <div class="admin-list-meta">
         <span class="admin-list-meta__highlight">当前结果 {{ total }} 条</span>
-        <span>建议分类名称保持简洁，图标地址可按统一 CDN 资源维护</span>
+        <span>建议分类名称保持简洁，图标地址按统一素材规范维护</span>
       </div>
 
       <div ref="containerRef" class="admin-table-shell">

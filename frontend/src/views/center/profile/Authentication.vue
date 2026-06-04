@@ -14,13 +14,12 @@
         <span class="describe">{{ item.subtitle }}</span>
       </div>
       <div class="btn-wrapper">
-        <a-button @click="handleClick(item)">绑定</a-button>
+        <a-button @click="handleClick(item)">{{ item.actionText }}</a-button>
       </div>
     </div>
-    <a-modal v-model:open="open" title="Basic Modal" @ok="handleOk">
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
+    <a-modal v-model:open="open" :title="activeItem?.title || '账号安全'" @ok="handleOk">
+      <p class="modal-title">{{ activeItem?.modalTitle }}</p>
+      <p class="modal-desc">{{ activeItem?.modalDesc }}</p>
     </a-modal>
   </div>
 </template>
@@ -31,10 +30,11 @@ import { useStore } from "@/stores"
 import { CheckCircleFilled } from "@ant-design/icons-vue"
 
 const open = ref(false)
+const activeItem = ref(null)
 const userInfo = computed(() => useStore().user().userInfo)
 
 const handleClick = (item) => {
-  console.log(item)
+  activeItem.value = item
   open.value = true
 }
 
@@ -46,6 +46,9 @@ const itemList = computed(() => [
     icon: "#icon-id-card-front",
     value: userInfo.value.hasAuth,
     subtitle: "实名认证成功后,可以享受开通直播间等服务",
+    actionText: userInfo.value.hasAuth ? "查看" : "认证",
+    modalTitle: userInfo.value.hasAuth ? "实名认证已完成" : "完成实名认证后即可申请开播",
+    modalDesc: "请根据页面提示提交真实身份信息，认证通过后可使用更多主播服务。",
     type: "phone",
     jumpMode: "modal",
     status: !!userInfo.value.hasAuth,
@@ -56,6 +59,9 @@ const itemList = computed(() => [
     icon: "#icon-zhifubaozhifu",
     value: userInfo.value.hasAuth,
     subtitle: "绑定支付宝后,可以支持开心果提现等服务",
+    actionText: userInfo.value.hasAuth ? "查看" : "绑定",
+    modalTitle: userInfo.value.hasAuth ? "支付宝已绑定" : "绑定支付宝用于收益提现",
+    modalDesc: "请确认账号信息准确无误，绑定成功后可在钱包中管理收益。",
     type: "phone",
     jumpMode: "modal",
     status: !!userInfo.value.hasAuth,
@@ -139,5 +145,17 @@ const itemList = computed(() => [
       font-size: 13px;
     }
   }
+}
+
+.modal-title {
+  margin: 0 0 8px;
+  color: #1f2937;
+  font-weight: 800;
+}
+
+.modal-desc {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.7;
 }
 </style>

@@ -15,7 +15,7 @@ export const configSections = [
     title: "安全配置",
     description: "统一管理登录安全和风控阈值。",
     fields: [
-      { key: "jwtExpireHours", label: "Token 有效期(小时)", type: "number", min: 1, max: 720 },
+      { key: "jwtExpireHours", label: "登录有效期(小时)", type: "number", min: 1, max: 720 },
       { key: "loginFailLimit", label: "登录失败上限", type: "number", min: 1, max: 20 },
       { key: "ipWhitelist", label: "后台 IP 白名单", type: "textarea", placeholder: "多个 IP 用换行分隔" },
       { key: "enableOperationLog", label: "记录操作日志", type: "switch" },
@@ -24,7 +24,7 @@ export const configSections = [
   {
     key: "login",
     title: "登录配置",
-    description: "整理本地环境的登录、注册和验证码开关。",
+    description: "统一管理登录、注册和验证码开关。",
     fields: [
       { key: "allowRegister", label: "允许注册", type: "switch" },
       { key: "enableSmsLogin", label: "开启短信登录", type: "switch" },
@@ -35,10 +35,10 @@ export const configSections = [
   {
     key: "storage",
     title: "存储配置",
-    description: "本地调试场景下记录对象存储和上传域名配置。",
+    description: "维护素材上传和资源访问设置。",
     fields: [
-      { key: "storageType", label: "存储类型", type: "select", options: ["local", "minio", "oss"] },
-      { key: "bucketName", label: "Bucket 名称", type: "input", placeholder: "请输入 bucket" },
+      { key: "storageType", label: "素材保存方式", type: "select", options: ["local", "minio", "oss"] },
+      { key: "bucketName", label: "素材空间名称", type: "input", placeholder: "请输入素材空间名称" },
       { key: "publicHost", label: "访问域名", type: "input", placeholder: "请输入资源访问域名" },
       { key: "uploadLimitMb", label: "上传大小上限(MB)", type: "number", min: 1, max: 500 },
     ],
@@ -46,10 +46,10 @@ export const configSections = [
   {
     key: "live",
     title: "直播配置",
-    description: "整理推拉流和审核相关的直播参数。",
+    description: "维护开播、观看和审核相关的直播参数。",
     fields: [
-      { key: "pushDomain", label: "推流域名", type: "input", placeholder: "请输入推流域名" },
-      { key: "playDomain", label: "播放域名", type: "input", placeholder: "请输入播放域名" },
+      { key: "pushDomain", label: "开播接入地址", type: "input", placeholder: "请输入开播接入地址" },
+      { key: "playDomain", label: "观看播放地址", type: "input", placeholder: "请输入观看播放地址" },
       { key: "enableLiveAudit", label: "开启直播审核", type: "switch" },
       { key: "auditHint", label: "审核提示", type: "textarea", placeholder: "请输入主播侧提示文案" },
     ],
@@ -57,10 +57,10 @@ export const configSections = [
 ]
 
 export const defaultConfigState = {
-  siteName: "Ant Live 本地环境",
-  siteUrl: "http://localhost:5173",
-  adminEmail: "admin@local.test",
-  siteNotice: "当前为本地联调环境，优先保证后台页面可用和接口兼容。",
+  siteName: "PulseLive",
+  siteUrl: "https://www.pulselive.example",
+  adminEmail: "admin@pulselive.example",
+  siteNotice: "欢迎来到 PulseLive，精彩直播正在进行。",
   jwtExpireHours: 24,
   loginFailLimit: 5,
   ipWhitelist: "",
@@ -68,13 +68,13 @@ export const defaultConfigState = {
   allowRegister: true,
   enableSmsLogin: false,
   enableEmailLogin: true,
-  loginTips: "本地环境不建议接入真实短信或邮箱服务。",
+  loginTips: "请使用已绑定的手机号或邮箱完成登录。",
   storageType: "local",
   bucketName: "ant-live-local",
-  publicHost: "http://localhost:9000",
+  publicHost: "https://assets.pulselive.example",
   uploadLimitMb: 20,
-  pushDomain: "rtmp://localhost/live",
-  playDomain: "http://localhost/live",
+  pushDomain: "https://live.pulselive.example/start",
+  playDomain: "https://live.pulselive.example/watch",
   enableLiveAudit: false,
-  auditHint: "本地调试环境下默认关闭直播审核。",
+  auditHint: "开播前请确认画面、声音和直播内容符合平台规范。",
 }

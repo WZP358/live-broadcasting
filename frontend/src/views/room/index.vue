@@ -3,15 +3,31 @@
     <section class="room-shell">
       <main class="player-column">
         <div class="room-head">
-          <img class="anchor-avatar" :src="roomInfo.userInfo?.avatar || fallbackAvatar" alt="" />
+          <div class="anchor-avatar-wrap">
+            <img class="anchor-avatar" :src="roomInfo.userInfo?.avatar || fallbackAvatar" alt="" @error="onImgError" />
+            <span class="anchor-live-dot"></span>
+          </div>
           <div class="head-copy">
             <div class="head-meta">
               <span>{{ roomInfo.categoryInfo?.name || "推荐" }}</span>
               <span>{{ roomInfo.status === 1 ? "直播中" : "未开播" }}</span>
-              <span>{{ roomInfo.browserLive ? "低延迟" : "标准线路" }}</span>
+              <span>{{ roomInfo.browserLive ? "流畅观看" : "高清观看" }}</span>
             </div>
             <h1>{{ roomInfo.title || "直播间" }}</h1>
-            <p>{{ roomInfo.notice || roomInfo.introduce || "欢迎来到直播间，文明互动，理性消费。" }}</p>
+            <div class="anchor-line">
+              <strong>{{ anchorName }}</strong>
+              <span>{{ roomInfo.notice || roomInfo.introduce || "欢迎来到直播间，文明互动，理性消费。" }}</span>
+            </div>
+          </div>
+          <div class="head-stats">
+            <div>
+              <strong>{{ formatCount(roomInfo.popularity || 0) }}</strong>
+              <span>热度</span>
+            </div>
+            <div>
+              <strong>{{ roomTags.length || "-" }}</strong>
+              <span>标签</span>
+            </div>
           </div>
           <div class="head-actions">
             <a-button
@@ -27,34 +43,43 @@
           </div>
         </div>
 
-        <div class="player-box">
-          <Player
-            v-if="roomInfo.status === 1 && (roomInfo.browserLive || roomInfo.pullUrl)"
-            ref="playChild"
-            :room-id="roomId"
-            :pull-url="roomInfo.pullUrl"
-            :browser-live="Boolean(roomInfo.browserLive)"
-          />
-          <div v-else class="player-empty">
-            <strong>{{ roomInfo.status === 1 ? "直播流准备中" : "主播暂未开播" }}</strong>
-            <span>{{ roomInfo.status === 1 ? "稍等片刻，播放器会在拉到流后显示画面。" : "可以先关注主播，开播后再回来观看。" }}</span>
+        <section class="watch-stage">
+          <div class="player-box">
+            <Player
+              v-if="roomInfo.status === 1 && (roomInfo.browserLive || roomInfo.pullUrl)"
+              ref="playChild"
+              :room-id="roomId"
+              :pull-url="roomInfo.pullUrl"
+              :browser-live="Boolean(roomInfo.browserLive)"
+            />
+            <div v-else class="player-empty">
+              <strong>{{ roomInfo.status === 1 ? "直播画面准备中" : "主播暂未开播" }}</strong>
+              <span>{{ roomInfo.status === 1 ? "稍等片刻，直播画面马上出现。" : "可以先关注主播，开播后再回来观看。" }}</span>
+            </div>
+            <div id="svga-wrap"></div>
           </div>
-          <div id="svga-wrap"></div>
-        </div>
 
-        <div class="player-bar">
-          <div class="bar-tags">
-            <span>{{ roomInfo.categoryInfo?.name || "未分类" }}</span>
-            <span>{{ roomInfo.pullUrl ? "有回退播放源" : "等待播放源" }}</span>
-            <a-tag v-for="t in roomTags" :key="t.id" size="small" color="blue">{{ t.tagName }}</a-tag>
-            <span>{{ isLogin ? "已登录" : "游客观看" }}</span>
+          <PlayerToolbar
+            :is-live="roomInfo.status === 1"
+            :viewer-count="roomInfo.popularity || 0"
+            @line-change="onLineChange"
+            @quality-change="onQualityChange"
+            @volume-change="onVolumeChange"
+            @fullscreen="onFullscreen"
+          />
+
+          <div class="watch-underbar">
+            <div class="watch-tags">
+              <span v-if="!roomTags.length">弹幕互动</span>
+              <span v-for="tag in roomTags" :key="tag.id || tag.tagName">{{ tag.tagName }}</span>
+            </div>
+            <p>{{ roomInfo.notice || "文明发言，理性消费，享受直播。" }}</p>
           </div>
-          <div class="bar-note">弹幕、送礼、关注会写入用户行为；游客只保留观看能力。</div>
-        </div>
+        </section>
 
         <section class="gift-section">
           <div class="section-head">
-            <h2>礼物</h2>
+            <h2>礼物与互动</h2>
             <span>{{ isLogin ? "送礼会扣除开心果并进入亲密榜" : "登录后可送礼" }}</span>
           </div>
           <GiftList :room-id="roomId" @require-login="goLogin" />
@@ -70,14 +95,26 @@
       </main>
 
       <aside class="chat-column">
-        <ChatList :room-id="roomId" :is-moderator="isModerator" @sendGift="handleSendGift" />
+        <div class="chat-tabs">
+          <button :class="{ active: chatMode === 'chat' }" @click="chatMode = 'chat'">弹幕</button>
+          <button :class="{ active: chatMode === 'agent' }" @click="chatMode = 'agent'">互动助手</button>
+        </div>
+        <ChatList v-if="chatMode === 'chat'" :room-id="roomId" :is-moderator="isModerator" @sendGift="handleSendGift" />
+        <AgentPanel
+          v-else
+          :chat-messages="[]"
+          :room-title="roomInfo.title"
+          :category-name="roomInfo.categoryInfo?.name"
+          :anchor-name="anchorName"
+          @send-welcome="handleSendWelcome"
+        />
       </aside>
     </section>
 
     <section class="recommend-section" v-if="recommendRooms.length">
       <div class="section-head">
         <h2>相关推荐</h2>
-        <span>同分区和热门直播优先展示</span>
+        <span>为你挑选相似内容</span>
       </div>
       <div class="recommend-grid">
         <LiveRoom v-for="item in recommendRooms" :key="item.id" :room="item" />
@@ -128,6 +165,8 @@
         </div>
       </a-form>
     </a-modal>
+
+    <GiftEffects ref="giftEffectsRef" />
   </div>
 </template>
 
@@ -138,14 +177,18 @@ import { useStore } from "@/stores"
 import $modal from "@/utils/message"
 import SVGA from "svgaplayerweb"
 import Player from "./Player.vue"
+import PlayerToolbar from "@/components/live/PlayerToolbar.vue"
 import ChatList from "./ChatList.vue"
 import GiftList from "./GiftList.vue"
 import LiveRoom from "@/components/LiveRoom.vue"
+import AgentPanel from "@/components/live/AgentPanel.vue"
+import GiftEffects from "@/components/live/GiftEffects.vue"
 import roomApi from "@/api/room"
 import watchApi from "@/api/watch"
 import liveApi from "@/api/live"
 import tagApi from "@/api/tag"
 import guardianApi from "@/api/guardian"
+import recommendApi from "@/api/recommend"
 import reportApi from "@/api/report"
 import moderatorApi from "@/api/moderator"
 
@@ -182,9 +225,22 @@ const checkModerator = async () => {
 }
 const svgaPlayer = ref(null)
 const svgaParser = ref(null)
-const fallbackAvatar = "https://dummyimage.com/96x96/f3f4f6/9ca3af&text=主播"
+import { FALLBACK_AVATAR, onImgError } from "@/utils/fallback"
+const fallbackAvatar = FALLBACK_AVATAR
+
+const chatMode = ref("chat")
 
 const anchorName = computed(() => roomInfo.value?.userInfo?.name || roomInfo.value?.userInfo?.nickName || "主播")
+
+const giftEffectsRef = ref(null)
+
+const formatCount = (value) => {
+  const count = Number(value || 0)
+  if (!Number.isFinite(count) || count <= 0) return "0"
+  if (count >= 100000000) return `${(count / 100000000).toFixed(1).replace(/\.0$/, "")}亿`
+  if (count >= 10000) return `${(count / 10000).toFixed(1).replace(/\.0$/, "")}万`
+  return `${count}`
+}
 
 onMounted(async () => {
   initSvga()
@@ -227,7 +283,7 @@ const subscribeGuardian = async () => {
     $modal.msgSuccess('守护开通成功')
     showGuardianModal.value = false
   } catch (e) {
-    $modal.msgError('开通失败，请确认余额充足')
+    $modal.msgError(e?.message || '开通失败，请确认余额充足')
   } finally {
     guardianLoading.value = false
   }
@@ -276,7 +332,31 @@ const handleFollowBtnClick = async () => {
   }
 }
 
-const saveHistory = () => watchApi.saveHistory({ roomId: roomId.value })
+const saveHistory = () => watchApi.saveHistory({ roomId: roomId.value }).catch(() => {})
+
+// 播放器工具栏事件
+const onLineChange = (line) => {
+  void line
+}
+
+const onQualityChange = (quality) => {
+  void quality
+}
+
+const onVolumeChange = (vol) => {
+  playChild.value?.setVolume?.(vol)
+}
+
+const onFullscreen = () => {
+  const playerEl = document.querySelector(".player-box")
+  if (playerEl) {
+    if (document.fullscreenElement) {
+      document.exitFullscreen()
+    } else {
+      playerEl.requestFullscreen()
+    }
+  }
+}
 
 const initSvga = () => {
   svgaPlayer.value = new SVGA.Player("#svga-wrap")
@@ -314,22 +394,58 @@ const getRoomExtraInfo = async () => {
 
 const getRecommendRooms = async () => {
   try {
-    const res = await liveApi.listLivingRooms({})
-    const categoryId = roomInfo.value?.categoryInfo?.id || roomInfo.value?.categoryId
-    recommendRooms.value = (res?.data?.list || [])
-      .filter((item) => Number(item.id) !== roomId.value)
-      .sort((a, b) => {
-        const aSame = (a.categoryInfo?.id || a.categoryId) === categoryId ? 1 : 0
-        const bSame = (b.categoryInfo?.id || b.categoryId) === categoryId ? 1 : 0
-        return bSame - aSame || Number(b.popularity || 0) - Number(a.popularity || 0)
-      })
-      .slice(0, 4)
+    const res = await recommendApi.getSimilarRooms(roomId.value, 4)
+    const data = res?.data
+    recommendRooms.value = Array.isArray(data) ? data : (data?.list || [])
   } catch (error) {
-    recommendRooms.value = []
+    try {
+      const res = await liveApi.listLivingRooms({})
+      const categoryId = roomInfo.value?.categoryInfo?.id || roomInfo.value?.categoryId
+      recommendRooms.value = (res?.data?.list || [])
+        .filter((item) => Number(item.id) !== roomId.value)
+        .sort((a, b) => {
+          const aSame = (a.categoryInfo?.id || a.categoryId) === categoryId ? 1 : 0
+          const bSame = (b.categoryInfo?.id || b.categoryId) === categoryId ? 1 : 0
+          return bSame - aSame || Number(b.popularity || 0) - Number(a.popularity || 0)
+        })
+        .slice(0, 4)
+    } catch (fallbackError) {
+      recommendRooms.value = []
+    }
   }
 }
 
-const handleSendGift = () => {
+const extractGiftName = (text = "") => {
+  const normalized = String(text || "").trim()
+  const sentMatch = normalized.match(/送出了?\s*(.+?)(?:\s*x\s*\d+|\s*\*\s*\d+|$)/)
+  if (sentMatch?.[1]) return sentMatch[1].trim()
+  const rewardMatch = normalized.match(/赠送了\s*(.+?)(?:\s*x\s*\d+|\s*\*\s*\d+|$)/)
+  return rewardMatch?.[1]?.trim() || ""
+}
+
+const extractSenderName = (text = "") => {
+  const normalized = String(text || "").trim()
+  const match = normalized.match(/^(.+?)(?:\s*送出了?|\s*赠送了)/)
+  return match?.[1]?.trim() || ""
+}
+
+const resolveGiftPayload = (payload, fallbackSender = "") => {
+  if (payload && typeof payload === "object") {
+    const text = payload.text || payload.content || ""
+    return {
+      giftName: payload.giftName || extractGiftName(text) || "小心心",
+      senderName: payload.senderName || payload.nickname || extractSenderName(text) || fallbackSender || "",
+    }
+  }
+  return {
+    giftName: payload || "小心心",
+    senderName: fallbackSender || "",
+  }
+}
+
+const handleSendGift = (payload, senderName) => {
+  const gift = resolveGiftPayload(payload, senderName)
+  giftEffectsRef.value?.playGiftEffect(gift.giftName, gift.senderName)
   playSvga("svga/angel.svga")
 }
 
@@ -342,6 +458,11 @@ const copyRoomLink = async () => {
   }
 }
 
+const handleSendWelcome = (msg) => {
+  navigator.clipboard.writeText(msg)
+  $modal.msgSuccess("欢迎语已复制，请在弹幕框粘贴发送")
+}
+
 const goLogin = () => {
   router.push("/login")
 }
@@ -349,42 +470,69 @@ const goLogin = () => {
 
 <style scoped lang="scss">
 .room-page {
-  max-width: 1440px;
+  max-width: 1500px;
   margin: 0 auto;
-  padding: 18px 24px 42px;
+  padding: 14px 20px 42px;
 }
 
 .room-shell {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
-  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 14px;
   align-items: start;
 }
 
+.player-column {
+  min-width: 0;
+}
+
 .room-head,
-.player-box,
-.player-bar,
+.watch-stage,
 .gift-section,
 .detail-section,
 .chat-column,
 .recommend-section {
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--border);
   border-radius: 8px;
   background: #fff;
+  box-shadow: var(--shadow);
 }
 
 .room-head {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   align-items: center;
-  padding: 16px;
+  min-height: 78px;
+  padding: 12px 14px;
+  border-color: rgba(255, 153, 0, 0.16);
+  background:
+    linear-gradient(135deg, rgba(255, 153, 0, 0.09), rgba(255, 255, 255, 0) 44%),
+    #fff;
+}
+
+.anchor-avatar-wrap {
+  position: relative;
+  flex: 0 0 auto;
 }
 
 .anchor-avatar {
-  width: 58px;
-  height: 58px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   object-fit: cover;
+  background: #eef1f5;
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.anchor-live-dot {
+  position: absolute;
+  right: 0;
+  bottom: 2px;
+  width: 13px;
+  height: 13px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--danger);
 }
 
 .head-copy {
@@ -394,37 +542,110 @@ const goLogin = () => {
 
 .head-meta {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
-  color: #d96c00;
   font-size: 12px;
 }
 
-.head-copy h1 {
-  margin: 8px 0 4px;
-  color: #1f2937;
-  font-size: 22px;
-  line-height: 1.3;
+.head-meta span {
+  height: 21px;
+  padding: 0 7px;
+  border-radius: 4px;
+  color: var(--accent);
+  background: var(--accent-light);
+  font-weight: 700;
+  line-height: 22px;
 }
 
-.head-copy p {
-  margin: 0;
+.head-copy h1 {
+  margin: 7px 0 4px;
   overflow: hidden;
-  color: #909399;
+  color: var(--text-primary);
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1.3;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.anchor-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.anchor-line strong {
+  flex: 0 0 auto;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.anchor-line span {
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.head-stats {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+  padding: 0 4px;
+}
+
+.head-stats div {
+  min-width: 58px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.76);
+  text-align: center;
+}
+
+.head-stats strong,
+.head-stats span {
+  display: block;
+}
+
+.head-stats strong {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.head-stats span {
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
 .head-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+  justify-content: flex-end;
+}
+
+.watch-stage {
+  margin-top: 12px;
+  overflow: hidden;
+  border-color: #11141b;
+  background: #080a0f;
+  box-shadow: 0 18px 46px rgba(5, 6, 9, 0.18);
 }
 
 .player-box {
   position: relative;
-  margin-top: 12px;
-  min-height: 620px;
+  min-height: 552px;
   overflow: hidden;
-  background: #050505;
+  border: 0;
+  border-radius: 0;
+  background: #050609;
+  box-shadow: none;
 }
 
 .player-empty {
@@ -435,6 +656,9 @@ const goLogin = () => {
   gap: 8px;
   text-align: center;
   color: #e5e7eb;
+  background:
+    linear-gradient(135deg, rgba(255, 153, 0, 0.13), transparent 34%),
+    #050609;
 }
 
 .player-empty strong {
@@ -452,38 +676,49 @@ const goLogin = () => {
   pointer-events: none;
 }
 
-.player-bar {
+.watch-underbar {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-top: 12px;
-  padding: 12px 16px;
+  gap: 14px;
+  padding: 12px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.72);
+  background: #11141b;
 }
 
-.bar-tags {
+.watch-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 7px;
+  min-width: 0;
 }
 
-.bar-tags span {
-  padding: 5px 10px;
+.watch-tags span {
+  height: 24px;
+  padding: 0 9px;
   border-radius: 4px;
-  background: #fff7ed;
-  color: #d96c00;
+  color: #ffd84d;
+  background: rgba(255, 153, 0, 0.16);
   font-size: 12px;
+  font-weight: 800;
+  line-height: 24px;
 }
 
-.bar-note {
-  color: #909399;
+.watch-underbar p {
+  margin: 0;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.56);
   font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .gift-section,
 .detail-section,
 .recommend-section {
   margin-top: 12px;
-  padding: 16px;
+  padding: 14px;
 }
 
 .section-head {
@@ -496,13 +731,14 @@ const goLogin = () => {
 
 .section-head h2 {
   margin: 0;
-  color: #1f2937;
+  color: var(--text-primary);
   font-size: 18px;
+  font-weight: 900;
 }
 
 .section-head span,
 .detail-section p {
-  color: #909399;
+  color: var(--text-muted);
 }
 
 .detail-section p {
@@ -512,14 +748,42 @@ const goLogin = () => {
 
 .chat-column {
   position: sticky;
-  top: 94px;
+  top: 74px;
   overflow: hidden;
+  border-color: var(--border);
+  background: #fff;
+  box-shadow: 0 16px 36px rgba(21, 24, 32, 0.08);
+}
+
+.chat-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  padding: 8px;
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+}
+
+.chat-tabs button {
+  height: 34px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  background: transparent;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.chat-tabs button.active {
+  color: var(--accent);
+  background: var(--accent-light);
 }
 
 .recommend-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
+  gap: 12px;
 }
 
 @media (max-width: 1180px) {
@@ -542,14 +806,22 @@ const goLogin = () => {
   }
 
   .room-head,
-  .player-bar,
+  .watch-underbar,
   .section-head {
     align-items: flex-start;
     flex-direction: column;
   }
 
+  .head-stats {
+    display: none;
+  }
+
   .player-box {
     min-height: 360px;
+  }
+
+  .head-actions {
+    justify-content: flex-start;
   }
 
   .recommend-grid {

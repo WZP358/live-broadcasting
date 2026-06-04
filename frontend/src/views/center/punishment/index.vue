@@ -1,74 +1,84 @@
 <template>
   <div class="security-status">
-    <div class="security-shield">
-      <div class="shield-icon">
-        <div class="score">
-          <span class="score-number">100</span>
-          <span class="score-text">直播间运营评分</span>
-        </div>
+    <section class="security-main">
+      <div class="score-card">
+        <span class="score-number">100</span>
+        <span class="score-text">运营评分</span>
       </div>
-    </div>
-    <div class="security-info">
-      <h2 class="security-title">直播间运营情况极佳</h2>
-      <p class="security-subtitle">请继续保持哦</p>
-      <div class="last-login">
-        <!-- <span class="login-time">最近于 2025-07-23 00:42:41 </span> -->
-        <span class="login-location">最近无违规记录</span>
+      <div class="security-info">
+        <h2 class="security-title">直播间运营情况良好</h2>
+        <p class="security-subtitle">最近无违规记录，请继续保持健康互动氛围。</p>
       </div>
-    </div>
+    </section>
+
+    <section class="security-panel">
+      <div class="status-row">
+        <span>内容状态</span>
+        <strong>正常</strong>
+      </div>
+      <div class="status-row">
+        <span>最近记录</span>
+        <strong>暂无违规</strong>
+      </div>
+      <div class="status-row">
+        <span>互动建议</span>
+        <strong>保持友好弹幕和清晰直播标题</strong>
+      </div>
+    </section>
   </div>
 </template>
 
-<script setup>
-</script>
+<script setup></script>
 
 <style lang="scss" scoped>
 .security-status {
-  background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
-  padding: 40px;
-  display: flex;
-  align-items: center;
-  gap: 40px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(76, 175, 80, 0.2);
-}
-
-.security-shield {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
   gap: 16px;
 }
 
-.shield-icon {
-  position: relative;
-  width: 170px;
-  height: 170px;
-  background-image: url('@/assets/img/icon_high.png');
-  background-size: 100% 100%;
+.security-main,
+.security-panel {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.security-main {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 30px;
+  background:
+    linear-gradient(90deg, rgba(255, 153, 0, 0.14), rgba(255, 216, 77, 0.05)),
+    #fff;
+}
+
+.score-card {
+  width: 150px;
+  height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.score {
+  flex-direction: column;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ffd84d, #ff9900);
+  color: #1f232b;
   text-align: center;
 }
 
 .score-number {
   display: block;
-  font-size: 48px;
-  font-weight: bold;
-  color: #fff;
-  line-height: 1;
   margin-bottom: 4px;
+  font-size: 48px;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .score-text {
   display: block;
   font-size: 14px;
-  color: #fff;
-  font-weight: 500;
+  font-weight: 800;
 }
 
 .security-info {
@@ -76,67 +86,69 @@
 }
 
 .security-title {
-  font-size: 32px;
-  font-weight: bold;
-  color: #2E7D32;
-  margin: 0 0 8px 0;
+  margin: 0 0 8px;
+  color: var(--text-primary);
+  font-size: 28px;
+  font-weight: 900;
   line-height: 1.2;
 }
 
 .security-subtitle {
+  margin: 0;
+  color: var(--text-secondary);
   font-size: 16px;
-  color: #4CAF50;
-  margin: 0 0 24px 0;
 }
 
-.last-login {
+.security-panel {
+  padding: 18px 22px;
+}
+
+.status-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #666;
-  padding: 12px 0;
-  border-top: 1px solid rgba(76, 175, 80, 0.2);
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
 }
 
-.login-time {
-  font-weight: 500;
+.status-row:last-child {
+  border-bottom: 0;
 }
 
-.login-location {
-  color: #888;
+.status-row span {
+  color: var(--text-secondary);
 }
 
-.arrow-icon {
-  margin-left: auto;
-  opacity: 0.6;
-  transition: opacity 0.2s;
+.status-row strong {
+  color: var(--text-primary);
 }
 
-.last-login:hover .arrow-icon {
-  opacity: 1;
-}
-
-/* 响应式设计 */
 @media (max-width: 768px) {
-  .security-status {
+  .security-main {
+    align-items: flex-start;
     flex-direction: column;
-    text-align: center;
-    padding: 24px;
     gap: 24px;
+    padding: 24px;
+  }
+
+  .score-card {
+    width: 130px;
+    height: 130px;
+  }
+
+  .score-number {
+    font-size: 40px;
   }
 
   .security-title {
     font-size: 24px;
   }
 
-  .shield-icon {
-    width: 100px;
-    height: 120px;
-  }
-
-  .score-number {
-    font-size: 36px;
+  .status-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <a-tag v-if="val === '男'" color="blue" :bordered="false">
+    <a-tag v-if="val === '男'" color="orange" :bordered="false">
         <template #icon>
             <ManOutlined />
         </template>
@@ -33,8 +33,8 @@ defineProps({
     font-size: 12px;
 
     &.male {
-        background-color: #e6f7ff;
-        color: #1890ff;
+        background-color: #fff8dc;
+        color: #ff9900;
     }
 
     &.female {

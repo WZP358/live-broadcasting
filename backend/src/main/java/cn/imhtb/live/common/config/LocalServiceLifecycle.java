@@ -69,6 +69,10 @@ public class LocalServiceLifecycle {
     }
 
     private void startService(String serviceName) {
+        if (!StringUtils.hasText(serviceName)) {
+            return;
+        }
+
         ServiceSpec spec = getServiceSpec(serviceName);
         if (spec == null) {
             log.warn("Unknown PulseLive local service: {}", serviceName);
@@ -124,12 +128,18 @@ public class LocalServiceLifecycle {
             ));
         }
 
+        if ("live-caption".equals(serviceName)) {
+            return new ServiceSpec(serviceName, Collections.singletonList(
+                    getIntProperty("pulselive.caption-port", "PULSELIVE_CAPTION_PORT", 8200)
+            ));
+        }
+
         return null;
     }
 
     private ProcessBuilder createServiceProcess(ServiceSpec spec) {
         if ("local-live".equals(spec.getName())) {
-            Path localLiveDir = projectRoot.resolve("tools").resolve("local_live");
+            Path localLiveDir = projectRoot.resolve("local-services").resolve("live-server");
             ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "npm", "start");
             builder.directory(localLiveDir.toFile());
             builder.environment().put("RTMP_PORT", String.valueOf(spec.getPorts().get(0)));
@@ -140,7 +150,7 @@ public class LocalServiceLifecycle {
         if ("maxine-denoise".equals(spec.getName())) {
             ProcessBuilder builder = new ProcessBuilder(
                     resolvePython().toString(),
-                    projectRoot.resolve("tools").resolve("deepfilternet_denoise").resolve("server.py").toString(),
+                    projectRoot.resolve("ai-services").resolve("deepfilternet3").resolve("server").resolve("server.py").toString(),
                     "--port",
                     String.valueOf(spec.getPorts().get(0))
             );
@@ -149,10 +159,22 @@ public class LocalServiceLifecycle {
         }
 
         if ("live-guard".equals(spec.getName())) {
-            Path guardDir = projectRoot.resolve("models").resolve("live_check");
+            Path guardDir = projectRoot.resolve("ai-services").resolve("vision-guard").resolve("server");
             ProcessBuilder builder = new ProcessBuilder(resolvePython().toString(), "vision_guard.py");
             builder.directory(guardDir.toFile());
             builder.environment().put("YOLO_CONFIG_DIR", guardDir.resolve(".ultralytics").toString());
+            return builder;
+        }
+
+        if ("live-caption".equals(spec.getName())) {
+            Path captionDir = projectRoot.resolve("ai-services").resolve("live-agent");
+            ProcessBuilder builder = new ProcessBuilder(
+                    resolvePython().toString(),
+                    "stt_server.py",
+                    "--port",
+                    String.valueOf(spec.getPorts().get(0))
+            );
+            builder.directory(captionDir.toFile());
             return builder;
         }
 
@@ -160,7 +182,7 @@ public class LocalServiceLifecycle {
     }
 
     private Path resolvePython() {
-        Path venvPython = projectRoot.resolve("models").resolve("live_check")
+        Path venvPython = projectRoot.resolve("ai-services").resolve("vision-guard").resolve("server")
                 .resolve("venv").resolve("Scripts").resolve("python.exe");
         if (Files.exists(venvPython)) {
             return venvPython;
@@ -257,9 +279,9 @@ public class LocalServiceLifecycle {
 
         Path current = Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize();
         for (Path candidate = current; candidate != null; candidate = candidate.getParent()) {
-            if (Files.exists(candidate.resolve("tools").resolve("local_live").resolve("package.json"))
-                    && Files.exists(candidate.resolve("tools").resolve("deepfilternet_denoise").resolve("server.py"))
-                    && Files.exists(candidate.resolve("models").resolve("live_check").resolve("vision_guard.py"))) {
+            if (Files.exists(candidate.resolve("local-services").resolve("live-server").resolve("package.json"))
+                    && Files.exists(candidate.resolve("ai-services").resolve("deepfilternet3").resolve("server").resolve("server.py"))
+                    && Files.exists(candidate.resolve("ai-services").resolve("vision-guard").resolve("server").resolve("vision_guard.py"))) {
                 return candidate;
             }
         }

@@ -11,7 +11,7 @@
         <div class="rank-board">
           <div class="rank-item" :class="`rank-item-${item.rankNo}`" v-for="item in displayRanks" :key="item.key">
             <div class="rank-badge">NO.{{ item.rankNo }}</div>
-            <img class="avatar" :src="item.avatar || fallbackAvatar" />
+            <img class="avatar" :src="item.avatar || fallbackAvatar" @error="onImgError" />
             <span class="name">{{ item.nickName }}</span>
             <span class="charm">{{ formatIntimacy(item.intimacyValue) }}</span>
           </div>
@@ -21,12 +21,21 @@
         <div class="rank-dropdown-item" v-for="item in rankList" :key="item.userId">
           <div class="rank-dropdown-left">
             <span class="rank-dropdown-no" :class="`rank-no-${item.rankNo}`">{{ item.rankNo }}</span>
-            <img class="rank-dropdown-avatar" :src="item.avatar || fallbackAvatar" />
+            <img class="rank-dropdown-avatar" :src="item.avatar || fallbackAvatar" @error="onImgError" />
             <span class="rank-dropdown-name">{{ item.nickName || `观众${item.userId}` }}</span>
           </div>
           <span class="rank-dropdown-value">{{ formatIntimacy(item.intimacyValue) }}</span>
         </div>
         <a-empty v-if="rankList.length === 0" description="本月还没有亲密值记录" />
+      </div>
+    </div>
+    <div class="chat-tools">
+      <span>弹幕互动</span>
+      <div>
+        <button :class="{ active: isUserScrolling }" type="button" @click="toggleScrollLock">
+          {{ isUserScrolling ? "跟随" : "锁屏" }}
+        </button>
+        <button type="button" @click="clearMessages">清屏</button>
       </div>
     </div>
     <div class="chat-main" ref="scrollContainer" @scroll="handleScroll">
@@ -39,11 +48,12 @@
       </a-list>
     </div>
     <div class="chat-footer">
+      <p class="chat-safety">请勿轻信任何主播或个人提供的兼职信息，谨防受骗</p>
       <a-flex vertical>
         <a-textarea class="chat-box" v-model:value="messageText" :placeholder="mutedUntil > Date.now() ? '你已被禁言' : isLogin ? '发个弹幕，别刷屏' : '登录后才能发送弹幕'"
           show-count :maxlength="20" :disabled="!isLogin || mutedUntil > Date.now()" :auto-size="{ minRows: 2, maxRows: 2 }" />
         <div class="chat-btn-wrapper">
-          <span class="popularity">{{ popularity || 0 }}人在线</span>
+          <span class="popularity">{{ formatOnlineCount(popularity) }}在线</span>
           <a-button type="primary" size="small" @click="handleMessageSend" :disabled="!isLogin || mutedUntil > Date.now()">发送</a-button>
         </div>
       </a-flex>
@@ -84,7 +94,8 @@ const isLogin = computed(() => store.user().isLogin)
 const popularity = ref(1)
 const rankList = ref([])
 const showRankDropdown = ref(false)
-const fallbackAvatar = "https://dummyimage.com/96x96/f5f5f5/999999.png&text=TOP"
+import { FALLBACK_AVATAR, onImgError } from "@/utils/fallback";
+const fallbackAvatar = FALLBACK_AVATAR
 
 let websocket = null
 const reconnectTimer = ref()
@@ -121,6 +132,7 @@ onMounted(async () => {
     }]
   }
   getPopularity()
+  startPopularityPolling()
   getIntimacyRank()
 })
 
@@ -146,7 +158,26 @@ const scrollToBottom = () => {
   })
 }
 
-const handleScroll = () => { }
+const toggleScrollLock = () => {
+  if (isUserScrolling.value) {
+    isUserScrolling.value = false
+    scrollToBottom()
+    return
+  }
+  isUserScrolling.value = true
+}
+
+const clearMessages = () => {
+  data.value = []
+  isUserScrolling.value = false
+}
+
+const handleScroll = () => {
+  const el = scrollContainer.value
+  if (!el) return
+  const distanceToBottom = el.scrollHeight - el.scrollTop - el.clientHeight
+  isUserScrolling.value = distanceToBottom > 72
+}
 
 /**
  * 发送消息
@@ -179,6 +210,13 @@ const getIntimacyRank = async () => {
   }
 }
 
+const formatOnlineCount = (value) => {
+  const count = Number(value || 0)
+  if (!Number.isFinite(count) || count <= 0) return "0"
+  if (count >= 10000) return `${(count / 10000).toFixed(1).replace(/\.0$/, "")}万`
+  return `${count}`
+}
+
 const formatIntimacy = (value) => {
   const num = Number(value || 0)
   if (Number.isInteger(num)) {
@@ -190,20 +228,21 @@ const formatIntimacy = (value) => {
 /**
  * 获取人气
  */
-const getPopularity = () => {
+const getPopularity = async () => {
+  try {
+    const res = await ChatApi.getPopularity({ roomId: roomId.value })
+    popularity.value = res?.data ?? 0
+  } catch (error) {
+    popularity.value = popularity.value || 0
+  }
+}
+
+const startPopularityPolling = () => {
   popularityInterval.value = setInterval(async () => {
-    try {
-      const res = await ChatApi.getPopularity({ roomId: roomId.value })
-      popularity.value = res?.data ?? 0
-    } catch (error) {
-      // silently ignore polling errors
-    }
+    await getPopularity()
   }, 10000)
 }
 
-/**
- * 初始化 WebSocket连接
- */
 const initWebSocket = () => {
   const token = store.user().userToken
   if (!token) {
@@ -212,25 +251,19 @@ const initWebSocket = () => {
   let wsUrl = "ws://" + location.hostname + ":10022?token=" + encodeURIComponent(token)
   websocket = new WebSocket(wsUrl)
   websocket.onopen = () => {
-    console.log("WebSocket连接成功!")
     connetRoom()
-    // 开启跳包
     heartBeat()
   }
   websocket.onclose = (e) => {
     if (e.code === 1000) {
-      // 服务端主动断开，不需要重连
       return
     }
     if (e.code === 1005) {
-      // 手动关闭，不需要重连
       return
     }
     reconnectWebSocket()
   }
-  websocket.onerror = () => {
-    // WebSocket连接时发生错误
-  }
+  websocket.onerror = () => {}
   websocket.onmessage = (event) => {
     let message
     try {
@@ -245,7 +278,6 @@ const initWebSocket = () => {
       }))
       return
     }
-    // 处理礼物
     if (message.method === "giftMessage") {
       emits("sendGift", message.data)
       return
@@ -267,7 +299,6 @@ const initWebSocket = () => {
         nickname: "系统消息",
         text: message.data,
       })
-      // 从消息内容中提取禁言时长
       const match = message.data && message.data.match(/(\d+)\s*秒/)
       mutedUntil.value = Date.now() + (match ? parseInt(match[1]) * 1000 : 60 * 1000)
       $modal.msgWarning(message.data)
@@ -275,12 +306,10 @@ const initWebSocket = () => {
     }
     if (message.method === "kickUser") {
       $modal.msgError(message.data)
-      // 踢出后断开 WebSocket
       websocket && websocket.close(1000)
       return
     }
     data.value = data.value.concat(message.data)
-    // 裁剪消息列表长度
     if (data.value.length > 40) {
       data.value = data.value.slice(-40)
     }
@@ -298,13 +327,10 @@ const formatGuardReason = (payload = {}) => {
   }
   const label = payload.violationLabel || labelMap[payload.violationType]
   return label
-    ? `直播内容触发违规检测：${label}，直播间已封停`
-    : "直播内容触发违规检测，直播间已封停"
+    ? `直播内容不符合平台规范：${label}，直播间已关闭`
+    : "直播内容不符合平台规范，直播间已关闭"
 }
 
-/**
- * 连接房间
- */
 const connetRoom = () => {
   let reqBody = {
     msgType: 0,
@@ -317,9 +343,6 @@ const connetRoom = () => {
   }
 }
 
-/**
- * 发送心跳包
- */
 const heartBeat = () => {
   heartBeatTimer.value = setInterval(() => {
     if (websocket && websocket.readyState === 1) {
@@ -328,14 +351,9 @@ const heartBeat = () => {
   }, 9500)
 }
 
-/**
- * 重新连接websocket
- */
 const reconnectWebSocket = () => {
-  // 关闭心跳定时器
   heartBeatTimer.value && clearInterval(heartBeatTimer.value)
   heartBeatTimer.value = null
-  // 关闭原来的重连定时器
   reconnectTimer.value && clearTimeout(reconnectTimer.value)
   reconnectTimer.value = null
 
@@ -343,11 +361,9 @@ const reconnectWebSocket = () => {
     return
   }
   lockReconnect.value = true
-  // 重连次数上限
   if (maxReconnectCount.value == 0) {
     return
   }
-  // 重连
   reconnectTimer.value = setTimeout(() => {
     initWebSocket()
     maxReconnectCount.value--
@@ -359,14 +375,14 @@ const handleMuteUser = async (targetUserId, duration) => {
   try {
     await moderatorApi.mute({ roomId: roomId.value, targetUserId, duration: duration || 60 })
     $modal.msgSuccess('已禁言')
-  } catch (e) { $modal.msgError('禁言失败') }
+  } catch (e) { $modal.msgError(e?.message || '禁言失败') }
 }
 
 const handleKickUser = async (targetUserId) => {
   try {
     await moderatorApi.kick({ roomId: roomId.value, targetUserId })
     $modal.msgSuccess('已踢出')
-  } catch (e) { $modal.msgError('踢出失败') }
+  } catch (e) { $modal.msgError(e?.message || '踢出失败') }
 }
 
 const close = () => {
@@ -379,27 +395,27 @@ const close = () => {
 
 <style lang="scss" scoped>
 .chat-wrapper {
-  height: 100%;
-  background-color: #fff;
   display: flex;
   flex-direction: column;
   position: relative;
   flex: 1;
-  height: 710px;
+  height: 700px;
   min-height: 0;
   overflow: hidden;
+  background: #f7f8fa;
 
   .chat-top-section {
     position: relative;
     z-index: 2;
     flex: 0 0 auto;
-    height: 180px;
+    height: 176px;
   }
 
   .chat-header {
-    height: 158px;
-    background-color: #fff;
-    padding: 12px 10px 8px;
+    height: 154px;
+    background:
+      linear-gradient(180deg, rgba(255, 153, 0, 0.13), rgba(255, 248, 220, 0.62) 48%, #fff 100%);
+    padding: 12px 10px 9px;
     box-sizing: border-box;
 
     .rank-toolbar {
@@ -411,7 +427,13 @@ const close = () => {
 
       .rank-title {
         font-size: 14px;
-        font-weight: 600;
+        font-weight: 900;
+        color: var(--text-primary);
+      }
+
+      :deep(.ant-btn-link) {
+        color: var(--accent);
+        font-weight: 800;
       }
 
       .rank-dropdown-wrapper {
@@ -422,14 +444,15 @@ const close = () => {
 
   .rank-dropdown-list {
     position: absolute;
-    top: calc(100% - 4px);
+    top: calc(100% - 8px);
     left: 10px;
     right: 10px;
     max-height: 320px;
     overflow-y: auto;
+    border: 1px solid var(--border);
     background: #fff;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 12px 28px rgba(21, 24, 32, 0.14);
     z-index: 100;
     opacity: 0;
     visibility: hidden;
@@ -449,14 +472,14 @@ const close = () => {
       align-items: center;
       justify-content: space-between;
       padding: 8px 12px;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid var(--border);
 
       &:last-child {
         border-bottom: none;
       }
 
       &:hover {
-        background-color: #fafafa;
+        background: var(--accent-light);
       }
     }
 
@@ -469,24 +492,29 @@ const close = () => {
     }
 
     .rank-dropdown-no {
-      width: 22px;
+      flex: 0 0 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #f2f4f7;
       font-size: 12px;
       color: #999;
       text-align: center;
+      line-height: 24px;
+      font-weight: 800;
 
       &.rank-no-1 {
         color: #f3d26b;
-        font-weight: 600;
+        background: #fff4cf;
       }
 
       &.rank-no-2 {
         color: #c8d0da;
-        font-weight: 600;
+        background: #f3f5f8;
       }
 
       &.rank-no-3 {
         color: #d8a478;
-        font-weight: 600;
+        background: #fff2e8;
       }
     }
 
@@ -509,7 +537,7 @@ const close = () => {
 
     .rank-dropdown-value {
       font-size: 12px;
-      color: #ec8303;
+      color: var(--accent);
       font-weight: 600;
       margin-left: 8px;
     }
@@ -528,26 +556,30 @@ const close = () => {
 .rank-board {
   display: flex;
   gap: 8px;
+  align-items: end;
+  height: 112px;
 }
 
 .rank-item {
   flex: 1;
   min-width: 0;
   text-align: center;
-  padding: 10px 6px 8px;
-  border-radius: 4px;
+  padding: 8px 6px 7px;
+  border-radius: 8px;
   background: linear-gradient(180deg, #fff8ef 0%, #fff 100%);
   border: 1px solid #f6e3c7;
+  box-shadow: 0 4px 12px rgba(255, 153, 0, 0.06);
 
   .rank-badge {
     font-size: 11px;
     color: #8c6b35;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
+    font-weight: 900;
   }
 
   .avatar {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     border: 2px solid #d7d7d7;
     border-radius: 50%;
     object-fit: cover;
@@ -556,7 +588,7 @@ const close = () => {
   .name {
     display: block;
     font-size: 12px;
-    margin-top: 8px;
+    margin-top: 6px;
     color: #333;
     white-space: nowrap;
     overflow: hidden;
@@ -565,15 +597,18 @@ const close = () => {
 
   .charm {
     display: block;
-    margin-top: 4px;
+    margin-top: 2px;
     color: #ec8303;
     font-size: 12px;
+    font-weight: 800;
   }
 }
 
 .rank-item-1 {
   background: linear-gradient(180deg, #fff4cf 0%, #fff 100%);
   border-color: #f3d26b;
+  padding-top: 12px;
+  min-height: 108px;
 
   .avatar {
     border: gold 2px solid;
@@ -592,39 +627,119 @@ const close = () => {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  padding: 8px 7px 6px;
+  background:
+    linear-gradient(180deg, #fff 0, #f8f9fb 100%);
 
   &::-webkit-scrollbar {
     display: none;
   }
 
   ::v-deep(.ant-list-item) {
-    padding: 5px 8px;
+    padding: 2px 0;
     border: none;
   }
+
+  ::v-deep(.ant-list-items) {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.chat-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  height: 32px;
+  padding: 0 10px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.chat-tools span {
+  color: var(--text-secondary);
+  font-weight: 800;
+}
+
+.chat-tools div {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.chat-tools button {
+  height: 22px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 4px;
+  color: var(--text-muted);
+  background: #f4f6f9;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.chat-tools button:hover,
+.chat-tools button.active {
+  color: var(--accent);
+  background: var(--accent-light);
 }
 
 .chat-footer {
   flex: 0 0 auto;
   padding: 10px;
+  border-top: 1px solid var(--border);
+  background: #fff;
+
+  .chat-safety {
+    margin: 0 0 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    color: #9a6a2e;
+    background: #fff7e8;
+    font-size: 12px;
+    line-height: 1.4;
+  }
 
   .chat-box {
     width: 100%;
+    border-radius: 8px;
+
+    :deep(.ant-input) {
+      border-radius: 8px;
+      border-color: #e3e7ee;
+      background: #f7f8fa;
+      font-size: 13px;
+      resize: none;
+    }
+
+    :deep(.ant-input:focus) {
+      background: #fff;
+    }
   }
 
   .chat-btn-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
     margin-top: 10px;
     text-align: right;
 
     ::v-deep(.ant-btn) {
-      width: 75px;
-      // color: $font-color-light;
+      width: 82px;
+      height: 28px;
+      border-radius: 16px;
+      font-weight: 800;
     }
 
     .popularity {
-      float: left;
-      color: $font-color-light;
+      color: var(--text-muted);
       font-size: 12px;
-      margin: 5px 0px 0px 0px;
+      margin: 0;
+      white-space: nowrap;
     }
   }
 

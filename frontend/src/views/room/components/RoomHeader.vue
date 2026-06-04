@@ -1,11 +1,11 @@
 <template>
   <div class="room-head">
-    <img class="anchor-avatar" :src="roomInfo.userInfo?.avatar || fallbackAvatar" alt="" />
+    <img class="anchor-avatar" :src="roomInfo.userInfo?.avatar || fallbackAvatar" alt="" @error="onImgError" />
     <div class="head-copy">
       <div class="head-meta">
         <span>{{ roomInfo.categoryInfo?.name || "推荐" }}</span>
         <span>{{ roomInfo.status === 1 ? "直播中" : "未开播" }}</span>
-        <span>{{ roomInfo.browserLive ? "低延迟" : "标准线路" }}</span>
+        <span>{{ roomInfo.browserLive ? "流畅观看" : "高清观看" }}</span>
       </div>
       <h1>{{ roomInfo.title || "直播间" }}</h1>
       <p>{{ roomInfo.notice || roomInfo.introduce || "欢迎来到直播间，文明互动，理性消费。" }}</p>
@@ -20,6 +20,7 @@
 </template>
 
 <script setup>
+import { onImgError } from "@/utils/fallback"
 defineProps({
   fallbackAvatar: {
     type: String,

@@ -3,18 +3,18 @@
     <section class="recharge-hero">
       <div>
         <h2>充值中心</h2>
-        <p>统一整理充值档位与收银入口，界面风格与钱包、账单页保持一致。</p>
+        <p>选择开心果档位，支付完成后可用于直播间送礼互动。</p>
       </div>
       <div class="recharge-hero__tips">
         <QuestionCircleOutlined />
-        <span>使用支付宝沙箱收银台完成充值</span>
+        <span>支付完成后余额会自动到账</span>
       </div>
     </section>
 
     <section class="recharge-card">
       <div class="recharge-card__header">
         <h3>选择充值档位</h3>
-        <p>点击卡片即可选择套餐，后续可继续扩展优惠活动与支付方式。</p>
+        <p>点击卡片选择套餐，再前往收银台完成支付。</p>
       </div>
 
       <div class="charge-grid">
@@ -35,7 +35,7 @@
       <div class="recharge-actions">
         <a-button type="primary" size="large" :loading="paying" @click="recharge">前往收银台</a-button>
         <div class="agreement">
-          <a-checkbox :checked="true">我已阅读并同意<a>《AntLive 开心果用户协议》</a></a-checkbox>
+          <a-checkbox :checked="true">我已阅读并同意<a>《PulseLive 开心果用户协议》</a></a-checkbox>
         </div>
       </div>
     </section>
@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, ref } from "vue"
+import { onBeforeMount, onBeforeUnmount, ref } from "vue"
 import { useRouter } from "vue-router"
 import WalletApi from "@/api/wallet"
 import { QuestionCircleOutlined } from "@ant-design/icons-vue"
@@ -53,16 +53,26 @@ const router = useRouter()
 const currentSelect = ref(1)
 const paying = ref(false)
 let payWatcher = null
-const chargeList = ref([
-  { id: 1, value: 6, fee: "6.00" },
-  { id: 2, value: 10, fee: "10.00" },
-  { id: 3, value: 50, fee: "50.00" },
-  { id: 4, value: 100, fee: "100.00" },
-  { id: 5, value: 128, fee: "128.00" },
-  { id: 6, value: 256, fee: "256.00" },
-  { id: 7, value: 328, fee: "328.00" },
-  { id: 8, value: 648, fee: "648.00" },
-])
+const chargeList = ref([])
+
+onBeforeMount(async () => {
+  try {
+    const res = await WalletApi.getRechargeTiers()
+    chargeList.value = res?.data || []
+    if (chargeList.value.length) currentSelect.value = chargeList.value[0].id
+  } catch (e) {
+    chargeList.value = [
+      { id: 1, value: 6, fee: "6.00" },
+      { id: 2, value: 10, fee: "10.00" },
+      { id: 3, value: 50, fee: "50.00" },
+      { id: 4, value: 100, fee: "100.00" },
+      { id: 5, value: 128, fee: "128.00" },
+      { id: 6, value: 256, fee: "256.00" },
+      { id: 7, value: 328, fee: "328.00" },
+      { id: 8, value: 648, fee: "648.00" },
+    ]
+  }
+})
 
 const handleItemClick = (item) => {
   currentSelect.value = item.id
@@ -121,7 +131,7 @@ const recharge = async () => {
     cashierWindow.document.open()
     cashierWindow.document.write(res.data.payHtml)
     cashierWindow.document.close()
-    $modal.msgSuccess("已打开支付宝沙箱收银台，支付完成后余额会自动入账")
+    $modal.msgSuccess("已打开收银台，支付完成后余额会自动入账")
     watchPaymentResult(cashierWindow, beforeBalance)
   } catch (error) {
     cashierWindow.close()
@@ -144,10 +154,10 @@ onBeforeUnmount(() => {
 
 .recharge-hero,
 .recharge-card {
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
 }
 
 .recharge-hero {
@@ -175,9 +185,10 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  border-radius: 999px;
-  background: #eff6ff;
-  color: #2563eb;
+  border-radius: 18px;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-weight: 800;
 }
 
 .recharge-card {
@@ -204,7 +215,7 @@ onBeforeUnmount(() => {
 .charge-item {
   padding: 22px 18px;
   border: 1px solid rgba(148, 163, 184, 0.18);
-  border-radius: 20px;
+  border-radius: 8px;
   background: #fff;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -233,13 +244,13 @@ onBeforeUnmount(() => {
 
 .charge-item b {
   margin-top: 18px;
-  color: #0f766e;
+  color: var(--accent);
   font-size: 22px;
 }
 
 .charge-item--active {
-  border-color: #2563eb;
-  background: linear-gradient(135deg, rgba(239, 246, 255, 0.9), rgba(255, 255, 255, 1));
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(255, 248, 220, 0.95), rgba(255, 255, 255, 1));
 }
 
 .recharge-actions {

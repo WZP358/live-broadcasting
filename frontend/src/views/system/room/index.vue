@@ -1,6 +1,6 @@
 <template>
   <AdminPageLayout title="直播间管理" description="统一审核直播间标题、分类、公告和封禁状态，支持按房间、主播、开播状态快速筛查。">
-    <AdminCard title="筛选条件" subtitle="参考若依后台列表页结构，先检索再操作">
+    <AdminCard title="筛选条件" subtitle="先检索直播间，再进行查看、编辑或封禁操作">
       <a-form ref="formRef" :model="formState" @finish="getData">
         <div class="admin-query-grid">
           <a-form-item name="id" label="房间ID">
@@ -32,7 +32,7 @@
       </a-form>
     </AdminCard>
 
-    <AdminCard title="房间列表" subtitle="列表、详情和编辑分别拆到独立文件，便于持续扩展">
+    <AdminCard title="房间列表" subtitle="集中查看直播间资料、开播状态和运营操作">
       <AdminToolbar>
         <template #left>
           <a-button type="primary" @click="getData">查询</a-button>

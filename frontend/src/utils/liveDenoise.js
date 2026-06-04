@@ -150,7 +150,7 @@ export const createLiveDenoiseEngine = ({
         } catch (error) {
           // ignore
         }
-        reject(new Error("连接本地 DeepFilterNet3 降噪服务超时，请确认服务已经启动。"))
+        reject(new Error("降噪准备超时，已继续使用原始麦克风声音。"))
       }, WS_OPEN_TIMEOUT)
 
       ws.binaryType = "arraybuffer"
@@ -174,7 +174,7 @@ export const createLiveDenoiseEngine = ({
             return
           }
           if (payload.type === "error") {
-            const errorMessage = payload.message || "本地 DeepFilterNet3 降噪服务初始化失败。"
+            const errorMessage = "降噪初始化失败，已继续使用原始麦克风声音。"
             notifyState("error", errorMessage)
             if (!settled) {
               settled = true
@@ -197,7 +197,7 @@ export const createLiveDenoiseEngine = ({
         if (!useEnhancedOutput) {
           useEnhancedOutput = true
           dryQueue.clear()
-          notifyState("active", "DeepFilterNet3 已开始输出增强音频。")
+          notifyState("active", "降噪正在优化声音。")
         }
         enhancedQueue.push(chunk)
       }
@@ -206,7 +206,7 @@ export const createLiveDenoiseEngine = ({
         if (!settled) {
           settled = true
           window.clearTimeout(timer)
-          reject(new Error("本地 DeepFilterNet3 降噪服务连接失败。"))
+          reject(new Error("降噪暂不可用，已继续使用原始麦克风声音。"))
         }
       }
 
@@ -214,12 +214,12 @@ export const createLiveDenoiseEngine = ({
         if (!settled) {
           settled = true
           window.clearTimeout(timer)
-          reject(new Error("本地 DeepFilterNet3 降噪服务已关闭。"))
+          reject(new Error("降噪已断开，已继续使用原始麦克风声音。"))
           return
         }
         if (started) {
           useEnhancedOutput = false
-          notifyState("fallback", "本地 DeepFilterNet3 降噪服务已断开，已回退到原始麦克风音频。")
+          notifyState("fallback", "降噪已断开，已继续使用原始麦克风声音。")
         }
       }
     })
@@ -227,14 +227,14 @@ export const createLiveDenoiseEngine = ({
   const start = async (sourceStream) => {
     const [audioTrack] = sourceStream.getAudioTracks()
     if (!audioTrack) {
-      throw new Error("未检测到麦克风音轨，无法启用 DeepFilterNet3 降噪。")
+      throw new Error("未检测到麦克风声音，暂时无法启用降噪。")
     }
 
     await stop()
 
     const AudioContextCtor = window.AudioContext || window.webkitAudioContext
     if (!AudioContextCtor) {
-      throw new Error("当前浏览器不支持 Web Audio，无法接入 DeepFilterNet3。")
+      throw new Error("当前浏览器暂不支持实时降噪。")
     }
 
     audioContext = new AudioContextCtor({
@@ -300,7 +300,7 @@ export const createLiveDenoiseEngine = ({
     renderNode.connect(silentGainNode)
 
     started = true
-    notifyState("warming", "本地 DeepFilterNet3 已连接，正在等待增强音频输出。")
+    notifyState("warming", "降噪正在准备中。")
 
     const processedStream = new MediaStream([
       ...sourceStream.getVideoTracks(),

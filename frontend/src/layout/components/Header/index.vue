@@ -24,7 +24,8 @@ import HeaderRightBar from "../HeaderRightBar/index.vue"
 .header {
   padding: 0 20px;
   background-color: #fff;
-  border-bottom: 1px solid #dcdfe6;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 0 rgba(21, 24, 32, 0.02);
 }
 
 .header-inner {
@@ -46,11 +47,11 @@ import HeaderRightBar from "../HeaderRightBar/index.vue"
 
 .header-title strong {
   font-size: 15px;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .header-title span {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-secondary);
 }
 </style>

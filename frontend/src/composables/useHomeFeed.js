@@ -96,7 +96,6 @@ export function useHomeFeed() {
     return filterRoomsByKeyword(allLivingRooms.value, keyword.value);
   });
   const displayRooms = computed(() => {
-    // 推荐模式且无分类无搜索时，优先使用个性化推荐
     if (feedMode.value === "recommend" && !currentSelectCategory.value && !keyword.value.trim() && recommendedRooms.value.length > 0) {
       const ids = new Set(allLivingRooms.value.map(r => r.id));
       const freshRecommended = recommendedRooms.value.filter(r => ids.has(r.id));

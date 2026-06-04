@@ -1,37 +1,47 @@
 <template>
   <div class="guardian-page">
-    <a-tabs v-model:activeKey="activeTab">
-      <a-tab-pane key="myGuardians" tab="我的守护">
-        <a-table :columns="guardianColumns" :data-source="guardians" :pagination="false" row-key="id" size="small" :loading="guardianLoading">
-          <template #bodyCell="{ column, record }">
-            <template v-if="column.key === 'level'">
-              <a-tag :color="levelColor(record.level)">{{ levelName(record.level) }}</a-tag>
+    <section class="guardian-header">
+      <div>
+        <h2>守护管理</h2>
+        <p>查看你的守护关系、粉丝团状态和续费情况。</p>
+      </div>
+      <a-button @click="refresh">刷新</a-button>
+    </section>
+
+    <section class="guardian-card">
+      <a-tabs v-model:activeKey="activeTab">
+        <a-tab-pane key="myGuardians" tab="我的守护">
+          <a-table :columns="guardianColumns" :data-source="guardians" :pagination="false" row-key="id" size="middle" :loading="guardianLoading">
+            <template #bodyCell="{ column, record }">
+              <template v-if="column.key === 'level'">
+                <a-tag :color="levelColor(record.level)">{{ levelName(record.level) }}</a-tag>
+              </template>
+              <template v-if="column.key === 'expireTime'">
+                {{ formatDate(record.expireTime) }}
+              </template>
+              <template v-if="column.key === 'action'">
+                <a-button type="link" size="small" v-if="record.autoRenew" @click="cancelRenew(record)">取消续费</a-button>
+                <a-button type="link" size="small" @click="renewGuardian(record)">续费</a-button>
+              </template>
             </template>
-            <template v-if="column.key === 'expireTime'">
-              {{ formatDate(record.expireTime) }}
+          </a-table>
+          <a-empty v-if="!guardianLoading && guardians.length === 0" description="还没有守护任何主播" />
+        </a-tab-pane>
+        <a-tab-pane key="myFans" tab="我的粉丝团">
+          <a-table :columns="fanColumns" :data-source="fans" :pagination="false" row-key="id" size="middle" :loading="fanLoading">
+            <template #bodyCell="{ column, record }">
+              <template v-if="column.key === 'level'">
+                <a-tag :color="levelColor(record.level)">{{ levelName(record.level) }}</a-tag>
+              </template>
+              <template v-if="column.key === 'expireTime'">
+                {{ formatDate(record.expireTime) }}
+              </template>
             </template>
-            <template v-if="column.key === 'action'">
-              <a-button type="link" size="small" v-if="record.autoRenew" @click="cancelRenew(record)">取消续费</a-button>
-              <a-button type="link" size="small" @click="renewGuardian(record)">续费</a-button>
-            </template>
-          </template>
-        </a-table>
-        <a-empty v-if="!guardianLoading && guardians.length === 0" description="还没有守护任何主播" />
-      </a-tab-pane>
-      <a-tab-pane key="myFans" tab="我的粉丝团">
-        <a-table :columns="fanColumns" :data-source="fans" :pagination="false" row-key="id" size="small" :loading="fanLoading">
-          <template #bodyCell="{ column, record }">
-            <template v-if="column.key === 'level'">
-              <a-tag :color="levelColor(record.level)">{{ levelName(record.level) }}</a-tag>
-            </template>
-            <template v-if="column.key === 'expireTime'">
-              {{ formatDate(record.expireTime) }}
-            </template>
-          </template>
-        </a-table>
-        <a-empty v-if="!fanLoading && fans.length === 0" description="还没有粉丝开通守护" />
-      </a-tab-pane>
-    </a-tabs>
+          </a-table>
+          <a-empty v-if="!fanLoading && fans.length === 0" description="还没有粉丝开通守护" />
+        </a-tab-pane>
+      </a-tabs>
+    </section>
   </div>
 </template>
 
@@ -104,9 +114,56 @@ const renewGuardian = (record) => {
   $modal.msg('续费功能请前往直播间操作')
 }
 
-onMounted(() => { loadGuardians(); loadFans() })
+const refresh = () => {
+  loadGuardians()
+  loadFans()
+}
+
+onMounted(() => { refresh() })
 </script>
 
-<style scoped>
-.guardian-page { padding: 8px 0; }
+<style scoped lang="scss">
+.guardian-page {
+  display: grid;
+  gap: 16px;
+}
+
+.guardian-header,
+.guardian-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.guardian-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 24px;
+}
+
+.guardian-header h2 {
+  margin: 0 0 8px;
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.guardian-header p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.guardian-card {
+  padding: 18px;
+}
+
+@media (max-width: 720px) {
+  .guardian-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
 </style>

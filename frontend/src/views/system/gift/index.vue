@@ -1,5 +1,5 @@
 <template>
-  <AdminPageLayout title="礼物管理" description="统一维护礼物名称、价格、图标与排序。这里去掉了演示性质的假上传，改成真实项目更常见的 URL 字段管理方式。">
+  <AdminPageLayout title="礼物管理" description="统一维护礼物名称、价格、图标、排序和上下架状态。">
     <AdminCard title="筛选条件" subtitle="按礼物名称检索配置项">
       <a-form ref="formRef" :model="formState" @finish="getData">
         <div class="admin-query-grid">
@@ -14,7 +14,7 @@
       </a-form>
     </AdminCard>
 
-    <AdminCard title="礼物列表" subtitle="通过弹窗维护配置，页面职责保持单一">
+    <AdminCard title="礼物列表" subtitle="集中管理礼物展示、价格和可用状态">
       <AdminToolbar>
         <template #left>
           <a-button type="primary" @click="getData">查询</a-button>

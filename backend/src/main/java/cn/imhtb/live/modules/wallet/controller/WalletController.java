@@ -38,7 +38,11 @@ public class WalletController {
     private final IWalletLogService walletLogService;
     private final AlipayProperties alipayProperties;
 
-    @ApiOperation("获取钱包")
+    @ApiOperation("获取充值金额档位列表")
+    @GetMapping("/recharge-tiers")
+    public ApiResponse<?> rechargeTiers() {
+        return ApiResponse.ofSuccess(walletService.getRechargeTiers());
+    }
     @GetMapping("/getBalance")
     public ApiResponse<Wallet> getBalance() {
         Wallet wallet = walletService.getWallet(UserHolder.getUserId());

@@ -43,18 +43,19 @@ const breadcrumbs = computed(() =>
 <style scoped lang="scss">
 .system-layout {
   min-height: 100vh;
-  background: #f5f7f9;
+  background: #f3f5f8;
 }
 
 .system-layout__content {
-  padding: 16px 20px 0;
+  padding: 18px 22px 0;
 }
 
 .system-layout__breadcrumb {
-  padding: 12px 18px;
-  border: 1px solid #ebeef5;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
   border-radius: 8px;
   background: #fff;
+  box-shadow: var(--shadow);
 }
 
 .system-layout__page {

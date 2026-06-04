@@ -3,7 +3,7 @@
     <section class="bill-header">
       <div>
         <h2>交易记录</h2>
-        <p>统一查看钱包收支明细，方便用户核对最近的充值、消费和其他余额变动。</p>
+        <p>查看钱包收支明细，方便核对最近的充值、消费和余额变动。</p>
       </div>
       <a-button @click="getData">刷新</a-button>
     </section>
@@ -105,10 +105,10 @@ onMounted(() => {
 
 .bill-header,
 .bill-card {
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
 }
 
 .bill-header {
@@ -121,13 +121,14 @@ onMounted(() => {
 
 .bill-header h2 {
   margin: 0 0 8px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 24px;
+  font-weight: 900;
 }
 
 .bill-header p {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   line-height: 1.7;
 }
 

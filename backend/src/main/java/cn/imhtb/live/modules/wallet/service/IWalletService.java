@@ -37,4 +37,9 @@ public interface IWalletService extends IService<Wallet> {
 
     boolean completeAlipayReturn(Map<String, String> params);
 
+    /**
+     * 获取充值金额档位（从配置或数据库读取）。
+     */
+    java.util.List<java.util.Map<String, Object>> getRechargeTiers();
+
 }

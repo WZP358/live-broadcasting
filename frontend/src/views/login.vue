@@ -8,10 +8,11 @@ const router = useRouter()
 const route = useRoute()
 const store = useStore()
 const formRef = ref()
+const loading = ref(false)
 
 const formState = reactive({
-  username: "root",
-  password: "123123",
+  username: "",
+  password: "",
 })
 
 const rules = {
@@ -24,6 +25,7 @@ const redirect = computed(() => (route.query.redirect ? decodeURIComponent(route
 const submitForm = async () => {
   try {
     await formRef.value.validateFields()
+    loading.value = true
     const result = await store.user().login(formState)
     if (!result) {
       $modal.msgError("账号或密码错误")
@@ -35,235 +37,563 @@ const submitForm = async () => {
     $modal.msgSuccess(userStore.isAdmin ? "管理员登录成功" : "登录成功")
     router.push(target)
   } catch (error) {
-    // validation error handled by form
+    if (error?.message && !String(error.message).includes("validate")) {
+      $modal.msgError(error.message)
+    }
+  } finally {
+    loading.value = false
   }
 }
 
 const goHome = () => {
   router.push("/")
 }
+
+const goSearch = () => {
+  router.push("/search")
+}
+
+const goLiveCenter = () => {
+  router.push("/center/live/live-settings")
+}
 </script>
 
 <template>
-  <div class="login-page">
-    <section class="login-shell">
-      <div class="login-brand">
-        <button class="brand-mark" type="button" @click="goHome">A</button>
-        <div>
-          <div class="brand-name">PulseLive</div>
-          <div class="brand-desc">统一登录后，系统会根据账号权限自动进入用户端或管理后台。</div>
-        </div>
-      </div>
+  <div class="auth-page">
+    <header class="auth-topbar">
+      <button class="auth-brand" type="button" @click="goHome">
+        <span class="auth-brand__mark">PL</span>
+        <span class="auth-brand__copy">
+          <strong>PulseLive</strong>
+          <em>弹幕互动直播平台</em>
+        </span>
+      </button>
+      <nav class="auth-nav">
+        <button type="button" @click="goHome">首页</button>
+        <button type="button" @click="goSearch">搜索</button>
+        <button type="button" @click="goLiveCenter">开播</button>
+      </nav>
+    </header>
 
-      <div class="login-main">
-        <div class="login-copy">
-          <span class="eyebrow">Live Platform</span>
-          <h1>一个入口，进入对应系统</h1>
-          <p>
-            普通账号登录后进入直播前台与个人中心，管理员账号登录后直接进入后台控制台，不再区分两个网址和两套登录逻辑。
-          </p>
-
-          <div class="feature-list">
-            <div class="feature-item">
-              <strong>统一认证</strong>
-              <span>用户与管理员共用一套登录入口</span>
-            </div>
-            <div class="feature-item">
-              <strong>自动分流</strong>
-              <span>根据角色自动跳转前台或后台</span>
-            </div>
-            <div class="feature-item">
-              <strong>直播闭环</strong>
-              <span>开播、观看、管理都在同一平台完成</span>
-            </div>
+    <main class="auth-shell">
+      <section class="live-showcase">
+        <div class="showcase-player">
+          <div class="player-toolbar">
+            <span>推荐直播</span>
+            <strong>直播中</strong>
+          </div>
+          <div class="danmaku danmaku--one">今晚这场太热闹了</div>
+          <div class="danmaku danmaku--two">主播这波操作可以</div>
+          <div class="danmaku danmaku--three">关注走一波</div>
+          <div class="player-caption">
+            <span class="room-tag">游戏赛事</span>
+            <h1>登录后回到你常看的直播间</h1>
+            <p>关注、弹幕、礼物和开播中心都在一个账号里。</p>
           </div>
         </div>
 
-        <div class="login-card">
-          <div class="card-header">
-            <h2>账号登录</h2>
-            <p>输入账号和密码继续</p>
+        <div class="showcase-grid">
+          <article class="showcase-tile">
+            <span>热门分区</span>
+            <strong>游戏赛事</strong>
+            <em>28.4万热度</em>
+          </article>
+          <article class="showcase-tile">
+            <span>正在上升</span>
+            <strong>娱乐连麦</strong>
+            <em>弹幕互动中</em>
+          </article>
+          <article class="showcase-tile">
+            <span>推荐主播</span>
+            <strong>创作直播间</strong>
+            <em>正在开播</em>
+          </article>
+        </div>
+
+        <div class="rank-panel">
+          <div class="rank-panel__head">
+            <h2>站内热榜</h2>
+            <span>实时</span>
           </div>
-
-          <a-form ref="formRef" :model="formState" class="login-form" :rules="rules" layout="vertical">
-            <a-form-item name="username" label="账号">
-              <a-input v-model:value="formState.username" size="large" placeholder="请输入账号" />
-            </a-form-item>
-            <a-form-item name="password" label="密码">
-              <a-input-password v-model:value="formState.password" size="large" placeholder="请输入密码" />
-            </a-form-item>
-            <a-form-item>
-              <a-button type="primary" size="large" block @click="submitForm">登录并进入系统</a-button>
-            </a-form-item>
-          </a-form>
-
-          <div class="login-footer">
-            <router-link to="/register">没有账号？去注册</router-link>
-            <span v-if="redirect" class="redirect-tip">登录后将返回原目标页面</span>
+          <div class="rank-row">
+            <span>1</span>
+            <strong>峡谷冲分夜</strong>
+            <em>42.1万</em>
+          </div>
+          <div class="rank-row">
+            <span>2</span>
+            <strong>户外城市漫游</strong>
+            <em>18.8万</em>
+          </div>
+          <div class="rank-row">
+            <span>3</span>
+            <strong>新人主播首秀</strong>
+            <em>9.6万</em>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <section class="auth-card">
+        <div class="auth-tabs">
+          <button class="active" type="button">登录</button>
+          <router-link to="/register">注册</router-link>
+        </div>
+
+        <div class="card-header">
+          <h2>欢迎回来</h2>
+          <p>登录您的账号以继续观看</p>
+        </div>
+
+        <a-form ref="formRef" :model="formState" class="login-form" :rules="rules" layout="vertical">
+          <a-form-item name="username">
+            <template #label>
+              <span class="form-label">账号</span>
+            </template>
+            <a-input v-model:value="formState.username" size="large" placeholder="请输入账号" autocomplete="off" />
+          </a-form-item>
+          <a-form-item name="password">
+            <template #label>
+              <span class="form-label">密码</span>
+            </template>
+            <a-input-password v-model:value="formState.password" size="large" placeholder="请输入密码" autocomplete="off" @keyup.enter="submitForm" />
+          </a-form-item>
+          <a-form-item>
+            <a-button type="primary" size="large" block :loading="loading" class="auth-submit" @click="submitForm">
+              <span v-if="!loading">登录</span>
+            </a-button>
+          </a-form-item>
+        </a-form>
+
+        <div class="auth-card__footer">
+          <router-link to="/register">没有账号？<span>立即注册</span></router-link>
+          <span v-if="redirect">登录后返回原页面</span>
+        </div>
+      </section>
+    </main>
   </div>
 </template>
 
 <style scoped lang="scss">
-.login-page {
+.auth-page {
   min-height: 100vh;
-  padding: 40px 24px;
+  padding: 22px 24px 42px;
   background:
-    radial-gradient(circle at top left, rgba(14, 116, 144, 0.18), transparent 28%),
-    radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.16), transparent 30%),
-    linear-gradient(135deg, #f6f8fc 0%, #eef3fb 42%, #f8fafc 100%);
+    linear-gradient(180deg, #151820 0, #151820 300px, var(--bg-primary) 300px),
+    var(--bg-primary);
 }
 
-.login-shell {
-  max-width: 1280px;
+.auth-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1180px;
+  height: 48px;
+  margin: 0 auto 22px;
+}
+
+.auth-brand,
+.auth-nav button {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.auth-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  color: #fff;
+}
+
+.auth-brand__mark {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--accent-gradient);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.auth-brand__copy {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+}
+
+.auth-brand__copy strong {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.auth-brand__copy em {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 12px;
+  font-style: normal;
+}
+
+.auth-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.auth-nav button {
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 17px;
+  color: var(--header-text);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.auth-nav button:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.auth-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 16px;
+  max-width: 1180px;
   margin: 0 auto;
 }
 
-.login-brand {
+.live-showcase,
+.auth-card {
+  min-width: 0;
+}
+
+.showcase-player,
+.rank-panel,
+.auth-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #fff;
+  box-shadow: var(--shadow-hover);
+}
+
+.showcase-player {
+  position: relative;
+  min-height: 390px;
+  overflow: hidden;
+  border-color: rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(90deg, rgba(5, 6, 9, 0.86), rgba(5, 6, 9, 0.28)),
+    linear-gradient(135deg, #242936, #533014 52%, #0b2625);
+}
+
+.player-toolbar {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  left: 14px;
+  z-index: 2;
   display: flex;
   align-items: center;
-  gap: 16px;
-}
-
-.brand-mark {
-  width: 52px;
-  height: 52px;
-  border: 0;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #1677ff, #0f4cdd);
-  color: #fff;
-  font-size: 24px;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 18px 34px rgba(22, 119, 255, 0.22);
-}
-
-.brand-name {
-  font-size: 22px;
-  font-weight: 700;
-  color: #111827;
-}
-
-.brand-desc {
-  margin-top: 4px;
-  color: #64748b;
-}
-
-.login-main {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) 420px;
-  gap: 28px;
-  margin-top: 32px;
-}
-
-.login-copy,
-.login-card {
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
-  backdrop-filter: blur(16px);
-}
-
-.login-copy {
-  padding: 40px;
-}
-
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(22, 119, 255, 0.08);
-  color: #0f4cdd;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.74);
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-weight: 800;
 }
 
-.login-copy h1 {
-  margin: 18px 0 12px;
-  font-size: 42px;
-  line-height: 1.15;
-  color: #0f172a;
+.player-toolbar strong {
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 4px;
+  color: #fff;
+  background: var(--danger);
+  line-height: 22px;
 }
 
-.login-copy p {
-  max-width: 620px;
+.danmaku {
+  position: absolute;
+  right: 28px;
+  max-width: 240px;
+  padding: 7px 10px;
+  border-radius: 4px;
+  color: #fff;
+  background: rgba(5, 6, 9, 0.44);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.danmaku--one {
+  top: 94px;
+}
+
+.danmaku--two {
+  top: 150px;
+  right: 84px;
+}
+
+.danmaku--three {
+  top: 208px;
+  right: 46px;
+}
+
+.player-caption {
+  position: absolute;
+  right: 32px;
+  bottom: 32px;
+  left: 32px;
+  color: #fff;
+}
+
+.room-tag {
+  display: inline-flex;
+  height: 24px;
+  padding: 0 9px;
+  border-radius: 4px;
+  color: #fff;
+  background: var(--accent);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 24px;
+}
+
+.player-caption h1 {
+  margin: 14px 0 8px;
+  color: #fff;
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.player-caption p {
   margin: 0;
-  color: #475569;
-  font-size: 16px;
-  line-height: 1.9;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 14px;
 }
 
-.feature-list {
+.showcase-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 32px;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-.feature-item {
-  padding: 18px;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%);
-  border: 1px solid #dbeafe;
+.showcase-tile {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #fff;
+  box-shadow: var(--shadow);
 }
 
-.feature-item strong {
+.showcase-tile span,
+.showcase-tile em {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-style: normal;
+}
+
+.showcase-tile strong {
   display: block;
-  margin-bottom: 10px;
-  font-size: 16px;
-  color: #0f172a;
+  margin: 6px 0 4px;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.feature-item span {
-  color: #64748b;
-  line-height: 1.7;
+.rank-panel {
+  margin-top: 10px;
+  padding: 14px;
 }
 
-.login-card {
-  padding: 28px;
+.rank-panel__head,
+.rank-row {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.rank-panel__head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.rank-panel__head h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.rank-panel__head span {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.rank-row {
+  padding: 9px 0;
+  border-top: 1px solid var(--border);
+}
+
+.rank-row span {
+  color: var(--accent);
+  font-weight: 900;
+}
+
+.rank-row strong {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rank-row em {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-style: normal;
+}
+
+.auth-card {
+  align-self: start;
+  padding: 22px;
+}
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 4px;
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+}
+
+.auth-tabs button,
+.auth-tabs a {
+  display: grid;
+  height: 34px;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  background: transparent;
+  font-size: 14px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.auth-tabs .active {
+  color: var(--accent);
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.card-header {
+  margin: 24px 0;
 }
 
 .card-header h2 {
   margin: 0;
-  font-size: 28px;
-  color: #0f172a;
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: 900;
 }
 
 .card-header p {
-  margin: 8px 0 0;
-  color: #64748b;
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
 }
 
 .login-form {
-  margin-top: 24px;
+  :deep(.ant-form-item) {
+    margin-bottom: 18px;
+  }
 }
 
-.login-footer {
+.form-label {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+:deep(.ant-input),
+:deep(.ant-input-affix-wrapper) {
+  border-radius: 8px;
+  border-color: var(--border);
+}
+
+.auth-submit {
+  height: 44px;
+  border-radius: 8px;
+  font-weight: 900;
+}
+
+.auth-card__footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 8px;
-  font-size: 14px;
+  color: var(--text-muted);
+  font-size: 12px;
 }
 
-.redirect-tip {
-  color: #94a3b8;
+.auth-card__footer a {
+  color: var(--text-secondary);
+  text-decoration: none;
 }
 
-@media (max-width: 960px) {
-  .login-main {
+.auth-card__footer span,
+.auth-card__footer a:hover {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+@media (max-width: 940px) {
+  .auth-shell {
     grid-template-columns: 1fr;
   }
 
-  .feature-list {
+  .auth-card {
+    order: -1;
+  }
+}
+
+@media (max-width: 620px) {
+  .auth-page {
+    padding: 14px;
+  }
+
+  .auth-topbar {
+    height: auto;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .auth-nav {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .showcase-player {
+    min-height: 310px;
+  }
+
+  .player-caption h1 {
+    font-size: 24px;
+  }
+
+  .danmaku {
+    display: none;
+  }
+
+  .showcase-grid {
     grid-template-columns: 1fr;
   }
 }

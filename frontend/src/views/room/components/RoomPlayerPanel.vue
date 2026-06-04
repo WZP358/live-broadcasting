@@ -8,8 +8,8 @@
         :browser-live="Boolean(roomInfo.browserLive)"
       />
       <div v-else class="player-empty">
-        <strong>{{ roomInfo.status === 1 ? "直播流准备中" : "主播暂未开播" }}</strong>
-        <span>{{ roomInfo.status === 1 ? "稍等片刻，播放器会在拉到流后显示画面。" : "可以先关注主播，开播后再回来观看。" }}</span>
+        <strong>{{ roomInfo.status === 1 ? "直播画面准备中" : "主播暂未开播" }}</strong>
+        <span>{{ roomInfo.status === 1 ? "稍等片刻，直播画面马上出现。" : "可以先关注主播，开播后再回来观看。" }}</span>
       </div>
       <div id="svga-wrap"></div>
     </div>
@@ -17,7 +17,7 @@
     <div class="player-bar">
       <div class="bar-tags">
         <span>{{ roomInfo.categoryInfo?.name || "未分类" }}</span>
-        <span>{{ roomInfo.pullUrl ? "有回退播放源" : "等待播放源" }}</span>
+        <span>{{ roomInfo.pullUrl ? "备用观看已准备" : "等待直播画面" }}</span>
         <span>{{ isLogin ? "已登录" : "游客观看" }}</span>
       </div>
       <div class="bar-note">弹幕、送礼、关注会写入用户行为；游客只保留观看能力。</div>

@@ -24,13 +24,13 @@
 .logo-badge {
   width: 36px;
   height: 36px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, #409eff, #2b6cf0);
+  border-radius: 8px;
+  background: var(--accent-gradient);
   display: grid;
   place-items: center;
   font-size: 14px;
-  font-weight: 700;
-  box-shadow: 0 8px 18px rgba(64, 158, 255, 0.2);
+  font-weight: 900;
+  box-shadow: 0 8px 18px rgba(255, 153, 0, 0.24);
 }
 
 .logo-copy {

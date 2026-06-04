@@ -20,7 +20,7 @@
       </a-form>
     </AdminCard>
 
-    <AdminCard title="用户列表" subtitle="页面采用列配置与弹窗解耦，便于后续扩展">
+    <AdminCard title="用户列表" subtitle="集中查看用户资料、账号状态和运营操作">
       <AdminToolbar>
         <template #left>
           <a-button type="primary" @click="getData">查询</a-button>
@@ -28,7 +28,7 @@
           <a-button @click="getData">刷新</a-button>
         </template>
         <template #right>
-          <span>默认按最新分页结果展示，可继续扩展导出、批量封禁等后台动作</span>
+          <span>默认按最新结果展示，可继续执行导出、批量封禁等运营动作</span>
         </template>
       </AdminToolbar>
 

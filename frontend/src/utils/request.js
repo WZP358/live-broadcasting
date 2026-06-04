@@ -49,9 +49,9 @@ service.interceptors.response.use((response) => {
 
     const errMsg = msg || error.message || ''
     if (errMsg === 'Network Error') {
-        $modal.msgError('后端服务连接异常')
+        $modal.msgError('网络连接异常，请稍后重试')
     } else if (errMsg.includes('timeout')) {
-        $modal.msgError('系统接口请求超时')
+        $modal.msgError('请求超时，请稍后重试')
     } else if (error?.response?.status >= 500) {
         $modal.msgError('服务器繁忙，请稍后重试')
     } else {

@@ -15,7 +15,7 @@
               :before-upload="beforeUpload"
               @change="handleChange"
             >
-              <img class="avatar-img" :src="displayAvatar" alt="avatar" />
+              <img class="avatar-img" :src="displayAvatar" alt="avatar" @error="onImgError" />
               <div v-if="loading" class="avatar-loading">
                 <loading-outlined />
               </div>
@@ -26,7 +26,7 @@
             <h2>{{ userInfo.nickName || userInfo.nickname || userInfo.username || "直播用户" }}</h2>
             <p>{{ userInfo.signature || "这个人很懒，什么都没留下。" }}</p>
             <div class="summary-tags">
-              <a-tag color="blue">UID {{ userInfo.userId || userInfo.id || "-" }}</a-tag>
+              <a-tag color="gold">UID {{ userInfo.userId || userInfo.id || "-" }}</a-tag>
               <a-tag color="green">{{ userInfo.email ? "已绑定邮箱" : "未绑定邮箱" }}</a-tag>
               <a-tag color="gold">{{ userInfo.mobile ? "已绑定手机" : "未绑定手机" }}</a-tag>
             </div>
@@ -56,7 +56,7 @@
           </div>
           <div class="summary-item">
             <span>身份</span>
-            <strong>{{ userStore.isAdmin ? "管理员 / 主播" : "普通用户 / 主播" }}</strong>
+            <strong>{{ userStore.isAdmin ? "运营账号" : "直播用户" }}</strong>
           </div>
         </div>
       </a-card>
@@ -78,6 +78,7 @@ import SecurityItem from "./SecurityItem.vue"
 import Authentication from "./Authentication.vue"
 import { LoadingOutlined } from "@ant-design/icons-vue"
 import { useStore } from "@/stores"
+import { FALLBACK_AVATAR, onImgError } from "@/utils/fallback"
 import $modal from "@/utils/message"
 import { computed, onMounted, ref } from "vue"
 import { storeToRefs } from "pinia"
@@ -89,8 +90,7 @@ const fileList = ref([])
 const loading = ref(false)
 const imageUrl = ref("")
 
-const fallbackAvatar = "https://dummyimage.com/160x160/e2e8f0/64748b&text=LIVE"
-const displayAvatar = computed(() => imageUrl.value || fallbackAvatar)
+const displayAvatar = computed(() => imageUrl.value || FALLBACK_AVATAR)
 
 const userToken = computed(() => ({
   Authorization: `${store.user().userToken}`,
@@ -143,15 +143,16 @@ const beforeUpload = (file) => {
 }
 
 .profile-card {
-  border-radius: 20px;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.05);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
   min-width: 0;
 }
 
 .profile-card--summary {
   background:
-    radial-gradient(circle at right top, rgba(59, 130, 246, 0.16), transparent 24%),
-    linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+    linear-gradient(135deg, rgba(255, 153, 0, 0.12), rgba(255, 216, 77, 0.06)),
+    #fff;
 }
 
 .summary-header {
@@ -163,12 +164,13 @@ const beforeUpload = (file) => {
 .summary-copy h2 {
   margin: 0;
   font-size: 28px;
-  color: #0f172a;
+  color: var(--text-primary);
+  font-weight: 900;
 }
 
 .summary-copy p {
   margin: 10px 0 0;
-  color: #64748b;
+  color: var(--text-secondary);
   line-height: 1.8;
 }
 
@@ -189,21 +191,21 @@ const beforeUpload = (file) => {
 
 .summary-item {
   padding: 14px 16px;
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.92);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
 }
 
 .summary-item span {
   display: block;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
 .summary-item strong {
   display: block;
   margin-top: 8px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 15px;
   line-height: 1.7;
   word-break: break-word;
@@ -265,7 +267,7 @@ const beforeUpload = (file) => {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  color: #1677ff;
+  color: var(--accent);
   background: rgba(255, 255, 255, 0.68);
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <AdminPageLayout title="认证管理" description="集中处理实名认证审核，兼容旧接口但页面结构已经统一到新的后台框架中。">
+  <AdminPageLayout title="认证管理" description="集中处理实名认证审核，帮助主播更快完成开播资格确认。">
     <AdminCard title="筛选条件" subtitle="可按姓名、证件号和审核状态筛查">
       <a-form ref="formRef" :model="formState" @finish="handleSearch">
         <div class="admin-query-grid">

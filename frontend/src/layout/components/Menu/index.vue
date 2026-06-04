@@ -109,35 +109,36 @@ const buildMenuItems = (menus, parentPaths = []) => {
 <style lang="scss" scoped>
 .sider-menu {
   background-color: transparent;
-  color: rgba(191, 203, 217, 0.92);
+  color: rgba(221, 226, 234, 0.82);
 }
 
 :deep(.sider-menu.ant-menu) {
   background: transparent;
-  color: rgba(191, 203, 217, 0.92);
+  color: rgba(221, 226, 234, 0.82);
 }
 
 :deep(.sider-menu .ant-menu-item),
 :deep(.sider-menu .ant-menu-submenu-title) {
   margin-inline: 8px;
   width: auto;
-  border-radius: 4px;
-  height: 48px;
-  line-height: 48px;
+  border-radius: 8px;
+  height: 44px;
+  line-height: 44px;
 }
 
 :deep(.sider-menu .ant-menu-item-selected) {
-  background: #263445;
+  background: rgba(255, 153, 0, 0.16);
   color: #fff;
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 
 :deep(.sider-menu .ant-menu-item:hover),
 :deep(.sider-menu .ant-menu-submenu-title:hover) {
   color: #fff;
-  background: rgba(38, 52, 69, 0.72);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 :deep(.sider-menu .ant-menu-sub.ant-menu-inline) {
-  background: rgba(38, 52, 69, 0.35);
+  background: rgba(255, 255, 255, 0.035);
 }
 </style>

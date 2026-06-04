@@ -6,26 +6,31 @@
 
 ```text
 .
-├─ backend/                    Spring Boot 后端服务
-│  ├─ src/main/java/           业务接口、直播、聊天、钱包、审核等后端代码
-│  ├─ src/main/resources/      application.yml、application-local.yml、SQL、Mapper
-│  └─ settings.xml             Maven 本地配置
-├─ frontend/                   Vue 3 + Vite 前端
-│  ├─ src/api/                 API 请求封装
-│  ├─ src/views/               页面与业务视图
-│  ├─ src/utils/               WebRTC、降噪、字幕等前端工具
-│  └─ vite.config.js           本地开发代理配置
-├─ models/
-│  ├─ DeepFilterNet/           DeepFilterNet3 模型与代码
-│  └─ live_check/              视觉审核模型服务，YOLO + NudeNet
-├─ tools/
-│  ├─ deepfilternet_denoise/   DeepFilterNet3 WebSocket 降噪服务
-│  └─ local_live/              本地 RTMP / HTTP-FLV 直播媒体服务器
-├─ start-local-live.cmd        启动本地直播媒体服务器
-├─ start-maxine-denoise.cmd    启动 DeepFilterNet3 降噪服务
-├─ start-live-guard.cmd        启动视觉审核模型服务
-└─ stop-local-live.cmd         停止本地直播服务脚本
-```
+├─ apps/
+│  ├─ backend/                 Spring Boot 后端服务
+│  │  ├─ src/main/java/        业务接口、直播、聊天、钱包、审核等后端代码
+│  │  ├─ src/main/resources/   application.yml、application-local.yml、SQL、Mapper
+│  │  └─ settings.xml          Maven 本地配置
+│  ├─ frontend/                Vue 3 + Vite 前端
+│  │  ├─ src/api/              API 请求封装
+│  │  ├─ src/views/            页面与业务视图
+│  │  ├─ src/utils/            WebRTC、降噪、字幕等前端工具
+│  │  └─ vite.config.js        本地开发代理配置
+│  └─ admin/                   Vue 2 管理后台前端
+├─ ai-services/
+│  ├─ deepfilternet3/          DeepFilterNet3 实时降噪
+│  │  ├─ engine/               DeepFilterNet3 模型训练/推理代码
+│  │  ├─ server/               WebSocket 降噪服务 (server.py)
+│  │  └─ weights/              预训练模型权重
+│  └─ vision-guard/            视觉审核服务
+│     ├─ server/               FastAPI 审核服务 (vision_guard.py)
+│     └─ weights/              YOLOv8l + YOLOv8l-pose 权重
+├─ local-services/
+│  ├─ live-server/             本地 RTMP / HTTP-FLV 直播媒体服务器
+│  └─ broadcast-simulator/    直播推流模拟脚本
+├─ docs/
+│  ├─ deployment/              部署文档与 SQL
+│  └─ reports/                 技术报告
 
 ## 服务与端口
 

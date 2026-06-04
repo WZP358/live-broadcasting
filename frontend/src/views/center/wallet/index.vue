@@ -12,7 +12,7 @@
 
       <div class="wallet-actions">
         <a-button type="primary" size="large" @click="gotoCharge">立即充值</a-button>
-        <a-button size="large">提现功能规划中</a-button>
+        <a-button size="large">提现说明</a-button>
       </div>
     </section>
 
@@ -32,7 +32,7 @@
         <div class="wallet-card__header">
           <div>
             <h3>钱包说明</h3>
-            <p>让用户理解余额来源、用途和后续资金动作。</p>
+            <p>了解开心果余额的用途、来源与提现规则。</p>
           </div>
         </div>
 
@@ -47,7 +47,7 @@
           </article>
           <article class="wallet-note">
             <strong>提现说明</strong>
-            <span>当前项目先保留入口样式，后续可接入真实提现审核流程。</span>
+            <span>主播收益结算后可按平台规则发起提现申请。</span>
           </article>
         </div>
       </section>
@@ -135,10 +135,10 @@ onBeforeUnmount(() => {
 
 .wallet-hero,
 .wallet-card {
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #fff;
+  box-shadow: var(--shadow);
 }
 
 .wallet-hero {
@@ -148,8 +148,8 @@ onBeforeUnmount(() => {
   align-items: center;
   padding: 24px 26px;
   background:
-    radial-gradient(circle at right top, rgba(59, 130, 246, 0.14), transparent 22%),
-    linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+    linear-gradient(135deg, rgba(255, 153, 0, 0.14), rgba(255, 216, 77, 0.06)),
+    #fff;
 }
 
 .wallet-balance-card {
@@ -163,23 +163,24 @@ onBeforeUnmount(() => {
   place-items: center;
   width: 60px;
   height: 60px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #0f766e, #38bdf8);
+  border-radius: 8px;
+  background: var(--accent-gradient);
   color: #fff;
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 900;
 }
 
 .wallet-balance-card p,
 .wallet-balance-card span {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .wallet-balance-card h2 {
   margin: 6px 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 34px;
+  font-weight: 900;
 }
 
 .wallet-actions {
@@ -199,13 +200,14 @@ onBeforeUnmount(() => {
 
 .wallet-card__header h3 {
   margin: 0 0 6px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 20px;
+  font-weight: 900;
 }
 
 .wallet-card__header p {
   margin: 0 0 18px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .wallet-notes {
@@ -215,9 +217,9 @@ onBeforeUnmount(() => {
 
 .wallet-note {
   padding: 16px 18px;
-  border-radius: 16px;
-  background: #f8fbff;
-  border: 1px solid #dbeafe;
+  border-radius: var(--radius-md);
+  background: var(--accent-light);
+  border: 1px solid rgba(255, 153, 0, 0.18);
 }
 
 .wallet-note strong,
@@ -226,12 +228,12 @@ onBeforeUnmount(() => {
 }
 
 .wallet-note strong {
-  color: #0f172a;
+  color: var(--text-primary);
   margin-bottom: 6px;
 }
 
 .wallet-note span {
-  color: #64748b;
+  color: var(--text-secondary);
   line-height: 1.7;
 }
 

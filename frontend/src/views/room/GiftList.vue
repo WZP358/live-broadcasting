@@ -1,38 +1,34 @@
 <template>
-  <div class="gift-wrapper">
-    <a-popover overlayClassName="gift-popover" placement="topLeft" trigger="hover" v-for="(item, index) in giftList"
-      :key="item.id">
-      <template #content>
-        <a-flex>
-          <img :src="item.icon" alt="" />
-          <a-flex vertical>
+  <div class="gift-board">
+    <div class="gift-scroller">
+      <a-popover v-for="item in giftList" :key="item.id" overlayClassName="gift-popover" placement="topLeft" trigger="hover">
+        <template #content>
+          <div class="gift-popover__head">
+            <img :src="item.icon" alt="" />
             <div>
-              <span name>{{ item.name }}</span>
-              <span price>{{ item.price }}开心果</span>
+              <strong>{{ item.name }}</strong>
+              <span>{{ item.price }} 开心果</span>
+              <p>{{ item.description || "送礼会增加本房间亲密值" }}</p>
             </div>
-            <span describe>{{ item.description || "送礼会增加本房间亲密值" }}</span>
-          </a-flex>
-        </a-flex>
-        <a-divider />
-        <a-flex>
-          <a-button @click="handleItemClick(1, item)">1个</a-button>
-          <a-button @click="handleItemClick(10, item)">10个</a-button>
-          <a-button @click="handleItemClick(100, item)">100个</a-button>
-        </a-flex>
-      </template>
-      <div class="footer-item" vertical align="center">
-        <img :src="item.icon" alt="" />
-        <span name>{{ item.name }}</span>
-        <span price>{{ item.price }}开心果</span>
-      </div>
-    </a-popover>
-  </div>
-  <a-divider type="vertical" style="height: 100%" />
-  <div class="wallet-wrapper">
-    <div class="footer-item" vertical align="center" @click="handleWalletClick">
-      <img src="../../../src/assets/img/开心果.png" alt="" />
-      <span price style="margin-top: 10px">{{ isLogin ? `余额:${wallet.balance || "0"}个` : "登录后送礼" }}</span>
+          </div>
+          <div class="gift-popover__actions">
+            <a-button @click="handleItemClick(1, item)">1 个</a-button>
+            <a-button @click="handleItemClick(10, item)">10 个</a-button>
+            <a-button type="primary" @click="handleItemClick(100, item)">100 个</a-button>
+          </div>
+        </template>
+        <button class="gift-item" type="button">
+          <img :src="item.icon" alt="" />
+          <strong>{{ item.name }}</strong>
+          <span>{{ item.price }}开心果</span>
+        </button>
+      </a-popover>
     </div>
+
+    <button class="wallet-card" type="button" @click="handleWalletClick">
+      <img src="../../../src/assets/img/开心果.png" alt="" />
+      <span>{{ isLogin ? `余额 ${wallet.balance || "0"}` : "登录后送礼" }}</span>
+    </button>
   </div>
 </template>
 
@@ -93,9 +89,6 @@ const handleItemClick = async (num, item) => {
   }
 }
 
-/**
- * 获取礼物列表
- */
 const getGiftList = async () => {
   try {
     const res = await giftApi.getGiftList()
@@ -106,9 +99,6 @@ const getGiftList = async () => {
   }
 }
 
-/**
- * 获取用户钱包
- */
 const getWallet = async () => {
   try {
     const res = await walletApi.getBalance()
@@ -120,73 +110,139 @@ const getWallet = async () => {
 </script>
 
 <style lang="scss" scoped>
-.gift-wrapper {
-  flex: 1;
-  display: flex;
-
-  .footer-item:hover {
-    background-color: #f5f5f5;
-    cursor: pointer;
-  }
+.gift-board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 126px;
+  gap: 12px;
+  align-items: stretch;
 }
 
-.wallet-wrapper {
-  width: 100px;
+.gift-scroller {
+  display: flex;
+  min-width: 0;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+}
+
+.gift-item,
+.wallet-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #fff;
   cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
-.footer-item {
-  width: 90px;
-  height: 100%;
+.gift-item {
+  display: grid;
+  flex: 0 0 92px;
+  min-height: 92px;
+  place-items: center;
+  gap: 3px;
+  padding: 10px 8px;
+}
+
+.gift-item:hover,
+.wallet-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 153, 0, 0.3);
+  background: var(--accent-light);
+  box-shadow: var(--shadow);
+}
+
+.gift-item img,
+.wallet-card img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.gift-item strong {
+  max-width: 76px;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gift-item span,
+.wallet-card span {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.wallet-card {
+  display: grid;
+  place-items: center;
+  gap: 5px;
+  padding: 10px;
+}
+
+.wallet-card span {
+  color: var(--accent);
+  font-weight: 800;
+  text-align: center;
+}
+
+.gift-popover__head {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  img {
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
-  }
-
-  span[name] {
-    margin-top: 5px;
-    font-size: 14px;
-    color: $font-color;
-  }
-
-  span[price] {
-    font-size: 12px;
-    color: $font-color-light;
-  }
+  gap: 10px;
+  max-width: 260px;
 }
 
-.footer-item:hover {
-  img {
-    transition: transform 0.4s ease;
-    animation: shake 0.4s ease-in-out;
-  }
+.gift-popover__head img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
 }
 
-@keyframes shake {
-  0% {
-    transform: translate(0, 0);
+.gift-popover__head strong,
+.gift-popover__head span,
+.gift-popover__head p {
+  display: block;
+}
+
+.gift-popover__head strong {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.gift-popover__head span {
+  margin-top: 3px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.gift-popover__head p {
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.gift-popover__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+@media (max-width: 640px) {
+  .gift-board {
+    grid-template-columns: 1fr;
   }
 
-  25% {
-    transform: translate(0, -3px);
-  }
-
-  50% {
-    transform: translate(0, 0);
-  }
-
-  75% {
-    transform: translate(0, 3px);
-  }
-
-  100% {
-    transform: translate(0, 0);
+  .wallet-card {
+    grid-auto-flow: column;
+    justify-content: center;
   }
 }
 </style>
