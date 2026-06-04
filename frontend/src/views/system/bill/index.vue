@@ -41,7 +41,7 @@
               {{ index + 1 }}
             </template>
             <template v-else-if="column.key === 'billChange'">
-              <span :style="{ color: Number(record.billChange) >= 0 ? '#16a34a' : '#dc2626', fontWeight: 600 }">
+              <span :style="{ color: Number(record.billChange) >= 0 ? 'var(--success)' : 'var(--danger)', fontWeight: 600 }">
                 {{ Number(record.billChange) >= 0 ? `+${record.billChange}` : `${record.billChange}` }}
               </span>
             </template>

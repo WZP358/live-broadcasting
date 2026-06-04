@@ -132,7 +132,7 @@ onMounted(() => { refresh() })
 .guardian-card {
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: var(--shadow);
 }
 

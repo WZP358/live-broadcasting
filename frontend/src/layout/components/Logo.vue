@@ -17,8 +17,8 @@
   gap: 12px;
   height: 64px;
   padding: 0 16px;
-  color: #fff;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--header-text-active);
+  border-bottom: 1px solid color-mix(in srgb, var(--header-text) 14%, transparent);
 }
 
 .logo-badge {
@@ -30,7 +30,7 @@
   place-items: center;
   font-size: 14px;
   font-weight: 900;
-  box-shadow: 0 8px 18px rgba(255, 153, 0, 0.24);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 26%, transparent);
 }
 
 .logo-copy {
@@ -46,6 +46,6 @@
 
 .logo-copy span {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--header-text);
 }
 </style>

@@ -128,18 +128,18 @@ onMounted(() => {
 <style scoped>
 .pm-page { min-height: 520px; }
 .pm-layout { min-height: 520px; }
-.pm-list-panel { border: 1px solid var(--border); border-radius: 8px; padding: 12px; min-height: 520px; height: 100%; display: flex; flex-direction: column; background: #fff; box-shadow: var(--shadow); }
+.pm-list-panel { border: 1px solid var(--border); border-radius: 8px; padding: 12px; min-height: 520px; height: 100%; display: flex; flex-direction: column; background: var(--bg-card); box-shadow: var(--shadow); }
 .pm-list-header { font-weight: 900; margin-bottom: 8px; color: var(--text-primary); }
 .pm-contact-list { flex: 1; overflow-y: auto; margin-top: 8px; }
 .pm-contact-item { cursor: pointer; border-radius: 6px; }
 .pm-contact-item.active { background: var(--accent-light); }
-.pm-chat-panel { border: 1px solid var(--border); border-radius: 8px; min-height: 520px; height: 100%; display: flex; flex-direction: column; background: #fff; box-shadow: var(--shadow); }
+.pm-chat-panel { border: 1px solid var(--border); border-radius: 8px; min-height: 520px; height: 100%; display: flex; flex-direction: column; background: var(--bg-card); box-shadow: var(--shadow); }
 .pm-chat-header { padding: 12px 14px; border-bottom: 1px solid var(--border); font-weight: 900; color: var(--text-primary); }
-.pm-chat-messages { flex: 1; overflow-y: auto; padding: 14px; background: #fafbfc; }
+.pm-chat-messages { flex: 1; overflow-y: auto; padding: 14px; background: var(--bg-secondary); }
 .pm-msg-row { margin-bottom: 12px; display: flex; flex-direction: column; align-items: flex-start; }
 .pm-msg-mine { align-items: flex-end; }
-.pm-msg-bubble { max-width: 70%; padding: 8px 12px; border-radius: 8px; background: #f0f0f0; word-break: break-all; }
-.pm-msg-mine .pm-msg-bubble { background: var(--accent); color: #1f232b; font-weight: 700; }
+.pm-msg-bubble { max-width: 70%; padding: 8px 12px; border-radius: 8px; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); word-break: break-all; }
+.pm-msg-mine .pm-msg-bubble { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 700; }
 .pm-msg-time { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 .pm-chat-input { padding: 12px; border-top: 1px solid var(--border); display: grid; gap: 8px; }
 .pm-chat-input .ant-btn { width: fit-content; justify-self: end; }

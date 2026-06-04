@@ -175,6 +175,8 @@ public class LocalServiceLifecycle {
                     String.valueOf(spec.getPorts().get(0))
             );
             builder.directory(captionDir.toFile());
+            builder.environment().put("PULSELIVE_WHISPER_MODEL",
+                    getStringProperty("pulselive.whisper-model", "PULSELIVE_WHISPER_MODEL", "tiny"));
             return builder;
         }
 
@@ -250,6 +252,16 @@ public class LocalServiceLifecycle {
 
         value = environment.getProperty(envName, Integer.class);
         return value != null ? value : defaultValue;
+    }
+
+    private String getStringProperty(String propertyName, String envName, String defaultValue) {
+        String value = environment.getProperty(propertyName);
+        if (StringUtils.hasText(value)) {
+            return value;
+        }
+
+        value = environment.getProperty(envName);
+        return StringUtils.hasText(value) ? value : defaultValue;
     }
 
     private void stopPort(Integer port) {

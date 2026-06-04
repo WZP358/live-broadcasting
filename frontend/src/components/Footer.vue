@@ -14,7 +14,7 @@ const handleClick = () => {
 .footer {
   height: 60px;
   text-align: center;
-  color: #94a3b8;
+  color: var(--text-muted);
   span {
     line-height: 60px;
     font-size: 12px;

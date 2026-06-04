@@ -45,9 +45,9 @@ defineEmits(["copy", "toggle-follow"]);
   gap: 14px;
   align-items: center;
   padding: 16px;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--bg-card);
 }
 
 .anchor-avatar {
@@ -65,13 +65,13 @@ defineEmits(["copy", "toggle-follow"]);
 .head-meta {
   display: flex;
   gap: 8px;
-  color: #d96c00;
+  color: var(--accent);
   font-size: 12px;
 }
 
 .head-copy h1 {
   margin: 8px 0 4px;
-  color: #1f2937;
+  color: var(--text-primary);
   font-size: 22px;
   line-height: 1.3;
 }
@@ -79,7 +79,7 @@ defineEmits(["copy", "toggle-follow"]);
 .head-copy p {
   margin: 0;
   overflow: hidden;
-  color: #909399;
+  color: var(--text-muted);
   text-overflow: ellipsis;
   white-space: nowrap;
 }

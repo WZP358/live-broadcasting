@@ -23,9 +23,9 @@ import HeaderRightBar from "../HeaderRightBar/index.vue"
 <style lang="scss" scoped>
 .header {
   padding: 0 20px;
-  background-color: #fff;
+  background-color: var(--bg-card);
   border-bottom: 1px solid var(--border);
-  box-shadow: 0 1px 0 rgba(21, 24, 32, 0.02);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--text-primary) 4%, transparent);
 }
 
 .header-inner {

@@ -98,8 +98,8 @@ const handleClick = (slide) => {
   height: 24px;
   padding: 0 10px;
   border-radius: 4px;
-  color: #1f232b;
-  background: rgba(255, 216, 77, 0.92);
+  color: var(--accent-text);
+  background: var(--accent);
   font-size: 12px;
   font-weight: 800;
 }
@@ -131,7 +131,7 @@ const handleClick = (slide) => {
   padding: 0 18px;
   border: 0;
   border-radius: 18px;
-  color: #fff;
+  color: var(--accent-text);
   background: var(--accent);
   font-size: 13px;
   font-weight: 800;
@@ -183,7 +183,7 @@ const handleClick = (slide) => {
 }
 
 :deep(.ant-carousel .slick-dots li.slick-active button) {
-  background: #fff;
+  background: var(--accent);
 }
 
 @media (max-width: 780px) {

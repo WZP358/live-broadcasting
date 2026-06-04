@@ -34,7 +34,7 @@
             :disabled="state.starting"
             @click="startScreenLive"
           >
-            <span class="source-icon">屏</span>
+            <span class="source-icon"><DesktopOutlined /></span>
             <span>
               <strong>屏幕直播</strong>
               <small>{{ state.liveActive && state.isScreenSharing ? "正在使用" : "共享屏幕" }}</small>
@@ -47,7 +47,7 @@
             :disabled="state.starting"
             @click="startCameraLive"
           >
-            <span class="source-icon">摄</span>
+            <span class="source-icon"><VideoCameraOutlined /></span>
             <span>
               <strong>摄像头直播</strong>
               <small>{{ state.liveActive && !state.isScreenSharing ? "正在使用" : "使用摄像头" }}</small>
@@ -122,9 +122,20 @@
             <span>{{ state.message || "准备好后即可开始直播" }}</span>
           </div>
           <div class="room-strip-actions">
-            <a-button :loading="state.starting" @click="startScreenLive">屏幕</a-button>
-            <a-button :loading="state.starting" @click="startCameraLive">摄像头</a-button>
-            <a-button type="primary" danger :disabled="!state.liveActive" @click="stopBrowserLive">
+            <a-button :loading="state.starting" @click="startScreenLive">
+              <DesktopOutlined />
+              屏幕
+            </a-button>
+            <a-button :loading="state.starting" @click="startCameraLive">
+              <VideoCameraOutlined />
+              摄像头
+            </a-button>
+            <a-button
+              :type="state.liveActive ? 'primary' : 'default'"
+              :danger="state.liveActive"
+              :disabled="!state.liveActive"
+              @click="stopBrowserLive"
+            >
               停止直播
             </a-button>
           </div>
@@ -209,9 +220,18 @@
           </div>
         </div>
         <div class="chat-tools">
-          <button type="button">弹幕</button>
-          <button type="button">礼物</button>
-          <button type="button">关注</button>
+          <button type="button">
+            <MessageOutlined />
+            弹幕
+          </button>
+          <button type="button">
+            <GiftOutlined />
+            礼物
+          </button>
+          <button type="button">
+            <HeartOutlined />
+            关注
+          </button>
         </div>
       </aside>
     </div>
@@ -220,6 +240,13 @@
 
 <script setup>
 import { computed, onBeforeUnmount, reactive, ref } from "vue"
+import {
+  DesktopOutlined,
+  GiftOutlined,
+  HeartOutlined,
+  MessageOutlined,
+  VideoCameraOutlined,
+} from "@ant-design/icons-vue"
 import $modal from "@/utils/message"
 import liveAPI from "@/api/live"
 import { createBrowserLiveFallbackUrls, createPeerConnection } from "@/utils/browserLive"
@@ -234,7 +261,7 @@ const LIVE_SYNC_LATENCY_MS = 1000
 
 const props = defineProps({
   roomId: {
-    type: Number,
+    type: [Number, String],
     default: null,
   },
   liveStatus: {
@@ -1958,6 +1985,693 @@ button.tool-row {
   .preview-stage,
   .studio-preview {
     min-height: 280px;
+  }
+}
+
+.browser-live-panel {
+  --studio-bg: #111317;
+  --studio-surface: #1b1e23;
+  --studio-surface-raised: #22262c;
+  --studio-surface-soft: #252a31;
+  --studio-border: #303640;
+  --studio-border-strong: #3b424d;
+  --studio-text: #eef2f7;
+  --studio-muted: #a3abb8;
+  --studio-subtle: #798190;
+  --studio-accent: #ff9f1a;
+  --studio-accent-soft: rgba(255, 159, 26, 0.16);
+  --studio-success: #21c083;
+  --studio-danger: #f04f5f;
+  min-height: 760px;
+  border-radius: 8px;
+  background: var(--studio-bg);
+  color: var(--studio-text);
+  border-color: var(--studio-border);
+  box-shadow: 0 18px 46px rgba(10, 13, 18, 0.28);
+}
+
+.studio-topbar {
+  height: 68px;
+  padding: 0 22px;
+  background: #16191e;
+  border-bottom-color: var(--studio-border);
+}
+
+.studio-brand {
+  gap: 14px;
+}
+
+.studio-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--studio-accent);
+  color: #171717;
+  font-size: 13px;
+  box-shadow: 0 8px 18px rgba(255, 159, 26, 0.22);
+}
+
+.studio-brand h3,
+.studio-panel h4,
+.room-strip h4,
+.studio-bottom h4,
+.chat-header h4 {
+  color: var(--studio-text);
+  font-size: 15px;
+}
+
+.studio-brand h3 {
+  font-size: 17px;
+}
+
+.studio-brand span:not(.studio-logo),
+.room-strip span,
+.chat-header span,
+.source-item small,
+.tool-row small,
+.chat-empty span,
+.chat-message span,
+.studio-bottom p,
+.dock-metrics span,
+.data-grid span,
+.status-line span {
+  color: var(--studio-muted);
+}
+
+.studio-top-status {
+  gap: 10px;
+}
+
+.signal-pill,
+.live-pill {
+  padding: 7px 12px;
+  background: var(--studio-surface-soft);
+  color: var(--studio-muted);
+}
+
+.signal-pill.active {
+  color: var(--studio-success);
+  background: rgba(33, 192, 131, 0.15);
+}
+
+.live-pill.active {
+  color: var(--studio-accent);
+  background: var(--studio-accent-soft);
+}
+
+.studio-workspace {
+  grid-template-columns: 272px minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px;
+  background: var(--studio-bg);
+}
+
+.studio-left,
+.studio-right {
+  gap: 14px;
+}
+
+.section-tabs {
+  height: 44px;
+  padding: 4px;
+  border-radius: 8px;
+  background: #191c21;
+  border-color: var(--studio-border);
+}
+
+.section-tabs button {
+  border-radius: 6px;
+  color: var(--studio-muted);
+  font-weight: 700;
+}
+
+.section-tabs button.active {
+  background: var(--studio-surface-soft);
+  color: var(--studio-text);
+}
+
+.studio-panel,
+.studio-bottom section,
+.studio-right,
+.room-strip,
+.control-dock {
+  border-radius: 8px;
+  background: var(--studio-surface);
+  border-color: var(--studio-border);
+}
+
+.studio-panel {
+  padding: 16px;
+}
+
+.source-panel,
+.tool-panel,
+.status-panel {
+  gap: 14px;
+}
+
+.source-item,
+.tool-row {
+  border-radius: 8px;
+  background: var(--studio-surface-raised);
+  border-color: var(--studio-border);
+}
+
+.source-item {
+  min-height: 74px;
+  padding: 14px;
+  gap: 14px;
+}
+
+.source-item:hover,
+.source-item.selected {
+  border-color: var(--studio-accent);
+  background: #292e36;
+}
+
+.source-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: var(--studio-accent-soft);
+  color: var(--studio-accent);
+  font-size: 14px;
+}
+
+.source-item span:last-child,
+.tool-row span {
+  gap: 5px;
+}
+
+.source-item strong,
+.tool-row strong,
+.status-line strong,
+.dock-metrics strong,
+.data-grid strong,
+.chat-message strong,
+.chat-empty strong {
+  color: var(--studio-text);
+  font-size: 14px;
+}
+
+.tool-row {
+  min-height: 68px;
+  padding: 14px;
+  gap: 16px;
+}
+
+button.tool-row:hover {
+  border-color: var(--studio-accent);
+  background: #292e36;
+}
+
+.tool-row em {
+  min-width: 58px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #303640;
+  color: var(--studio-muted);
+}
+
+.tool-row em.on {
+  background: rgba(33, 192, 131, 0.16);
+  color: var(--studio-success);
+}
+
+.tool-row em.warn {
+  background: var(--studio-accent-soft);
+  color: var(--studio-accent);
+}
+
+.status-line {
+  padding-bottom: 12px;
+  border-bottom-color: var(--studio-border);
+}
+
+.studio-center {
+  grid-template-rows: auto minmax(430px, 1fr) auto auto;
+  gap: 16px;
+}
+
+.room-strip {
+  min-height: 76px;
+  padding: 16px 18px;
+  gap: 20px;
+}
+
+.room-strip span {
+  margin-top: 6px;
+}
+
+.room-strip-actions {
+  gap: 12px;
+}
+
+.room-strip-actions :deep(.ant-btn) {
+  min-width: 88px;
+  height: 38px;
+  border-radius: 6px;
+}
+
+.preview-stage {
+  min-height: 460px;
+  border-radius: 8px;
+  border-color: #252b34;
+  background:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.025) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.025) 25%, transparent 25%),
+    #080a0d;
+  background-size: 32px 32px;
+}
+
+.studio-preview {
+  min-height: 460px;
+  background: #07080a;
+}
+
+.preview-empty {
+  gap: 10px;
+  background: rgba(8, 10, 13, 0.78);
+}
+
+.preview-empty strong {
+  font-size: 22px;
+}
+
+.preview-live-tag {
+  left: 18px;
+  top: 18px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  background: var(--studio-danger);
+}
+
+.subtitle-preview {
+  bottom: 30px;
+  padding: 11px 18px;
+  border-radius: 8px;
+}
+
+.control-dock {
+  padding: 16px 18px;
+  gap: 18px;
+}
+
+.control-dock :deep(.ant-btn) {
+  min-width: 136px;
+  height: 44px;
+  border-radius: 6px;
+  font-weight: 800;
+}
+
+.dock-metrics {
+  gap: 12px;
+}
+
+.dock-metrics div {
+  min-width: 106px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--studio-surface-raised);
+  border-color: var(--studio-border);
+}
+
+.studio-bottom {
+  gap: 16px;
+}
+
+.studio-bottom section {
+  min-height: 108px;
+  padding: 16px;
+}
+
+.data-grid {
+  gap: 10px;
+}
+
+.data-grid div {
+  padding: 12px;
+  border-radius: 6px;
+  background: var(--studio-surface-raised);
+}
+
+.studio-right {
+  grid-column: 1 / -1;
+  min-height: 260px;
+}
+
+.chat-header {
+  height: 56px;
+  padding: 0 16px;
+  background: #191c21;
+  border-bottom-color: var(--studio-border);
+}
+
+.chat-feed {
+  height: calc(100% - 116px);
+  min-height: 160px;
+  padding: 14px;
+  gap: 10px;
+}
+
+.chat-message,
+.chat-empty {
+  padding: 14px;
+  border-radius: 8px;
+  background: var(--studio-surface-raised);
+  border-left-color: var(--studio-accent);
+}
+
+.chat-tools {
+  height: 60px;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #191c21;
+  border-top-color: var(--studio-border);
+}
+
+.chat-tools button {
+  height: 38px;
+  border-radius: 6px;
+  background: var(--studio-surface-soft);
+  color: var(--studio-muted);
+}
+
+.chat-tools button:hover {
+  background: #333944;
+}
+
+@media (min-width: 1540px) {
+  .studio-workspace {
+    grid-template-columns: 272px minmax(620px, 1fr) 300px;
+  }
+
+  .studio-right {
+    grid-column: auto;
+    min-height: 650px;
+  }
+
+  .chat-feed {
+    min-height: 520px;
+  }
+}
+
+@media (max-width: 1080px) {
+  .studio-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .studio-center {
+    grid-template-rows: auto minmax(320px, auto) auto auto;
+  }
+
+  .preview-stage,
+  .studio-preview {
+    min-height: 340px;
+  }
+}
+
+@media (max-width: 820px) {
+  .browser-live-panel {
+    min-height: 0;
+  }
+
+  .studio-topbar,
+  .room-strip,
+  .control-dock {
+    gap: 14px;
+  }
+
+  .studio-workspace {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 12px;
+  }
+
+  .studio-center {
+    grid-template-rows: auto auto auto auto;
+  }
+
+  .room-strip-actions,
+  .dock-metrics {
+    gap: 10px;
+  }
+
+  .room-strip-actions {
+    flex-direction: column;
+  }
+
+  .room-strip-actions :deep(.ant-btn),
+  .control-dock :deep(.ant-btn) {
+    width: 100%;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .dock-metrics {
+    flex-direction: column;
+  }
+
+  .dock-metrics div {
+    width: 100%;
+  }
+
+  .preview-stage,
+  .studio-preview {
+    min-height: 320px;
+  }
+
+  .control-dock :deep(.ant-btn) {
+    min-width: 0;
+  }
+}
+
+.browser-live-panel {
+  --studio-bg: color-mix(in srgb, var(--bg-primary) 72%, var(--bg-card));
+  --studio-topbar-bg: var(--bg-card);
+  --studio-surface: var(--bg-card);
+  --studio-surface-raised: color-mix(in srgb, var(--bg-card) 82%, var(--bg-secondary));
+  --studio-surface-soft: var(--bg-secondary);
+  --studio-border: var(--border);
+  --studio-border-strong: var(--border-strong);
+  --studio-text: var(--text-primary);
+  --studio-muted: var(--text-secondary);
+  --studio-subtle: var(--text-muted);
+  --studio-accent: var(--accent);
+  --studio-accent-strong: var(--accent-strong);
+  --studio-accent-soft: var(--accent-light);
+  --studio-success: var(--success);
+  --studio-danger: var(--danger);
+  min-height: 720px;
+  border-color: var(--studio-border);
+  background: var(--studio-bg);
+  color: var(--studio-text);
+  box-shadow: var(--shadow);
+}
+
+:global(html[data-theme="dark"]) .browser-live-panel,
+:global(html[data-theme="cyberpunk"]) .browser-live-panel {
+  --studio-bg: color-mix(in srgb, var(--bg-primary) 86%, #000);
+  --studio-topbar-bg: var(--bg-header-soft);
+  --studio-surface: var(--bg-card);
+  --studio-surface-raised: color-mix(in srgb, var(--bg-card) 82%, #000);
+  --studio-surface-soft: var(--bg-secondary);
+  --studio-border: var(--border);
+  --studio-border-strong: var(--border-strong);
+  --studio-accent-soft: var(--accent-soft);
+}
+
+.studio-topbar,
+.chat-header,
+.chat-tools {
+  background: var(--studio-topbar-bg);
+  border-color: var(--studio-border);
+}
+
+.studio-logo {
+  background: var(--studio-accent);
+  color: var(--accent-text);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--studio-accent) 24%, transparent);
+}
+
+.studio-brand h3,
+.studio-panel h4,
+.room-strip h4,
+.studio-bottom h4,
+.chat-header h4,
+.source-item strong,
+.tool-row strong,
+.status-line strong,
+.dock-metrics strong,
+.data-grid strong,
+.chat-message strong,
+.chat-empty strong {
+  color: var(--studio-text);
+}
+
+.studio-brand span:not(.studio-logo),
+.room-strip span,
+.chat-header span,
+.source-item small,
+.tool-row small,
+.chat-empty span,
+.chat-message span,
+.studio-bottom p,
+.dock-metrics span,
+.data-grid span,
+.status-line span {
+  color: var(--studio-muted);
+}
+
+.signal-pill,
+.live-pill,
+.tool-row em {
+  background: var(--studio-surface-soft);
+  color: var(--studio-muted);
+}
+
+.signal-pill.active {
+  color: var(--studio-success);
+  background: color-mix(in srgb, var(--studio-success) 14%, transparent);
+}
+
+.live-pill.active,
+.tool-row em.warn {
+  color: var(--studio-accent-strong);
+  background: var(--studio-accent-soft);
+}
+
+.studio-workspace {
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 20px;
+  padding: 20px;
+  background: var(--studio-bg);
+}
+
+.section-tabs,
+.studio-panel,
+.studio-bottom section,
+.studio-right,
+.room-strip,
+.control-dock,
+.source-item,
+.tool-row,
+.dock-metrics div,
+.data-grid div,
+.chat-message,
+.chat-empty {
+  border-color: var(--studio-border);
+  background: var(--studio-surface);
+}
+
+.section-tabs,
+.source-item,
+.tool-row,
+.dock-metrics div,
+.data-grid div,
+.chat-message {
+  background: var(--studio-surface-raised);
+}
+
+.section-tabs button {
+  color: var(--studio-muted);
+}
+
+.section-tabs button.active {
+  background: var(--studio-accent-soft);
+  color: var(--studio-accent-strong);
+}
+
+.source-item,
+.tool-row {
+  color: var(--studio-text);
+}
+
+.source-item:hover,
+.source-item.selected,
+button.tool-row:hover {
+  border-color: color-mix(in srgb, var(--studio-accent) 55%, var(--studio-border));
+  background: color-mix(in srgb, var(--studio-accent-soft) 42%, var(--studio-surface-raised));
+}
+
+.source-icon {
+  background: var(--studio-accent-soft);
+  color: var(--studio-accent-strong);
+}
+
+.tool-row em.on {
+  background: color-mix(in srgb, var(--studio-success) 14%, transparent);
+  color: var(--studio-success);
+}
+
+.status-line {
+  border-bottom-color: var(--studio-border);
+}
+
+.preview-stage {
+  border-color: var(--studio-border-strong);
+  background:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.055) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.055) 25%, transparent 25%),
+    var(--player-bg);
+  background-size: 32px 32px;
+}
+
+.studio-preview {
+  background: var(--player-bg);
+}
+
+.preview-empty {
+  background: color-mix(in srgb, var(--player-bg) 76%, transparent);
+}
+
+.preview-empty strong {
+  color: #fff;
+}
+
+.preview-empty span {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.preview-live-tag {
+  background: var(--studio-danger);
+}
+
+.chat-message,
+.chat-empty {
+  border-left-color: var(--studio-accent);
+}
+
+.chat-tools button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--studio-surface-raised);
+  color: var(--studio-muted);
+}
+
+.chat-tools button:hover {
+  background: var(--studio-accent-soft);
+  color: var(--studio-accent-strong);
+}
+
+@media (min-width: 1540px) {
+  .studio-workspace {
+    grid-template-columns: 280px minmax(640px, 1fr) 320px;
+  }
+}
+
+@media (max-width: 1080px) {
+  .studio-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 820px) {
+  .studio-workspace {
+    gap: 14px;
+    padding: 12px;
   }
 }
 </style>

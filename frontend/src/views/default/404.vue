@@ -46,7 +46,7 @@ const handleGoSearch = () => {
   place-items: center;
   padding: 24px;
   background:
-    linear-gradient(180deg, #151820 0, #151820 280px, var(--bg-primary) 280px),
+    linear-gradient(180deg, var(--bg-header) 0, var(--bg-header) 280px, var(--bg-primary) 280px),
     var(--bg-primary);
 }
 
@@ -61,7 +61,7 @@ const handleGoSearch = () => {
 .error-side {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: var(--shadow-hover);
 }
 
@@ -74,7 +74,7 @@ const handleGoSearch = () => {
   height: 26px;
   padding: 0 10px;
   border-radius: 4px;
-  color: #fff;
+  color: var(--accent-text);
   background: var(--accent);
   font-size: 12px;
   font-weight: 900;

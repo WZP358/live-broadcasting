@@ -117,7 +117,7 @@ const itemList = computed(() => [
         font-size: 12px;
         line-height: 1.25;
         white-space: nowrap;
-        color: green;
+        color: var(--success);
         :nth-child(1) {
           margin-right: 2px;
         }
@@ -132,7 +132,7 @@ const itemList = computed(() => [
       white-space: nowrap;
       font-size: 11px;
       line-height: 1.35;
-      color: #666;
+      color: var(--text-muted);
     }
   }
   .btn-wrapper {
@@ -149,13 +149,13 @@ const itemList = computed(() => [
 
 .modal-title {
   margin: 0 0 8px;
-  color: #1f2937;
+  color: var(--text-primary);
   font-weight: 800;
 }
 
 .modal-desc {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   line-height: 1.7;
 }
 </style>

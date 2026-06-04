@@ -77,11 +77,11 @@ const handleCancel = () => {
 .stats-wrapper {
   h2[title] {
     text-align: center;
-    color: #666;
+    color: var(--text-primary);
   }
   h3 {
     text-align: center;
-    color: #666;
+    color: var(--text-secondary);
     margin: 20px 0px;
   }
   .item {
@@ -91,7 +91,7 @@ const handleCancel = () => {
       display: block;
       text-align: center;
       font-size: 16px;
-      color: #666;
+      color: var(--text-primary);
     }
   }
 }

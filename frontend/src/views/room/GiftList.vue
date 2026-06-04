@@ -130,7 +130,7 @@ const getWallet = async () => {
 .wallet-card {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  background: #fff;
+  background: var(--bg-card);
   cursor: pointer;
   transition:
     transform 0.18s ease,
@@ -151,7 +151,7 @@ const getWallet = async () => {
 .gift-item:hover,
 .wallet-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 153, 0, 0.3);
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--border));
   background: var(--accent-light);
   box-shadow: var(--shadow);
 }

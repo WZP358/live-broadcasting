@@ -107,7 +107,7 @@ const enterRoom = (id) => {
 };
 
 const goLiveCenter = () => {
-  router.push("/center/live/live-settings");
+  router.push("/live/studio");
 };
 
 // 打赏总榜
@@ -136,7 +136,7 @@ onMounted(async () => {
   gap: 18px;
   min-width: 0;
   padding: 10px 0;
-  background: linear-gradient(180deg, var(--bg-primary) 82%, rgba(244, 245, 248, 0));
+  background: linear-gradient(180deg, var(--bg-primary) 82%, color-mix(in srgb, var(--bg-primary) 0%, transparent));
 }
 
 .home-top__label {
@@ -172,7 +172,7 @@ onMounted(async () => {
 .channel-tabs button {
   height: 30px;
   padding: 0 13px;
-  border: 1px solid rgba(255, 153, 0, 0);
+  border: 1px solid transparent;
   border-radius: 4px;
   color: var(--text-secondary);
   background: transparent;
@@ -182,14 +182,14 @@ onMounted(async () => {
   transition: all 0.15s;
 
   &:hover {
-    color: #f59e0b;
-    background: #fff;
+    color: var(--accent);
+    background: var(--accent-light);
   }
 
   &.active {
-    color: #1f2937;
-    border-color: rgba(255, 153, 0, 0.45);
-    background: #ffd84d;
+    color: var(--accent-text);
+    border-color: var(--accent);
+    background: var(--accent);
     font-weight: 800;
   }
 }

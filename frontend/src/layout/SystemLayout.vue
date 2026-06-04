@@ -43,7 +43,7 @@ const breadcrumbs = computed(() =>
 <style scoped lang="scss">
 .system-layout {
   min-height: 100vh;
-  background: #f3f5f8;
+  background: var(--bg-primary);
 }
 
 .system-layout__content {
@@ -54,7 +54,7 @@ const breadcrumbs = computed(() =>
   padding: 12px 16px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: var(--shadow);
 }
 

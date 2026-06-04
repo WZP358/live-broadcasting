@@ -227,7 +227,7 @@ defineExpose({ triggerEffect, playGiftEffect })
   animation: heartWiggle 0.6s ease-in-out infinite;
 }
 
-.heart-red { filter: drop-shadow(0 0 8px #ef4444); }
+.heart-red { filter: drop-shadow(0 0 8px var(--danger)); }
 .heart-pink { filter: drop-shadow(0 0 8px #ec4899); }
 .heart-purple { filter: drop-shadow(0 0 8px #a855f7); }
 .heart-orange { filter: drop-shadow(0 0 8px #f97316); }
@@ -257,18 +257,18 @@ defineExpose({ triggerEffect, playGiftEffect })
 
 .plane-body {
   font-size: 48px;
-  filter: drop-shadow(0 4px 12px rgba(255, 153, 0, 0.5));
+  filter: drop-shadow(0 4px 12px color-mix(in srgb, var(--accent) 50%, transparent));
 }
 
 .plane-banner {
   padding: 4px 14px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #ffd84d, #ff9900);
-  color: #1f232b;
+  background: var(--accent-gradient);
+  color: var(--accent-text);
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
-  box-shadow: 0 4px 16px rgba(255, 153, 0, 0.34);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 34%, transparent);
 }
 
 @keyframes planeFly {

@@ -53,7 +53,7 @@ const canPlay = computed(() => props.roomInfo.status === 1 && (props.roomInfo.br
   margin-top: 12px;
   min-height: 620px;
   overflow: hidden;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--border);
   border-radius: 8px;
   background: #050505;
 }
@@ -89,9 +89,9 @@ const canPlay = computed(() => props.roomInfo.status === 1 && (props.roomInfo.br
   gap: 12px;
   margin-top: 12px;
   padding: 12px 16px;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--bg-card);
 }
 
 .bar-tags {
@@ -103,13 +103,13 @@ const canPlay = computed(() => props.roomInfo.status === 1 && (props.roomInfo.br
 .bar-tags span {
   padding: 5px 10px;
   border-radius: 4px;
-  background: #fff7ed;
-  color: #d96c00;
+  background: var(--accent-light);
+  color: var(--accent);
   font-size: 12px;
 }
 
 .bar-note {
-  color: #909399;
+  color: var(--text-muted);
   font-size: 12px;
 }
 

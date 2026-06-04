@@ -137,7 +137,7 @@ onBeforeUnmount(() => {
 .wallet-card {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: var(--shadow);
 }
 
@@ -148,8 +148,8 @@ onBeforeUnmount(() => {
   align-items: center;
   padding: 24px 26px;
   background:
-    linear-gradient(135deg, rgba(255, 153, 0, 0.14), rgba(255, 216, 77, 0.06)),
-    #fff;
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 15%, transparent), transparent),
+    var(--bg-card);
 }
 
 .wallet-balance-card {
@@ -165,7 +165,7 @@ onBeforeUnmount(() => {
   height: 60px;
   border-radius: 8px;
   background: var(--accent-gradient);
-  color: #fff;
+  color: var(--accent-text);
   font-size: 28px;
   font-weight: 900;
 }
@@ -219,7 +219,7 @@ onBeforeUnmount(() => {
   padding: 16px 18px;
   border-radius: var(--radius-md);
   background: var(--accent-light);
-  border: 1px solid rgba(255, 153, 0, 0.18);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
 }
 
 .wallet-note strong,

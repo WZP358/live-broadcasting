@@ -97,8 +97,8 @@ const msgTypeClass = computed(() => {
     box-shadow 0.16s ease;
 
   &:hover {
-    background: #fff;
-    box-shadow: 0 1px 6px rgba(21, 24, 32, 0.06);
+    background: var(--bg-card);
+    box-shadow: var(--shadow);
   }
 
   .name {
@@ -151,49 +151,49 @@ const msgTypeClass = computed(() => {
 }
 
 .moderator-badge {
-  background: #111827;
+  background: var(--bg-header);
 }
 
-.danmaku-level-10 .name { color: #ff9900; }
-.danmaku-level-20 .name { color: #e58a00; }
-.danmaku-level-30 .name { color: #c97800; }
-.danmaku-level-40 .name { color: #ad6700; }
-.danmaku-level-50 .name { color: #8f5600; }
+.danmaku-level-10 .name { color: var(--accent); }
+.danmaku-level-20 .name { color: var(--accent-strong); }
+.danmaku-level-30 .name { color: var(--warning); }
+.danmaku-level-40 .name { color: color-mix(in srgb, var(--warning) 82%, var(--text-primary)); }
+.danmaku-level-50 .name { color: color-mix(in srgb, var(--warning) 72%, var(--text-primary)); }
 
 .chat-system-message {
-  color: #8a5a1f;
-  background: #fff7e8;
+  color: var(--warning);
+  background: color-mix(in srgb, var(--warning) 13%, var(--bg-card));
 
   .name {
-    color: #c26a00;
+    color: var(--warning);
   }
 
   .msg {
-    color: #8a5a1f;
+    color: var(--text-primary);
   }
 }
 
 .chat-gift-message {
-  border: 1px solid rgba(255, 153, 0, 0.2);
-  background: linear-gradient(90deg, #fff8dc, #fff);
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
+  background: linear-gradient(90deg, var(--accent-light), var(--bg-card));
 
   .name {
-    color: #d97706;
+    color: var(--accent);
   }
 
   .msg {
-    color: #a15c00;
+    color: var(--text-primary);
     font-weight: 800;
   }
 }
 
 .chat-enter-message {
-  color: #3f7a66;
-  background: #effaf6;
+  color: var(--success);
+  background: color-mix(in srgb, var(--success) 12%, var(--bg-card));
 
   .name,
   .msg {
-    color: #28745d;
+    color: var(--success);
   }
 }
 
@@ -217,6 +217,6 @@ const msgTypeClass = computed(() => {
 
 .mod-actions button.danger {
   color: var(--danger);
-  background: #fff1f0;
+  background: color-mix(in srgb, var(--danger) 12%, var(--bg-card));
 }
 </style>

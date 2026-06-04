@@ -89,7 +89,7 @@ const itemList = computed(() => [
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #d6e7ff80;
+    background-color: var(--accent-light);
     border-radius: 50%;
     margin: 0 8px 0 6px;
     .icon {
@@ -122,7 +122,7 @@ const itemList = computed(() => [
         font-size: 12px;
         line-height: 1.25;
         white-space: nowrap;
-        color: green;
+        color: var(--success);
         :nth-child(1) {
           margin-right: 2px;
         }
@@ -137,7 +137,7 @@ const itemList = computed(() => [
       white-space: nowrap;
       font-size: 11px;
       line-height: 1.35;
-      color: #666;
+      color: var(--text-muted);
     }
   }
   .btn-wrapper {

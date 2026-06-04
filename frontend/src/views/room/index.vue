@@ -494,7 +494,7 @@ const goLogin = () => {
 .recommend-section {
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: var(--shadow);
 }
 
@@ -504,10 +504,10 @@ const goLogin = () => {
   align-items: center;
   min-height: 78px;
   padding: 12px 14px;
-  border-color: rgba(255, 153, 0, 0.16);
+  border-color: color-mix(in srgb, var(--accent) 18%, var(--border));
   background:
-    linear-gradient(135deg, rgba(255, 153, 0, 0.09), rgba(255, 255, 255, 0) 44%),
-    #fff;
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 44%),
+    var(--bg-card);
 }
 
 .anchor-avatar-wrap {
@@ -520,7 +520,7 @@ const goLogin = () => {
   height: 56px;
   border-radius: 50%;
   object-fit: cover;
-  background: #eef1f5;
+  background: var(--bg-secondary);
   box-shadow: 0 0 0 3px var(--accent-light);
 }
 
@@ -530,7 +530,7 @@ const goLogin = () => {
   bottom: 2px;
   width: 13px;
   height: 13px;
-  border: 2px solid #fff;
+  border: 2px solid var(--bg-card);
   border-radius: 50%;
   background: var(--danger);
 }
@@ -602,7 +602,7 @@ const goLogin = () => {
   padding: 7px 10px;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.76);
+  background: color-mix(in srgb, var(--bg-card) 80%, var(--bg-secondary));
   text-align: center;
 }
 
@@ -657,7 +657,7 @@ const goLogin = () => {
   text-align: center;
   color: #e5e7eb;
   background:
-    linear-gradient(135deg, rgba(255, 153, 0, 0.13), transparent 34%),
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent 34%),
     #050609;
 }
 
@@ -698,8 +698,8 @@ const goLogin = () => {
   height: 24px;
   padding: 0 9px;
   border-radius: 4px;
-  color: #ffd84d;
-  background: rgba(255, 153, 0, 0.16);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
   font-size: 12px;
   font-weight: 800;
   line-height: 24px;
@@ -751,8 +751,8 @@ const goLogin = () => {
   top: 74px;
   overflow: hidden;
   border-color: var(--border);
-  background: #fff;
-  box-shadow: 0 16px 36px rgba(21, 24, 32, 0.08);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-hover);
 }
 
 .chat-tabs {
@@ -761,7 +761,7 @@ const goLogin = () => {
   gap: 0;
   padding: 8px;
   border-bottom: 1px solid var(--border);
-  background: #fff;
+  background: var(--bg-card);
 }
 
 .chat-tabs button {

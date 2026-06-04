@@ -1,3 +1,3 @@
-$primary-color: #ff9900;
-$font-color: #16181d;
-$font-color-light: #686d78;
+$primary-color: var(--accent);
+$font-color: var(--text-primary);
+$font-color-light: var(--text-secondary);

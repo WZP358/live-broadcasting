@@ -27,7 +27,7 @@
 .comment-panel {
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: var(--shadow);
 }
 
@@ -38,8 +38,8 @@
   gap: 16px;
   padding: 22px 24px;
   background:
-    linear-gradient(90deg, rgba(255, 153, 0, 0.12), rgba(255, 216, 77, 0.05)),
-    #fff;
+    linear-gradient(90deg, color-mix(in srgb, var(--accent) 13%, transparent), transparent),
+    var(--bg-card);
 }
 
 .comment-hero span {

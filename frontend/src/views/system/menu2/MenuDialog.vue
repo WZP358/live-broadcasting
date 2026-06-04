@@ -140,19 +140,19 @@ const handleCancel = () => {
   margin-bottom: 18px;
   padding: 16px 18px;
   border-radius: 16px;
-  background: #f8fbff;
-  border: 1px solid #dbeafe;
+  background: var(--accent-light);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
 }
 
 .admin-modal-intro h4 {
   margin: 0 0 6px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 16px;
 }
 
 .admin-modal-intro p {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   line-height: 1.7;
 }
 </style>

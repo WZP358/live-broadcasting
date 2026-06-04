@@ -19,8 +19,8 @@ const handleBtnClick = () => {
 
 <style scoped lang="scss">
 .menu-btn {
-  border-color: #dcdfe6;
+  border-color: var(--border);
   box-shadow: none;
-  color: #606266;
+  color: var(--text-secondary);
 }
 </style>

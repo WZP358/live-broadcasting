@@ -46,7 +46,7 @@
             <!-- <a @click="handleView(record)">详情</a> -->
             <a @click="handleEdit(record)">修改</a>
             <a-divider type="vertical" />
-            <a style="color: red;" @click="handleDelte(record)">删除</a>
+            <a style="color: var(--danger);" @click="handleDelte(record)">删除</a>
           </span>
         </template>
       </template>

@@ -54,7 +54,7 @@ const goSearch = () => {
 }
 
 const goLiveCenter = () => {
-  router.push("/center/live/live-settings")
+  router.push("/live/studio")
 }
 </script>
 
@@ -178,7 +178,7 @@ const goLiveCenter = () => {
   min-height: 100vh;
   padding: 22px 24px 42px;
   background:
-    linear-gradient(180deg, #151820 0, #151820 300px, var(--bg-primary) 300px),
+    linear-gradient(180deg, var(--bg-header) 0, var(--bg-header) 300px, var(--bg-primary) 300px),
     var(--bg-primary);
 }
 
@@ -204,7 +204,7 @@ const goLiveCenter = () => {
   align-items: center;
   gap: 10px;
   padding: 0;
-  color: #fff;
+  color: var(--header-text-active);
 }
 
 .auth-brand__mark {
@@ -230,7 +230,7 @@ const goLiveCenter = () => {
 }
 
 .auth-brand__copy em {
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--header-text);
   font-size: 12px;
   font-style: normal;
 }
@@ -251,8 +251,8 @@ const goLiveCenter = () => {
 }
 
 .auth-nav button:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
+  color: var(--header-text-active);
+  background: color-mix(in srgb, var(--header-text) 12%, transparent);
 }
 
 .auth-shell {
@@ -273,7 +273,7 @@ const goLiveCenter = () => {
 .auth-card {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: var(--shadow-hover);
 }
 
@@ -281,10 +281,15 @@ const goLiveCenter = () => {
   position: relative;
   min-height: 390px;
   overflow: hidden;
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: color-mix(in srgb, var(--accent) 26%, var(--border));
   background:
-    linear-gradient(90deg, rgba(5, 6, 9, 0.86), rgba(5, 6, 9, 0.28)),
-    linear-gradient(135deg, #242936, #533014 52%, #0b2625);
+    linear-gradient(90deg, color-mix(in srgb, var(--player-bg) 88%, transparent), color-mix(in srgb, var(--player-bg) 34%, transparent)),
+    linear-gradient(
+      135deg,
+      var(--player-bg),
+      color-mix(in srgb, var(--accent) 26%, var(--player-bg)) 52%,
+      color-mix(in srgb, var(--success) 20%, var(--player-bg))
+    );
 }
 
 .player-toolbar {
@@ -317,7 +322,7 @@ const goLiveCenter = () => {
   padding: 7px 10px;
   border-radius: 4px;
   color: #fff;
-  background: rgba(5, 6, 9, 0.44);
+  background: color-mix(in srgb, var(--player-bg) 66%, transparent);
   font-size: 13px;
   white-space: nowrap;
 }
@@ -349,7 +354,7 @@ const goLiveCenter = () => {
   height: 24px;
   padding: 0 9px;
   border-radius: 4px;
-  color: #fff;
+  color: var(--accent-text);
   background: var(--accent);
   font-size: 12px;
   font-weight: 900;
@@ -382,7 +387,7 @@ const goLiveCenter = () => {
   padding: 14px;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: var(--shadow);
 }
 
@@ -490,7 +495,7 @@ const goLiveCenter = () => {
 
 .auth-tabs .active {
   color: var(--accent);
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: var(--shadow);
 }
 

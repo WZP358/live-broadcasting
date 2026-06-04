@@ -112,7 +112,7 @@ onMounted(() => {
 .room-card {
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: var(--shadow);
 }
 
@@ -187,7 +187,7 @@ onMounted(() => {
   padding: 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fafbfc;
+  background: var(--bg-secondary);
 }
 
 .metric-item strong {
@@ -225,7 +225,7 @@ onMounted(() => {
   width: 24px;
   min-height: 2px;
   border-radius: 4px 4px 0 0;
-  background: linear-gradient(180deg, #ffd84d, #ff9900);
+  background: var(--accent-gradient);
   transition: height 0.3s;
 }
 

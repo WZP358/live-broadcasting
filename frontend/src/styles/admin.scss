@@ -1,17 +1,17 @@
 :root {
-  --admin-primary: #409eff;
-  --admin-primary-soft: rgba(64, 158, 255, 0.1);
-  --admin-success: #67c23a;
-  --admin-warning: #e6a23c;
-  --admin-danger: #f56c6c;
-  --admin-text: #303133;
-  --admin-text-secondary: #606266;
-  --admin-text-placeholder: #909399;
-  --admin-border: #dcdfe6;
-  --admin-border-light: #ebeef5;
-  --admin-bg: #f5f7f9;
-  --admin-card: #ffffff;
-  --admin-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  --admin-primary: var(--accent);
+  --admin-primary-soft: var(--accent-light);
+  --admin-success: var(--success);
+  --admin-warning: var(--warning);
+  --admin-danger: var(--danger);
+  --admin-text: var(--text-primary);
+  --admin-text-secondary: var(--text-secondary);
+  --admin-text-placeholder: var(--text-muted);
+  --admin-border: var(--border-strong);
+  --admin-border-light: var(--border);
+  --admin-bg: var(--bg-primary);
+  --admin-card: var(--bg-card);
+  --admin-shadow: var(--shadow);
   --admin-radius: 8px;
 }
 
@@ -77,8 +77,8 @@ body {
   border-radius: var(--admin-radius);
   color: var(--admin-text);
   background:
-    linear-gradient(90deg, rgba(64, 158, 255, 0.1), rgba(64, 158, 255, 0.02)),
-    #fff;
+    linear-gradient(90deg, color-mix(in srgb, var(--admin-primary) 12%, transparent), transparent),
+    var(--admin-card);
   box-shadow: var(--admin-shadow);
 }
 
@@ -126,7 +126,7 @@ body {
   padding: 18px 20px;
   border-radius: var(--admin-radius);
   border: 1px solid var(--admin-border-light);
-  background: #fff;
+  background: var(--admin-card);
   box-shadow: var(--admin-shadow);
 }
 
@@ -179,7 +179,7 @@ body {
   padding: 12px 14px;
   border: 1px solid var(--admin-border-light);
   border-radius: var(--admin-radius);
-  background: #fafcff;
+  background: var(--bg-secondary);
 }
 
 .admin-toolbar__left,
@@ -217,17 +217,17 @@ body {
   border: 1px solid var(--admin-border-light);
   border-radius: var(--admin-radius);
   overflow: hidden;
-  background: #fff;
+  background: var(--admin-card);
 }
 
 .admin-table-shell :deep(.ant-table-thead > tr > th) {
-  background: #f8f8f9;
+  background: var(--bg-secondary);
   color: var(--admin-text);
   font-weight: 600;
 }
 
 .admin-table-shell :deep(.ant-table-tbody > tr:hover > td) {
-  background: #f5fbff !important;
+  background: var(--accent-light) !important;
 }
 
 .admin-pagination {
@@ -293,14 +293,14 @@ body {
   padding: 14px 16px;
   border-radius: var(--admin-radius);
   border: 1px solid var(--admin-border-light);
-  background: #fff;
+  background: var(--admin-card);
   cursor: pointer;
   transition: 0.2s ease;
 }
 
 .admin-link-card:hover {
-  border-color: #c6e2ff;
-  background: #f5fbff;
+  border-color: color-mix(in srgb, var(--admin-primary) 42%, var(--admin-border-light));
+  background: var(--admin-primary-soft);
 }
 
 .admin-dialog-form :deep(.ant-form-item) {

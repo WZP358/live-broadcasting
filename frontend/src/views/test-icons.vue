@@ -83,15 +83,15 @@ import SvgIcon from '@/components/SvgIcon/index.vue'
   flex-direction: column;
   align-items: center;
   padding: 15px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #f9f9f9;
+  background: var(--bg-card);
 }
 
 .icon-item span {
   margin-top: 8px;
   font-size: 12px;
-  color: #666;
+  color: var(--text-secondary);
   text-align: center;
 }
 </style>

@@ -52,10 +52,10 @@ defineEmits(['enter']);
   grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
   margin-top: 14px;
   overflow: hidden;
-  border: 1px solid rgba(31, 41, 55, 0.08);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 10px 24px rgba(24, 28, 36, 0.07);
+  background: var(--bg-card);
+  box-shadow: var(--shadow);
 }
 
 .focus-cover {
@@ -104,7 +104,7 @@ defineEmits(['enter']);
 
 .focus-cover__tag {
   left: 14px;
-  background: #f43f5e;
+  background: var(--danger);
 }
 
 .focus-cover__heat {
@@ -130,8 +130,8 @@ defineEmits(['enter']);
   height: 24px;
   padding: 0 9px;
   border-radius: 4px;
-  color: #8a5800;
-  background: #fff2b8;
+  color: var(--accent);
+  background: var(--accent-light);
   font-size: 12px;
   font-weight: 700;
   line-height: 24px;
@@ -166,7 +166,7 @@ defineEmits(['enter']);
   gap: 12px;
   margin-top: 22px;
   padding-top: 16px;
-  border-top: 1px solid rgba(31, 41, 55, 0.08);
+  border-top: 1px solid var(--border);
 }
 
 .anchor-row img {

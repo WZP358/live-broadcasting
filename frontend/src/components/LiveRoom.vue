@@ -139,9 +139,9 @@ onBeforeUnmount(() => {
 .live-card {
   min-width: 0;
   overflow: hidden;
-  border: 1px solid rgba(30, 35, 45, 0.08);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--bg-card);
   cursor: pointer;
   transition:
     transform 0.2s ease,
@@ -151,8 +151,8 @@ onBeforeUnmount(() => {
 
 .live-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(255, 153, 0, 0.36);
-  box-shadow: 0 12px 28px rgba(24, 28, 36, 0.12);
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border));
+  box-shadow: var(--shadow-hover);
 
   .live-card__cover {
     transform: scale(1.05);
@@ -308,7 +308,7 @@ onBeforeUnmount(() => {
   flex: 0 0 auto;
   max-width: 86px;
   overflow: hidden;
-  color: #f59e0b;
+  color: var(--accent);
   font-size: 12px;
   font-weight: 800;
   text-overflow: ellipsis;

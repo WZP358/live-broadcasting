@@ -42,24 +42,28 @@ const currentTheme = computed(() => {
   gap: 6px;
   height: 36px;
   padding: 0 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid color-mix(in srgb, var(--header-text) 18%, transparent);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--header-text) 8%, transparent);
   color: var(--header-text);
   font-size: 13px;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    color: #fff;
-    border-color: rgba(255, 153, 0, 0.4);
-    background: rgba(255, 153, 0, 0.16);
+    color: var(--header-text-active);
+    border-color: color-mix(in srgb, var(--accent) 46%, transparent);
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
   }
 }
 
 .theme-dropdown {
   width: 200px;
   padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-hover);
 }
 
 .theme-dropdown__title {

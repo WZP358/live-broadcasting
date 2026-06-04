@@ -178,7 +178,7 @@ onMounted(() => {
 .messages-panel {
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: var(--shadow);
 }
 
@@ -216,19 +216,19 @@ onMounted(() => {
   padding: 18px 20px;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--bg-card);
   cursor: pointer;
   transition: 0.2s ease;
 }
 
 .message-card:hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+  box-shadow: var(--shadow-hover);
 }
 
 .message-card--unread {
-  background: linear-gradient(135deg, rgba(255, 248, 220, 0.96), #fff);
-  border-color: rgba(255, 153, 0, 0.3);
+  background: linear-gradient(135deg, var(--accent-light), var(--bg-card));
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--border));
 }
 
 .message-card__head {

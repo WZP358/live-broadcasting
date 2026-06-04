@@ -2,7 +2,7 @@
   <div class="header-right-bar">
     <a-dropdown v-if="userStore.isLogin" placement="bottomRight" :trigger="['hover']">
       <div class="user-info">
-        <a-avatar :size="34" :src="userStore.userInfo.avatar" :style="{ backgroundColor: '#ff9900' }">
+        <a-avatar :size="34" :src="userStore.userInfo.avatar" :style="{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }">
           {{ userStore.userInfo.username?.charAt(0)?.toUpperCase() }}
         </a-avatar>
         <div class="user-meta">
@@ -81,7 +81,7 @@ const handleLogout = () => {
 }
 
 .user-info:hover {
-  background: #f5f7fa;
+  background: var(--accent-light);
 }
 
 .user-meta {
@@ -91,18 +91,18 @@ const handleLogout = () => {
 }
 
 .username {
-  color: #303133;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 600;
 }
 
 .role-text {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-muted);
 }
 
 .dropdown-icon {
-  color: #909399;
+  color: var(--text-muted);
   font-size: 12px;
 }
 

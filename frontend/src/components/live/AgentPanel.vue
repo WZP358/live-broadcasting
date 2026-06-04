@@ -147,10 +147,10 @@ const scorePercent = computed(() => {
 
 const scoreColor = computed(() => {
   const s = sentiment.value.score
-  if (s === null) return "#94a3b8"
-  if (s > 0.3) return "#22c55e"
-  if (s < -0.3) return "#ef4444"
-  return "#f59e0b"
+  if (s === null) return "var(--text-muted)"
+  if (s > 0.3) return "var(--success)"
+  if (s < -0.3) return "var(--danger)"
+  return "var(--warning)"
 })
 
 const analyzeSentiment = async () => {
@@ -232,8 +232,8 @@ const askHelper = async () => {
   display: flex;
   gap: 4px;
   padding: 8px;
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
 
   button {
     flex: 1;
@@ -245,15 +245,15 @@ const askHelper = async () => {
     border: 0;
     border-radius: 8px;
     background: transparent;
-    color: #64748b;
+    color: var(--text-secondary);
     font-size: 12px;
     cursor: pointer;
     transition: all 0.2s;
 
-    &:hover { background: #f1f5f9; }
+    &:hover { background: var(--accent-light); }
     &.active {
-      background: #fff7ed;
-      color: #ea580c;
+      background: var(--accent-light);
+      color: var(--accent);
       font-weight: 600;
     }
   }
@@ -274,11 +274,11 @@ const askHelper = async () => {
   gap: 12px;
   padding: 14px;
   border-radius: 10px;
-  background: #f8fafc;
+  background: var(--bg-secondary);
   margin-bottom: 12px;
 
-  &.positive { background: #f0fdf4; }
-  &.negative { background: #fef2f2; }
+  &.positive { background: color-mix(in srgb, var(--success) 12%, var(--bg-card)); }
+  &.negative { background: color-mix(in srgb, var(--danger) 12%, var(--bg-card)); }
 
   .status-mark {
     width: 34px;
@@ -288,13 +288,13 @@ const askHelper = async () => {
     place-items: center;
     border-radius: 50%;
     color: #fff;
-    background: #f59e0b;
+    background: var(--warning);
     font-size: 14px;
     font-weight: 900;
   }
 
-  strong { display: block; color: #1e293b; font-size: 14px; }
-  span { color: #64748b; font-size: 12px; }
+  strong { display: block; color: var(--text-primary); font-size: 14px; }
+  span { color: var(--text-secondary); font-size: 12px; }
 }
 
 .sentiment-score {
@@ -307,7 +307,7 @@ const askHelper = async () => {
     flex: 1;
     height: 6px;
     border-radius: 3px;
-    background: #e2e8f0;
+    background: var(--border);
     overflow: hidden;
 
     .score-fill {
@@ -318,7 +318,7 @@ const askHelper = async () => {
   }
 
   .score-num {
-    color: #475569;
+    color: var(--text-secondary);
     font-size: 13px;
     font-weight: 600;
     min-width: 45px;
@@ -329,16 +329,16 @@ const askHelper = async () => {
 .flag-list {
   margin-top: 12px;
 
-  h4 { margin: 0 0 8px; color: #ef4444; font-size: 13px; }
+  h4 { margin: 0 0 8px; color: var(--danger); font-size: 13px; }
 
   .flag-item {
     display: flex;
     align-items: center;
     gap: 8px;
     padding: 6px 0;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border);
     font-size: 12px;
-    color: #64748b;
+    color: var(--text-secondary);
   }
 }
 
@@ -348,11 +348,11 @@ const askHelper = async () => {
   padding: 12px;
   margin-bottom: 10px;
   border-radius: 8px;
-  background: #f8fafc;
+  background: var(--bg-secondary);
 
-  h4 { margin: 0 0 8px; color: #1e293b; font-size: 13px; }
-  p { margin: 0; color: #475569; font-size: 13px; line-height: 1.6; }
-  .welcome-msg { color: #ea580c; font-weight: 500; }
+  h4 { margin: 0 0 8px; color: var(--text-primary); font-size: 13px; }
+  p { margin: 0; color: var(--text-secondary); font-size: 13px; line-height: 1.6; }
+  .welcome-msg { color: var(--accent); font-weight: 500; }
 }
 
 .tag-list {
@@ -383,7 +383,8 @@ const askHelper = async () => {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: #f1f5f9;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
     display: grid;
     place-items: center;
     font-size: 16px;
@@ -396,12 +397,12 @@ const askHelper = async () => {
     border-radius: 10px;
     font-size: 13px;
     line-height: 1.5;
-    background: #f1f5f9;
-    color: #334155;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
 
     .user & {
-      background: #fff7ed;
-      color: #1e293b;
+      background: var(--accent-light);
+      color: var(--text-primary);
     }
   }
 }

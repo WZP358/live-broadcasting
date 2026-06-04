@@ -91,7 +91,7 @@
               <a-space>
                 <a @click="handleView(record)">详情</a>
                 <a @click="handleEdit(record)">编辑</a>
-                <a :style="{ color: record.disabled === 0 ? '#dc2626' : '#16a34a' }" @click="handleToggleStatus(record, record.disabled === 0 ? -1 : 0)">
+                <a :style="{ color: record.disabled === 0 ? 'var(--danger)' : 'var(--success)' }" @click="handleToggleStatus(record, record.disabled === 0 ? -1 : 0)">
                   {{ record.disabled === 0 ? "封禁" : "解封" }}
                 </a>
               </a-space>

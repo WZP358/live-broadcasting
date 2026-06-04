@@ -161,7 +161,7 @@ const formatCount = (n) => {
   }
 
   &.live .dot {
-    background: #ef4444;
+    background: var(--danger);
     animation: blink 1.5s infinite;
   }
 }
@@ -259,11 +259,11 @@ const formatCount = (n) => {
   }
 
   :deep(.ant-slider-track) {
-    background: #f97316;
+    background: var(--accent);
   }
 
   :deep(.ant-slider-handle) {
-    border-color: #f97316;
+    border-color: var(--accent);
   }
 }
 

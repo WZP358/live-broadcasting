@@ -237,12 +237,10 @@ watch(() => route.query.keyword, (val) => {
 .search-header {
   margin-bottom: 18px;
   padding: 28px;
-  border: 1px solid rgba(31, 41, 55, 0.08);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--border));
   border-radius: 8px;
-  background:
-    linear-gradient(135deg, rgba(255, 216, 77, 0.92), rgba(255, 153, 0, 0.84)),
-    #ffd84d;
-  box-shadow: 0 12px 28px rgba(24, 28, 36, 0.08);
+  background: var(--accent-gradient);
+  box-shadow: var(--shadow-hover);
 }
 
 .search-header__bar {
@@ -259,7 +257,7 @@ watch(() => route.query.keyword, (val) => {
 
       &:focus {
         border-color: var(--accent);
-        box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.1);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
       }
     }
 
@@ -270,12 +268,12 @@ watch(() => route.query.keyword, (val) => {
       font-size: 15px;
       background: var(--accent);
       border-color: var(--accent);
-      color: #1f232b;
+      color: var(--accent-text);
       font-weight: 900;
 
       &:hover {
-        background: #ffcf33;
-        border-color: #ffcf33;
+        background: var(--accent-strong);
+        border-color: var(--accent-strong);
       }
     }
   }
@@ -290,23 +288,23 @@ watch(() => route.query.keyword, (val) => {
   button {
     height: 34px;
     padding: 0 18px;
-    border: 1px solid rgba(31, 41, 55, 0.12);
+    border: 1px solid color-mix(in srgb, var(--accent-text) 22%, transparent);
     border-radius: 4px;
-    background: rgba(255, 255, 255, 0.78);
-    color: #2f3440;
+    background: color-mix(in srgb, var(--bg-card) 86%, transparent);
+    color: var(--text-primary);
     font-size: 13px;
     cursor: pointer;
     transition: all 0.2s;
 
     &:hover {
-      border-color: rgba(31, 41, 55, 0.28);
-      color: #1f232b;
+      border-color: color-mix(in srgb, var(--accent-text) 44%, transparent);
+      color: var(--accent);
     }
 
     &.active {
-      background: #1f232b;
-      border-color: #1f232b;
-      color: #fff;
+      background: var(--bg-header);
+      border-color: var(--bg-header);
+      color: var(--header-text-active);
       font-weight: 800;
     }
   }
@@ -336,10 +334,10 @@ watch(() => route.query.keyword, (val) => {
 .search-hot,
 .search-results {
   padding: 18px;
-  border: 1px solid rgba(31, 41, 55, 0.08);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 8px 20px rgba(24, 28, 36, 0.06);
+  background: var(--bg-card);
+  box-shadow: var(--shadow);
 }
 
 .search-history + .search-hot {
@@ -389,7 +387,7 @@ watch(() => route.query.keyword, (val) => {
 
 .empty-search {
   padding: 80px 0;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: var(--radius-md);
 }
 

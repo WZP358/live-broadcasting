@@ -14,7 +14,7 @@
           <template v-if="column.key === 'fromUserNickname'">
             <a-flex align="center">
               <a-avatar v-if="record.fromUserAvatar" :size="28" :src="record.fromUserAvatar" alt="U" />
-              <a-avatar v-else :size="28" style="color: #f56a00; background-color: #fde3cf">
+              <a-avatar v-else :size="28" style="color: var(--accent); background-color: var(--accent-light)">
                 {{ (record.fromUserNickname || "用户").substring(0, 2) }}
               </a-avatar>
               <section style="width: 10px"></section>
@@ -130,7 +130,7 @@ const columns = reactive([
 .data-panel__body {
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: var(--shadow);
 }
 

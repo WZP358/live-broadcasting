@@ -81,7 +81,7 @@ const onChange = (currentPageNo) => {
 .center-panel__footer {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: var(--shadow);
 }
 

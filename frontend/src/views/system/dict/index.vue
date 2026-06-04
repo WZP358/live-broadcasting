@@ -49,7 +49,7 @@
             <template v-else-if="column.key === 'action'">
               <a-space>
                 <a @click="handleEdit(record)">编辑</a>
-                <a style="color: #dc2626" @click="handleDelete(record)">删除</a>
+                <a style="color: var(--danger)" @click="handleDelete(record)">删除</a>
               </a-space>
             </template>
           </template>

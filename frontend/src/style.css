@@ -10,6 +10,7 @@
   --text-secondary: #686d78;
   --text-muted: #9aa1ad;
   --accent: #ff9900;
+  --accent-text: #171b24;
   --accent-strong: #f59e0b;
   --accent-soft: #fff4c7;
   --accent-light: #fff8dc;
@@ -94,14 +95,14 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c9ced8;
+  background: color-mix(in srgb, var(--text-muted) 44%, transparent);
   border: 2px solid transparent;
   border-radius: 8px;
   background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #aeb5c2;
+  background: color-mix(in srgb, var(--text-muted) 62%, transparent);
   border: 2px solid transparent;
   background-clip: content-box;
 }
@@ -115,12 +116,17 @@ button {
 
 .hover-lift:hover {
   transform: translateY(-3px);
-  border-color: rgba(255, 153, 0, 0.28);
+  border-color: color-mix(in srgb, var(--accent) 28%, transparent);
   box-shadow: var(--shadow-hover);
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #edf0f5 25%, #e2e6ee 50%, #edf0f5 75%);
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 25%,
+    color-mix(in srgb, var(--border) 74%, var(--bg-secondary)) 50%,
+    var(--bg-secondary) 75%
+  );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s ease-in-out infinite;
   border-radius: var(--radius-md);
@@ -150,6 +156,7 @@ button {
 }
 
 :where(.ant-btn-primary) {
+  color: var(--accent-text) !important;
   background: var(--accent) !important;
   border-color: var(--accent) !important;
   box-shadow: none;
@@ -161,20 +168,328 @@ button {
 }
 
 :where(.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)) {
-  color: #fff;
+  color: var(--accent-text) !important;
   background: var(--accent) !important;
   border-color: var(--accent) !important;
 }
 
 :where(.ant-radio-button-wrapper:hover) {
+  color: var(--accent) !important;
+}
+
+:where(.ant-btn-default, .ant-btn) {
+  color: var(--text-primary);
+  background: var(--bg-card);
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+:where(.ant-btn-default:hover, .ant-btn-default:focus, .ant-btn:hover, .ant-btn:focus) {
   color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+:where(.ant-btn[disabled], .ant-btn[disabled]:hover, .ant-btn[disabled]:focus) {
+  color: var(--text-muted) !important;
+  background: var(--bg-secondary) !important;
+  border-color: var(--border) !important;
+}
+
+:where(.ant-input, .ant-input-affix-wrapper, .ant-select-selector, .ant-picker, .ant-input-number) {
+  color: var(--text-primary) !important;
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+}
+
+:where(.ant-select-selection-item, .ant-select-selection-placeholder, .ant-picker-input > input, .ant-input-number-input) {
+  color: var(--text-primary) !important;
+}
+
+:where(.ant-input::placeholder, .ant-input input::placeholder, .ant-input-affix-wrapper input::placeholder) {
+  color: var(--text-muted) !important;
 }
 
 :where(.ant-input:focus, .ant-input-focused, .ant-input-affix-wrapper-focused) {
   border-color: var(--accent) !important;
-  box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.14) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent) !important;
 }
 
-:where(.ant-card, .ant-modal-content, .ant-popover-inner) {
+:where(.ant-card, .ant-modal-content, .ant-popover-inner, .ant-dropdown-menu, .ant-select-dropdown, .ant-picker-dropdown .ant-picker-panel-container) {
+  color: var(--text-primary) !important;
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
   border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-hover) !important;
+}
+
+:where(.ant-popover-arrow::before) {
+  background: var(--bg-card) !important;
+}
+
+:where(.ant-card-head, .ant-modal-header, .ant-modal-footer, .ant-popover-title) {
+  color: var(--text-primary) !important;
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+}
+
+:where(.ant-card-head-title, .ant-modal-title, .ant-form-item-label > label) {
+  color: var(--text-primary) !important;
+}
+
+:where(.ant-dropdown-menu-item, .ant-menu-item, .ant-menu-submenu-title) {
+  color: var(--text-primary) !important;
+}
+
+:where(.ant-dropdown-menu-item:hover, .ant-menu-item:hover, .ant-menu-submenu-title:hover) {
+  color: var(--accent) !important;
+  background: var(--accent-light) !important;
+}
+
+:where(.ant-select-item, .ant-cascader-menu-item, .ant-dropdown-menu-submenu-title) {
+  color: var(--text-primary) !important;
+}
+
+:where(.ant-select-item-option-active:not(.ant-select-item-option-disabled), .ant-cascader-menu-item:hover) {
+  color: var(--accent) !important;
+  background: var(--accent-light) !important;
+}
+
+:where(.ant-select-item-option-selected:not(.ant-select-item-option-disabled), .ant-cascader-menu-item-active) {
+  color: var(--accent) !important;
+  background: var(--accent-light) !important;
+}
+
+:where(.ant-menu-light, .ant-menu) {
+  color: var(--text-primary) !important;
+  background: var(--bg-card) !important;
+}
+
+:where(.ant-menu-item-selected) {
+  color: var(--accent) !important;
+  background: var(--accent-light) !important;
+}
+
+:where(.ant-menu-submenu-selected > .ant-menu-submenu-title) {
+  color: var(--accent) !important;
+}
+
+:where(.ant-switch) {
+  background: var(--border-strong) !important;
+}
+
+:where(.ant-switch.ant-switch-checked) {
+  background: var(--accent) !important;
+}
+
+:where(.ant-switch .ant-switch-handle::before) {
+  background: var(--bg-card) !important;
+}
+
+:where(.ant-tag) {
+  color: var(--text-secondary) !important;
+  background: var(--bg-secondary) !important;
+  border-color: var(--border) !important;
+}
+
+:where(.ant-tag .ant-tag-close-icon) {
+  color: currentColor !important;
+}
+
+:where(
+    .ant-tag-processing,
+    .ant-tag-blue,
+    .ant-tag-cyan,
+    .ant-tag-geekblue,
+    .ant-tag-purple,
+    .ant-tag-magenta
+  ) {
+  color: var(--accent-strong) !important;
+  background: var(--accent-light) !important;
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--border)) !important;
+}
+
+:where(.ant-tag-success, .ant-tag-green) {
+  color: var(--success) !important;
+  background: color-mix(in srgb, var(--success) 13%, var(--bg-card)) !important;
+  border-color: color-mix(in srgb, var(--success) 34%, var(--border)) !important;
+}
+
+:where(.ant-tag-error, .ant-tag-red) {
+  color: var(--danger) !important;
+  background: color-mix(in srgb, var(--danger) 12%, var(--bg-card)) !important;
+  border-color: color-mix(in srgb, var(--danger) 34%, var(--border)) !important;
+}
+
+:where(.ant-tag-warning, .ant-tag-gold, .ant-tag-orange, .ant-tag-volcano, .ant-tag-brown) {
+  color: var(--warning) !important;
+  background: color-mix(in srgb, var(--warning) 13%, var(--bg-card)) !important;
+  border-color: color-mix(in srgb, var(--warning) 34%, var(--border)) !important;
+}
+
+:where(.ant-tag-default, .ant-tag-grey, .ant-tag-gray) {
+  color: var(--text-secondary) !important;
+  background: var(--bg-secondary) !important;
+  border-color: var(--border) !important;
+}
+
+:where(.ant-empty-description) {
+  color: var(--text-muted) !important;
+}
+
+:where(.ant-tabs-tab, .ant-tabs-tab-btn, .ant-radio-wrapper, .ant-checkbox-wrapper, .ant-list-item, .ant-list-item-meta-title) {
+  color: var(--text-primary) !important;
+}
+
+:where(.ant-list-item-meta-description) {
+  color: var(--text-secondary) !important;
+}
+
+:where(.ant-tabs-tab:hover, .ant-tabs-tab-active .ant-tabs-tab-btn) {
+  color: var(--accent) !important;
+}
+
+:where(.ant-tabs-ink-bar) {
+  background: var(--accent) !important;
+}
+
+:where(.ant-tabs-nav::before, .ant-list-split .ant-list-item) {
+  border-color: var(--border) !important;
+}
+
+:where(.ant-breadcrumb, .ant-breadcrumb a, .ant-breadcrumb-separator, .ant-descriptions-item-label) {
+  color: var(--text-secondary) !important;
+}
+
+:where(.ant-breadcrumb li:last-child, .ant-descriptions-title, .ant-descriptions-item-content) {
+  color: var(--text-primary) !important;
+}
+
+:where(.ant-descriptions .ant-descriptions-view, .ant-descriptions .ant-descriptions-row, .ant-descriptions .ant-descriptions-item-label, .ant-descriptions .ant-descriptions-item-content) {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+}
+
+:where(.ant-checkbox-inner, .ant-radio-inner) {
+  background: var(--bg-card) !important;
+  border-color: var(--border-strong) !important;
+}
+
+:where(.ant-checkbox-wrapper:hover .ant-checkbox-inner, .ant-radio-wrapper:hover .ant-radio-inner) {
+  border-color: var(--accent) !important;
+}
+
+:where(.ant-checkbox-checked .ant-checkbox-inner, .ant-radio-checked .ant-radio-inner) {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+:where(.ant-radio-inner::after) {
+  background: var(--accent-text) !important;
+}
+
+:where(.ant-checkbox-checked .ant-checkbox-inner::after) {
+  border-color: var(--accent-text) !important;
+}
+
+:where(.ant-alert) {
+  color: var(--text-primary) !important;
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+}
+
+:where(.ant-alert-success) {
+  background: color-mix(in srgb, var(--success) 11%, var(--bg-card)) !important;
+  border-color: color-mix(in srgb, var(--success) 34%, var(--border)) !important;
+}
+
+:where(.ant-alert-warning) {
+  background: color-mix(in srgb, var(--warning) 12%, var(--bg-card)) !important;
+  border-color: color-mix(in srgb, var(--warning) 34%, var(--border)) !important;
+}
+
+:where(.ant-alert-error) {
+  background: color-mix(in srgb, var(--danger) 11%, var(--bg-card)) !important;
+  border-color: color-mix(in srgb, var(--danger) 34%, var(--border)) !important;
+}
+
+:where(.ant-alert-message, .ant-result-title) {
+  color: var(--text-primary) !important;
+}
+
+:where(.ant-alert-description, .ant-result-subtitle) {
+  color: var(--text-secondary) !important;
+}
+
+:where(.ant-message-notice-content, .ant-notification-notice) {
+  color: var(--text-primary) !important;
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-hover) !important;
+}
+
+:where(.ant-message-custom-content, .ant-notification-notice-message) {
+  color: var(--text-primary) !important;
+}
+
+:where(.ant-notification-notice-description) {
+  color: var(--text-secondary) !important;
+}
+
+:where(.ant-tooltip-inner) {
+  color: var(--header-text-active) !important;
+  background: var(--bg-header-soft) !important;
+}
+
+:where(.ant-tooltip-arrow::before) {
+  background: var(--bg-header-soft) !important;
+}
+
+:where(.ant-table-wrapper .ant-table, .ant-table-wrapper .ant-table-container, .ant-table-wrapper .ant-table-content) {
+  color: var(--text-primary) !important;
+  background: var(--bg-card) !important;
+}
+
+:where(.ant-table-wrapper .ant-table-thead > tr > th) {
+  color: var(--text-primary) !important;
+  background: var(--bg-secondary) !important;
+  border-color: var(--border) !important;
+}
+
+:where(.ant-table-wrapper .ant-table-tbody > tr > td) {
+  color: var(--text-primary) !important;
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+}
+
+:where(.ant-table-wrapper .ant-table-tbody > tr.ant-table-row:hover > td) {
+  background: var(--accent-light) !important;
+}
+
+:where(.ant-table-wrapper .ant-table-placeholder, .ant-table-wrapper .ant-table-cell-row-hover) {
+  background: var(--bg-card) !important;
+}
+
+:where(.ant-pagination .ant-pagination-item, .ant-pagination .ant-pagination-prev .ant-pagination-item-link, .ant-pagination .ant-pagination-next .ant-pagination-item-link) {
+  color: var(--text-primary) !important;
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+}
+
+:where(.ant-pagination .ant-pagination-item a) {
+  color: var(--text-primary) !important;
+}
+
+:where(.ant-pagination .ant-pagination-item-active) {
+  border-color: var(--accent) !important;
+}
+
+:where(.ant-pagination .ant-pagination-item-active a) {
+  color: var(--accent) !important;
+}
+
+:where(.ant-upload-wrapper .ant-upload, .ant-upload-wrapper .ant-upload-list-item) {
+  color: var(--text-primary) !important;
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
 }

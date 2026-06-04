@@ -151,8 +151,8 @@ const beforeUpload = (file) => {
 
 .profile-card--summary {
   background:
-    linear-gradient(135deg, rgba(255, 153, 0, 0.12), rgba(255, 216, 77, 0.06)),
-    #fff;
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 13%, transparent), transparent),
+    var(--bg-card);
 }
 
 .summary-header {
@@ -192,7 +192,7 @@ const beforeUpload = (file) => {
 .summary-item {
   padding: 14px 16px;
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.92);
+  background: color-mix(in srgb, var(--bg-card) 92%, var(--bg-secondary));
   border: 1px solid var(--border);
 }
 
@@ -268,7 +268,7 @@ const beforeUpload = (file) => {
   place-items: center;
   border-radius: 50%;
   color: var(--accent);
-  background: rgba(255, 255, 255, 0.68);
+  background: color-mix(in srgb, var(--bg-card) 72%, transparent);
 }
 
 @media (max-width: 960px) {

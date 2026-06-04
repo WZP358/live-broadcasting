@@ -17,7 +17,7 @@ import Footer from "@/components/Footer.vue"
 .app-layout {
   min-height: 100vh;
   background:
-    linear-gradient(180deg, rgba(255, 153, 0, 0.05) 0, rgba(255, 255, 255, 0) 220px),
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, transparent) 0, transparent 220px),
     var(--bg-primary);
   .app-content {
     min-height: calc(100vh - 136px);

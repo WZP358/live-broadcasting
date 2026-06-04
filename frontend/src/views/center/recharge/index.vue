@@ -156,7 +156,7 @@ onBeforeUnmount(() => {
 .recharge-card {
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: var(--shadow);
 }
 
@@ -170,13 +170,13 @@ onBeforeUnmount(() => {
 
 .recharge-hero h2 {
   margin: 0 0 8px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 24px;
 }
 
 .recharge-hero p {
   margin: 0;
-  color: #64748b;
+  color: var(--text-secondary);
   line-height: 1.7;
 }
 
@@ -197,13 +197,13 @@ onBeforeUnmount(() => {
 
 .recharge-card__header h3 {
   margin: 0 0 6px;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 20px;
 }
 
 .recharge-card__header p {
   margin: 0 0 18px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .charge-grid {
@@ -214,16 +214,16 @@ onBeforeUnmount(() => {
 
 .charge-item {
   padding: 22px 18px;
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--bg-card);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .charge-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 28px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow-hover);
 }
 
 .charge-item strong,
@@ -233,13 +233,13 @@ onBeforeUnmount(() => {
 }
 
 .charge-item strong {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 28px;
 }
 
 .charge-item span {
   margin-top: 4px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .charge-item b {
@@ -250,7 +250,7 @@ onBeforeUnmount(() => {
 
 .charge-item--active {
   border-color: var(--accent);
-  background: linear-gradient(135deg, rgba(255, 248, 220, 0.95), rgba(255, 255, 255, 1));
+  background: linear-gradient(135deg, var(--accent-light), var(--bg-card));
 }
 
 .recharge-actions {
@@ -262,7 +262,7 @@ onBeforeUnmount(() => {
 }
 
 .agreement {
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 @media (max-width: 960px) {

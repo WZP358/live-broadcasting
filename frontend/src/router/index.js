@@ -114,6 +114,11 @@ const routes = [
         meta: { title: "直播间" },
       },
       {
+        path: "/live/studio",
+        component: () => import("@/views/live-studio/index.vue"),
+        meta: { title: "开播工作台", requiresAuth: true },
+      },
+      {
         path: "/center",
         component: () => import("@/views/center/index.vue"),
         redirect: "/center/personnel/profile",

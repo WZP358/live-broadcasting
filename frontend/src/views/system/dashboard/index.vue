@@ -136,7 +136,7 @@ onMounted(() => {
   padding: 14px 16px;
   border: 1px solid var(--admin-border-light);
   border-radius: var(--admin-radius);
-  background: #fafcff;
+  background: var(--bg-secondary);
 }
 
 .focus-item__meta h4 {

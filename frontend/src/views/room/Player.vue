@@ -644,7 +644,7 @@ const destroy = () => {
   min-height: 552px;
   object-fit: cover;
   background:
-    linear-gradient(135deg, rgba(255, 153, 0, 0.09), transparent 34%),
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 34%),
     #02040a;
 }
 

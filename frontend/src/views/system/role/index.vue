@@ -48,7 +48,7 @@
               <template v-else-if="column.key === 'action'">
                 <a-space>
                   <a @click.stop="handleEditRole(record)">编辑</a>
-                  <a style="color: #dc2626" @click.stop="handleDeleteRole(record)">删除</a>
+                  <a style="color: var(--danger)" @click.stop="handleDeleteRole(record)">删除</a>
                 </a-space>
               </template>
             </template>
@@ -350,7 +350,7 @@ onMounted(() => {
 
 .role-current {
   margin-bottom: 14px;
-  color: #4e5969;
+  color: var(--text-secondary);
 }
 
 @media (max-width: 1200px) {

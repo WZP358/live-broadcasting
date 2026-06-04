@@ -33,13 +33,13 @@ defineProps({
     font-size: 12px;
 
     &.male {
-        background-color: #fff8dc;
-        color: #ff9900;
+        background-color: var(--accent-light);
+        color: var(--accent);
     }
 
     &.female {
-        background-color: #fff0f6;
-        color: #eb2f96;
+        background-color: color-mix(in srgb, var(--danger) 12%, var(--bg-card));
+        color: var(--danger);
     }
 }
 </style>

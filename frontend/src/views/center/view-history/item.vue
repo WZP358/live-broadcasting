@@ -42,7 +42,7 @@ const itemClick = () => {
   overflow: hidden;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: var(--shadow);
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -50,7 +50,7 @@ const itemClick = () => {
 
 .history-item:hover {
   transform: translateY(-3px);
-  box-shadow: 0 24px 44px rgba(15, 23, 42, 0.1);
+  box-shadow: var(--shadow-hover);
 }
 
 .history-item__cover-wrap {
@@ -66,8 +66,8 @@ const itemClick = () => {
   gap: 4px;
   padding: 4px 10px;
   border-radius: 4px;
-  background: #ff9900;
-  color: #fff;
+  background: var(--accent);
+  color: var(--accent-text);
   font-size: 12px;
   font-weight: 600;
 }
@@ -91,8 +91,8 @@ const itemClick = () => {
   height: 42px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.95);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  border: 2px solid var(--bg-card);
+  box-shadow: var(--shadow);
 }
 
 .history-item__meta {

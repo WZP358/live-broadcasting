@@ -134,8 +134,8 @@ const go = (path) => {
   border: 1px solid var(--admin-border-light);
   border-radius: var(--admin-radius);
   background:
-    linear-gradient(90deg, rgba(64, 158, 255, 0.08), rgba(64, 158, 255, 0.02)),
-    #fff;
+    linear-gradient(90deg, color-mix(in srgb, var(--admin-primary) 10%, transparent), transparent),
+    var(--admin-card);
   box-shadow: var(--admin-shadow);
 }
 
@@ -168,7 +168,7 @@ const go = (path) => {
   padding: 16px 18px;
   border: 1px solid var(--admin-border-light);
   border-radius: var(--admin-radius);
-  background: #fafcff;
+  background: var(--bg-secondary);
 }
 
 .manage-stat span,
@@ -194,7 +194,7 @@ const go = (path) => {
   padding: 18px;
   border: 1px solid var(--admin-border-light);
   border-radius: var(--admin-radius);
-  background: #fff;
+  background: var(--admin-card);
 }
 
 .entry-card__head,

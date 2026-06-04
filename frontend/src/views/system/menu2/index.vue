@@ -66,7 +66,7 @@
             <template v-else-if="column.key === 'action'">
               <a-space>
                 <a @click="handleEdit(record)">编辑</a>
-                <a style="color: #dc2626" @click="handleDelete(record)">删除</a>
+                <a style="color: var(--danger)" @click="handleDelete(record)">删除</a>
               </a-space>
             </template>
           </template>
@@ -181,8 +181,8 @@ onMounted(() => {
   min-width: 44px;
   padding: 2px 8px;
   border-radius: 999px;
-  background: #eef6ff;
-  color: #1677ff;
+  background: var(--accent-light);
+  color: var(--accent);
   font-size: 12px;
 }
 </style>

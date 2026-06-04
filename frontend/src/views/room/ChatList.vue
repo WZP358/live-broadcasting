@@ -402,7 +402,7 @@ const close = () => {
   height: 700px;
   min-height: 0;
   overflow: hidden;
-  background: #f7f8fa;
+  background: var(--chat-bg);
 
   .chat-top-section {
     position: relative;
@@ -414,7 +414,7 @@ const close = () => {
   .chat-header {
     height: 154px;
     background:
-      linear-gradient(180deg, rgba(255, 153, 0, 0.13), rgba(255, 248, 220, 0.62) 48%, #fff 100%);
+      linear-gradient(180deg, color-mix(in srgb, var(--accent) 13%, transparent), var(--accent-light) 48%, var(--bg-card) 100%);
     padding: 12px 10px 9px;
     box-sizing: border-box;
 
@@ -450,9 +450,9 @@ const close = () => {
     max-height: 320px;
     overflow-y: auto;
     border: 1px solid var(--border);
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 8px;
-    box-shadow: 0 12px 28px rgba(21, 24, 32, 0.14);
+    box-shadow: var(--shadow-hover);
     z-index: 100;
     opacity: 0;
     visibility: hidden;
@@ -495,26 +495,26 @@ const close = () => {
       flex: 0 0 24px;
       height: 24px;
       border-radius: 50%;
-      background: #f2f4f7;
+      background: var(--bg-secondary);
       font-size: 12px;
-      color: #999;
+      color: var(--text-muted);
       text-align: center;
       line-height: 24px;
       font-weight: 800;
 
       &.rank-no-1 {
-        color: #f3d26b;
-        background: #fff4cf;
+        color: var(--accent);
+        background: var(--accent-light);
       }
 
       &.rank-no-2 {
-        color: #c8d0da;
-        background: #f3f5f8;
+        color: var(--text-secondary);
+        background: var(--bg-secondary);
       }
 
       &.rank-no-3 {
-        color: #d8a478;
-        background: #fff2e8;
+        color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 13%, var(--bg-card));
       }
     }
 
@@ -529,7 +529,7 @@ const close = () => {
 
     .rank-dropdown-name {
       font-size: 13px;
-      color: #333;
+      color: var(--text-primary);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -547,7 +547,7 @@ const close = () => {
 
       .ant-empty-description {
         font-size: 12px;
-        color: #999;
+        color: var(--text-muted);
       }
     }
   }
@@ -566,13 +566,13 @@ const close = () => {
   text-align: center;
   padding: 8px 6px 7px;
   border-radius: 8px;
-  background: linear-gradient(180deg, #fff8ef 0%, #fff 100%);
-  border: 1px solid #f6e3c7;
-  box-shadow: 0 4px 12px rgba(255, 153, 0, 0.06);
+  background: linear-gradient(180deg, var(--accent-light) 0%, var(--bg-card) 100%);
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
+  box-shadow: var(--shadow);
 
   .rank-badge {
     font-size: 11px;
-    color: #8c6b35;
+    color: var(--accent);
     margin-bottom: 5px;
     font-weight: 900;
   }
@@ -580,7 +580,7 @@ const close = () => {
   .avatar {
     width: 40px;
     height: 40px;
-    border: 2px solid #d7d7d7;
+    border: 2px solid var(--border-strong);
     border-radius: 50%;
     object-fit: cover;
   }
@@ -589,7 +589,7 @@ const close = () => {
     display: block;
     font-size: 12px;
     margin-top: 6px;
-    color: #333;
+    color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -598,15 +598,15 @@ const close = () => {
   .charm {
     display: block;
     margin-top: 2px;
-    color: #ec8303;
+    color: var(--accent);
     font-size: 12px;
     font-weight: 800;
   }
 }
 
 .rank-item-1 {
-  background: linear-gradient(180deg, #fff4cf 0%, #fff 100%);
-  border-color: #f3d26b;
+  background: linear-gradient(180deg, var(--accent-light) 0%, var(--bg-card) 100%);
+  border-color: var(--accent);
   padding-top: 12px;
   min-height: 108px;
 
@@ -629,7 +629,7 @@ const close = () => {
   overflow-y: auto;
   padding: 8px 7px 6px;
   background:
-    linear-gradient(180deg, #fff 0, #f8f9fb 100%);
+    linear-gradient(180deg, var(--bg-card) 0, var(--bg-secondary) 100%);
 
   &::-webkit-scrollbar {
     display: none;
@@ -655,7 +655,7 @@ const close = () => {
   padding: 0 10px;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  background: #fff;
+  background: var(--bg-card);
   color: var(--text-muted);
   font-size: 12px;
 }
@@ -676,7 +676,7 @@ const close = () => {
   border: 0;
   border-radius: 4px;
   color: var(--text-muted);
-  background: #f4f6f9;
+  background: var(--bg-secondary);
   font-size: 12px;
   cursor: pointer;
 }
@@ -691,14 +691,14 @@ const close = () => {
   flex: 0 0 auto;
   padding: 10px;
   border-top: 1px solid var(--border);
-  background: #fff;
+  background: var(--bg-card);
 
   .chat-safety {
     margin: 0 0 8px;
     padding: 6px 8px;
     border-radius: 6px;
-    color: #9a6a2e;
-    background: #fff7e8;
+    color: var(--warning);
+    background: color-mix(in srgb, var(--warning) 13%, var(--bg-card));
     font-size: 12px;
     line-height: 1.4;
   }
@@ -709,14 +709,14 @@ const close = () => {
 
     :deep(.ant-input) {
       border-radius: 8px;
-      border-color: #e3e7ee;
-      background: #f7f8fa;
+      border-color: var(--border);
+      background: var(--bg-secondary);
       font-size: 13px;
       resize: none;
     }
 
     :deep(.ant-input:focus) {
-      background: #fff;
+      background: var(--bg-card);
     }
   }
 
@@ -758,7 +758,7 @@ const close = () => {
     align-items: center;
     justify-content: space-between;
     padding: 10px 0;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border);
 
     &:last-child {
       border-bottom: none;
@@ -774,7 +774,7 @@ const close = () => {
   .rank-no {
     width: 38px;
     font-size: 13px;
-    color: #999;
+    color: var(--text-muted);
   }
 
   .avatar {
@@ -786,11 +786,11 @@ const close = () => {
   }
 
   .name {
-    color: #333;
+    color: var(--text-primary);
   }
 
   .value {
-    color: #ec8303;
+    color: var(--accent);
     font-weight: 600;
   }
 }

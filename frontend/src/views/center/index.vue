@@ -23,7 +23,7 @@
           </div>
         </div>
         <div class="hero-actions">
-          <button class="hero-action hero-action--primary" type="button" @click="route.push('/center/live/live-settings')">我要开播</button>
+          <button class="hero-action hero-action--primary" type="button" @click="route.push('/live/studio')">我要开播</button>
           <button class="hero-action" type="button" @click="route.push('/center/personnel/follow')">我的关注</button>
         </div>
       </div>
@@ -91,7 +91,7 @@ const items = ref([
     label: "主播中心",
     title: "主播中心",
     children: [
-      { key: "live-settings", label: "我要开播", title: "我要开播" },
+      { key: "live-settings", label: "开播准备", title: "开播准备" },
       { key: "dashboard", label: "数据看板", title: "数据看板" },
       { key: "guardian", label: "守护管理", title: "守护管理" },
     ],
@@ -137,53 +137,45 @@ const items = ref([
   position: relative;
   overflow: hidden;
   display: flex; gap: 20px; align-items: center; padding: 24px;
-  border: 1px solid rgba(255, 216, 77, 0.18);
+  border: 1px solid var(--border);
   border-radius: 8px;
   background:
-    linear-gradient(90deg, rgba(255, 153, 0, 0.17), rgba(255, 153, 0, 0.03)),
-    #171b24;
-  box-shadow: 0 12px 30px rgba(18, 20, 28, 0.12);
+    linear-gradient(90deg, var(--accent-light), transparent 58%),
+    var(--bg-card);
+  box-shadow: var(--shadow);
 }
 .profile-hero::after {
-  position: absolute;
-  right: 28px;
-  bottom: -38px;
-  width: 190px;
-  height: 110px;
-  border: 1px solid rgba(255, 216, 77, 0.2);
-  border-radius: 8px 8px 0 0;
-  background: rgba(255, 255, 255, 0.04);
-  content: "";
+  content: none;
 }
 .hero-avatar {
   position: relative;
   z-index: 1;
   width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
-  border: 3px solid rgba(255, 255, 255, 0.92);
-  box-shadow: 0 0 0 3px rgba(255, 216, 77, 0.26);
+  border: 3px solid var(--bg-card);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 26%, transparent);
 }
 .hero-info { position: relative; z-index: 1; flex: 1; }
 .hero-top { display: flex; align-items: center; gap: 10px; }
-.hero-top h1 { margin: 0; font-size: 24px; color: #fff; }
+.hero-top h1 { margin: 0; font-size: 24px; color: var(--text-primary); }
 .account-pill {
   display: inline-flex;
   height: 24px;
   align-items: center;
   padding: 0 9px;
   border-radius: 4px;
-  color: #ffd84d;
-  background: rgba(255, 216, 77, 0.14);
+  color: var(--accent-strong);
+  background: var(--accent-light);
   font-size: 12px;
   font-weight: 900;
 }
-.hero-info > p { margin: 6px 0 0; color: rgba(255, 255, 255, 0.66); font-size: 13px; }
+.hero-info > p { margin: 6px 0 0; color: var(--text-secondary); font-size: 13px; }
 .hero-stats {
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 16px;
 }
 .hero-stat {
-  padding: 10px 12px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; background: rgba(255, 255, 255, 0.07);
-  span { display: block; color: rgba(255, 255, 255, 0.58); font-size: 12px; }
-  strong { display: block; margin-top: 4px; color: #fff; font-size: 14px; }
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-secondary);
+  span { display: block; color: var(--text-muted); font-size: 12px; }
+  strong { display: block; margin-top: 4px; color: var(--text-primary); font-size: 14px; }
 }
 .hero-actions {
   display: flex;
@@ -194,17 +186,17 @@ const items = ref([
 .hero-action {
   height: 34px;
   padding: 0 16px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--border);
   border-radius: 17px;
-  color: rgba(255, 255, 255, 0.82);
-  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
   font-weight: 800;
   cursor: pointer;
 }
 .hero-action--primary {
-  border-color: #ffb020;
-  color: #171b24;
-  background: linear-gradient(135deg, #ffd84d, #ff9900);
+  border-color: var(--accent);
+  color: var(--accent-text);
+  background: var(--accent);
 }
 .center-body {
   display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 16px;

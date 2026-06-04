@@ -113,7 +113,7 @@ const handleGoFollow = () => {
 };
 
 const handleGoLiveCenter = () => {
-  router.push('/center/live/live-settings');
+  router.push('/live/studio');
 };
 
 const handleGoAdmin = () => {
@@ -220,7 +220,7 @@ const getCategoryInitial = (name = '') => {
           <a-button class="signin-btn" type="primary" size="large" @click="handleLogin">登录 / 注册</a-button>
         </template>
         <template v-else>
-          <a-badge :count="unreadCount" :overflow-count="99" :number-style="{ backgroundColor: '#ef4444' }">
+          <a-badge :count="unreadCount" :overflow-count="99" :number-style="{ backgroundColor: 'var(--danger)' }">
             <button class="notify-bell" type="button" @click="handleGoMessages">
               <BellOutlined />
             </button>
@@ -268,7 +268,7 @@ const getCategoryInitial = (name = '') => {
   top: 0;
   z-index: 998;
   background: var(--bg-header);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--header-text) 12%, transparent);
 }
 
 .site-header__inner {
@@ -288,7 +288,7 @@ const getCategoryInitial = (name = '') => {
   gap: 10px;
   padding: 0;
   border: 0;
-  color: #fff;
+  color: var(--header-text-active);
   background: transparent;
   cursor: pointer;
 }
@@ -300,7 +300,7 @@ const getCategoryInitial = (name = '') => {
   place-items: center;
   border-radius: 8px;
   background: var(--accent-gradient);
-  box-shadow: 0 8px 20px rgba(255, 153, 0, 0.24);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 26%, transparent);
   font-size: 13px;
   font-weight: 900;
 }
@@ -353,12 +353,12 @@ const getCategoryInitial = (name = '') => {
 
 .nav-item:hover,
 .nav-item.active {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.09);
+  color: var(--header-text-active);
+  background: color-mix(in srgb, var(--header-text) 12%, transparent);
 }
 
 .nav-item--accent {
-  color: #ffd84d;
+  color: var(--accent);
 }
 
 .nav-caret,
@@ -375,24 +375,24 @@ const getCategoryInitial = (name = '') => {
     .ant-input-group {
       border-radius: 19px;
       overflow: hidden;
-      background: rgba(255, 255, 255, 0.08);
+      background: color-mix(in srgb, var(--header-text) 10%, transparent);
     }
 
     .ant-input {
       height: 38px;
       border: 0;
       border-radius: 19px 0 0 19px;
-      color: #fff;
-      background: rgba(255, 255, 255, 0.08);
+      color: var(--header-text-active) !important;
+      background: color-mix(in srgb, var(--header-text) 10%, transparent) !important;
       font-size: 13px;
 
       &::placeholder {
-        color: #7f8795;
+        color: var(--header-text) !important;
       }
 
       &:hover,
       &:focus {
-        background: rgba(255, 255, 255, 0.13);
+        background: color-mix(in srgb, var(--header-text) 16%, transparent) !important;
         box-shadow: none !important;
       }
     }
@@ -430,16 +430,17 @@ const getCategoryInitial = (name = '') => {
   gap: 6px;
   height: 36px;
   padding: 0 12px;
-  border: 1px solid rgba(255, 153, 0, 0.42);
+  border: 1px solid color-mix(in srgb, var(--accent) 46%, transparent);
   border-radius: 18px;
-  color: #fff4c7;
-  background: rgba(255, 153, 0, 0.16);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
   font-weight: 700;
 }
 
 .start-live:hover {
-  border-color: rgba(255, 216, 77, 0.86);
-  background: rgba(255, 153, 0, 0.26);
+  color: var(--header-text-active);
+  border-color: color-mix(in srgb, var(--accent) 76%, transparent);
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
 }
 
 .signin-btn {
@@ -462,8 +463,8 @@ const getCategoryInitial = (name = '') => {
 }
 
 .notify-bell:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.09);
+  color: var(--header-text-active);
+  background: color-mix(in srgb, var(--header-text) 12%, transparent);
 }
 
 .user-entry {
@@ -473,12 +474,12 @@ const getCategoryInitial = (name = '') => {
   height: 38px;
   padding: 0 10px 0 6px;
   border-radius: 19px;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
+  color: var(--header-text-active);
+  background: color-mix(in srgb, var(--header-text) 10%, transparent);
 }
 
 .user-entry:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: color-mix(in srgb, var(--header-text) 16%, transparent);
 }
 
 .header-avatar {
@@ -498,7 +499,7 @@ const getCategoryInitial = (name = '') => {
 .user-entry__text strong {
   max-width: 94px;
   overflow: hidden;
-  color: #fff;
+  color: var(--header-text-active);
   font-size: 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -514,7 +515,7 @@ const getCategoryInitial = (name = '') => {
   max-height: 390px;
   overflow-y: auto;
   padding: 4px;
-  background: #fff;
+  background: var(--bg-card);
 }
 
 .category-panel__head {
@@ -550,7 +551,7 @@ const getCategoryInitial = (name = '') => {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   color: var(--text-primary);
-  background: #fff;
+  background: var(--bg-card);
   text-align: left;
   cursor: pointer;
   transition:
@@ -561,7 +562,7 @@ const getCategoryInitial = (name = '') => {
 
 .category-card:hover {
   transform: translateY(-1px);
-  border-color: rgba(255, 153, 0, 0.38);
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
   background: var(--accent-light);
 }
 
@@ -646,7 +647,7 @@ const getCategoryInitial = (name = '') => {
     height: 36px;
     border: 0;
     border-radius: 50%;
-    color: #fff;
+    color: var(--accent-text);
     background: var(--accent);
   }
 }

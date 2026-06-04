@@ -40,7 +40,7 @@
 .security-panel {
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: var(--shadow);
 }
 
@@ -50,8 +50,8 @@
   gap: 24px;
   padding: 30px;
   background:
-    linear-gradient(90deg, rgba(255, 153, 0, 0.14), rgba(255, 216, 77, 0.05)),
-    #fff;
+    linear-gradient(90deg, color-mix(in srgb, var(--accent) 15%, transparent), transparent),
+    var(--bg-card);
 }
 
 .score-card {
@@ -62,8 +62,8 @@
   justify-content: center;
   flex-direction: column;
   border-radius: 8px;
-  background: linear-gradient(135deg, #ffd84d, #ff9900);
-  color: #1f232b;
+  background: var(--accent-gradient);
+  color: var(--accent-text);
   text-align: center;
 }
 
