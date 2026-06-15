@@ -16,6 +16,9 @@
       <button type="button" @click.stop="$emit('muteUser', data.fromUserId, 300)">禁言5m</button>
       <button type="button" class="danger" @click.stop="$emit('kickUser', data.fromUserId)">踢出</button>
     </span>
+    <span class="report-actions" v-if="showActions && data.fromUserId && data.fromUserId !== userId">
+      <button type="button" @click.stop="$emit('reportMessage', data)">举报</button>
+    </span>
   </div>
 </template>
 
@@ -28,7 +31,7 @@ const props = defineProps({
   isModerator: { type: Boolean, default: false },
 })
 
-defineEmits(['muteUser', 'kickUser'])
+defineEmits(['muteUser', 'kickUser', 'reportMessage'])
 
 const showActions = ref(false)
 
@@ -204,7 +207,18 @@ const msgTypeClass = computed(() => {
   white-space: nowrap;
 }
 
-.mod-actions button {
+.report-actions {
+  display: inline-flex;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.mod-actions + .report-actions {
+  margin-left: 4px;
+}
+
+.mod-actions button,
+.report-actions button {
   height: 22px;
   padding: 0 6px;
   border: 0;
@@ -218,5 +232,10 @@ const msgTypeClass = computed(() => {
 .mod-actions button.danger {
   color: var(--danger);
   background: color-mix(in srgb, var(--danger) 12%, var(--bg-card));
+}
+
+.report-actions button {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 10%, var(--bg-card));
 }
 </style>

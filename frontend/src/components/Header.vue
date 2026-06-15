@@ -2,14 +2,17 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import {
-  AppstoreOutlined,
   BellOutlined,
-  CompassOutlined,
-  DownOutlined,
-  FireOutlined,
+  ClockCircleOutlined,
   HeartOutlined,
   HomeOutlined,
   SearchOutlined,
+  GiftOutlined,
+  MessageOutlined,
+  UserOutlined,
+  WalletOutlined,
+  EditOutlined,
+  LogoutOutlined,
   VideoCameraOutlined,
 } from '@ant-design/icons-vue';
 import { useStore } from '@/stores';
@@ -17,14 +20,16 @@ import { useNotificationStore } from '@/stores/modules/notification';
 import { useNotificationSocket } from '@/composables/useNotificationSocket';
 import liveApi from '@/api/live';
 import levelApi from '@/api/level';
+import walletApi from '@/api/wallet';
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
 import { FALLBACK_AVATAR, onImgError } from '@/utils/fallback';
 
 const router = useRouter();
 const store = useStore();
 
-const visible = ref(false);
-const categories = ref([]);
+const historyOpen = ref(false);
+const headerHistory = ref([]);
+const historyLoading = ref(false);
 const searchValue = ref('');
 
 const userStore = store.user();
@@ -33,10 +38,11 @@ const { connect: connectNotificationWs, disconnect: disconnectNotificationWs } =
 const userInfo = computed(() => userStore.userInfo || {});
 const isLogin = computed(() => userStore.isLogin);
 const hasAdminRole = computed(() => userStore.isAdmin);
-const currentCategory = computed(() => store.web().category.currentSelect);
 const displayName = computed(() => userInfo.value?.nickName || userInfo.value?.nickname || userInfo.value?.username || '用户');
 const userLevel = ref(0);
+const walletBalance = ref(0);
 const unreadCount = computed(() => notificationStore.unreadCount);
+const levelProgress = computed(() => `${Math.min(100, Math.max(0, Math.round(((userLevel.value || 0) % 10) * 10)))}%`);
 
 const loadLevel = async () => {
   try {
@@ -49,6 +55,15 @@ const loadLevel = async () => {
   }
 };
 
+const loadWalletBalance = async () => {
+  try {
+    const res = await walletApi.getBalance();
+    walletBalance.value = Number(res?.data?.balance || 0);
+  } catch (e) {
+    walletBalance.value = 0;
+  }
+};
+
 watch(isLogin, (val) => {
   if (val) {
     connectNotificationWs();
@@ -58,17 +73,12 @@ watch(isLogin, (val) => {
   }
 });
 
-onMounted(async () => {
-  try {
-    const res = await liveApi.listCategories({});
-    categories.value = res?.data?.list || [];
-  } catch (error) {
-    categories.value = [];
-  }
+onMounted(() => {
   if (isLogin.value) {
     connectNotificationWs();
     notificationStore.fetchUnreadCount();
     loadLevel();
+    loadWalletBalance();
   }
 });
 
@@ -79,28 +89,11 @@ const handleSearch = () => {
   }
 };
 
-const handleCategoryClick = (item) => {
-  store.web().selectCategory(item);
-  visible.value = false;
-  router.push('/');
-};
-
-const handleSelectAll = () => {
-  store.web().selectCategory(null);
-  visible.value = false;
-  router.push('/');
-};
-
 const handleLogin = () => {
   router.push('/login');
 };
 
 const handleGoHome = () => {
-  router.push('/');
-};
-
-const handleGoDiscover = () => {
-  store.web().selectCategory(null);
   router.push('/');
 };
 
@@ -110,6 +103,10 @@ const handleGoCenter = () => {
 
 const handleGoFollow = () => {
   router.push('/center/personnel/follow');
+};
+
+const handleGoHistory = () => {
+  router.push('/center/personnel/history');
 };
 
 const handleGoLiveCenter = () => {
@@ -128,10 +125,45 @@ const handleGoMessages = () => {
   router.push('/center/messages');
 };
 
-const getCategoryInitial = (name = '') => {
-  const value = String(name).trim();
-  return value ? value.slice(0, 1) : '全';
+const handleGoRecharge = () => {
+  router.push('/center/dollar/recharge');
 };
+
+const handleGoWallet = () => {
+  router.push('/center/dollar/wallet');
+};
+
+const loadHeaderHistory = async () => {
+  if (!isLogin.value || historyLoading.value) return;
+  historyLoading.value = true;
+  try {
+    const res = await liveApi.listHistory({ type: 0, page: 1, limit: 5 });
+    headerHistory.value = res?.data?.list || [];
+  } catch (e) {
+    headerHistory.value = [];
+  } finally {
+    historyLoading.value = false;
+  }
+};
+
+const handleHistoryOpenChange = (open) => {
+  historyOpen.value = open;
+  if (open) {
+    loadHeaderHistory();
+  }
+};
+
+const handleEnterHistoryRoom = (item) => {
+  const roomId = item?.roomId || item?.id;
+  if (!roomId) return;
+  historyOpen.value = false;
+  router.push('/room/' + roomId);
+};
+
+const getHistoryTitle = (item = {}) => item.title || item.name || item.roomTitle || '直播间';
+
+const getHistoryCategory = (item = {}) =>
+  item.categoryName || item.categoryInfo?.name || item.userNickname || item.userInfo?.nickName || '继续观看';
 </script>
 
 <template>
@@ -151,47 +183,9 @@ const getCategoryInitial = (name = '') => {
           首页
         </button>
 
-        <a-popover v-model:open="visible" placement="bottom" trigger="click">
-          <template #content>
-            <div class="category-panel">
-              <div class="category-panel__head">
-                <strong>全部分类</strong>
-                <span>{{ categories.length }} 个分区</span>
-              </div>
-              <div class="category-grid">
-                <button class="category-card" type="button" @click="handleSelectAll">
-                  <span class="category-card__icon">
-                    <AppstoreOutlined />
-                  </span>
-                  <span>
-                    <strong>全部直播</strong>
-                    <em>正在热播</em>
-                  </span>
-                </button>
-                <button v-for="item in categories" :key="item.id" class="category-card" type="button" @click="handleCategoryClick(item)">
-                  <span class="category-card__icon">{{ getCategoryInitial(item.name) }}</span>
-                  <span>
-                    <strong>{{ item.name }}</strong>
-                    <em>进入分区</em>
-                  </span>
-                </button>
-              </div>
-            </div>
-          </template>
-          <button class="nav-item nav-item--accent" :class="{ active: currentCategory }" type="button">
-            <AppstoreOutlined />
-            {{ currentCategory?.name || '分类' }}
-            <DownOutlined class="nav-caret" />
-          </button>
-        </a-popover>
-
         <button class="nav-item" type="button" @click="handleGoFollow">
           <HeartOutlined />
           关注
-        </button>
-        <button class="nav-item" type="button" @click="handleGoDiscover">
-          <CompassOutlined />
-          发现
         </button>
       </nav>
 
@@ -210,6 +204,43 @@ const getCategoryInitial = (name = '') => {
         </a-input-search>
       </div>
 
+      <div class="site-header__quick">
+        <a-popover placement="bottom" trigger="hover" :open="historyOpen" @openChange="handleHistoryOpenChange" overlayClassName="history-popover">
+          <template #content>
+            <div class="history-panel">
+              <div class="history-panel__head">
+                <strong>今天</strong>
+              </div>
+              <a-spin :spinning="historyLoading">
+                <div v-if="headerHistory.length" class="history-list">
+                  <button
+                    v-for="item in headerHistory"
+                    :key="item.id || item.roomId"
+                    class="history-entry"
+                    type="button"
+                    @click="handleEnterHistoryRoom(item)"
+                  >
+                    <span class="history-entry__dot">
+                      <ClockCircleOutlined />
+                    </span>
+                    <span class="history-entry__copy">
+                      <strong>{{ getHistoryTitle(item) }}</strong>
+                    </span>
+                    <span class="history-entry__room">{{ getHistoryCategory(item) }}</span>
+                  </button>
+                </div>
+                <a-empty v-else description="暂无观看历史" />
+              </a-spin>
+              <button class="history-more" type="button" @click="handleGoHistory">更多 ></button>
+            </div>
+          </template>
+          <button class="quick-entry quick-entry--history" :class="{ active: historyOpen || $route.path.includes('/center/personnel/history') }" type="button">
+            <ClockCircleOutlined />
+            <span>历史</span>
+          </button>
+        </a-popover>
+      </div>
+
       <div class="site-header__actions">
         <button class="start-live" type="button" @click="handleGoLiveCenter">
           <VideoCameraOutlined />
@@ -225,33 +256,82 @@ const getCategoryInitial = (name = '') => {
               <BellOutlined />
             </button>
           </a-badge>
-          <a-dropdown>
-            <button class="user-entry" type="button">
-              <img class="header-avatar" :src="userInfo?.avatar || FALLBACK_AVATAR" alt="" @error="onImgError" />
-              <span class="user-entry__text">
-                <strong>{{ displayName }}</strong>
-                <span>{{ hasAdminRole ? '管理员' : userLevel ? 'Lv.' + userLevel : '观众' }}</span>
-              </span>
-              <DownOutlined class="user-caret" />
+          <a-popover placement="bottomRight" trigger="click" overlayClassName="user-card-popover">
+            <button class="user-entry user-entry--avatar-only" type="button">
+              <img class="header-avatar header-avatar--large" :src="userInfo?.avatar || FALLBACK_AVATAR" alt="" @error="onImgError" />
             </button>
-            <template #overlay>
-              <a-menu>
-                <a-menu-item key="center">
-                  <a @click="handleGoCenter">个人中心</a>
-                </a-menu-item>
-                <a-menu-item key="live">
-                  <a @click="handleGoLiveCenter">开播中心</a>
-                </a-menu-item>
-                <a-menu-item v-if="hasAdminRole" key="admin">
-                  <a @click="handleGoAdmin">管理后台</a>
-                </a-menu-item>
-                <a-menu-divider />
-                <a-menu-item key="logout">
-                  <a @click="handleLogout">退出登录</a>
-                </a-menu-item>
-              </a-menu>
+            <template #content>
+              <div class="user-card-panel">
+                <button class="user-card-logout" type="button" @click="handleLogout">
+                  <LogoutOutlined />
+                  退出
+                </button>
+
+                <div class="user-card-avatar">
+                  <img :src="userInfo?.avatar || FALLBACK_AVATAR" alt="" @error="onImgError" />
+                </div>
+
+                <div class="user-card-name">
+                  <strong>{{ displayName }}</strong>
+                  <span>♀</span>
+                  <em>LV{{ userLevel || 1 }}</em>
+                  <button type="button">
+                    <EditOutlined />
+                  </button>
+                </div>
+
+                <p class="user-card-signature">
+                  <EditOutlined />
+                  {{ userInfo?.signature || '点击编辑个性签名' }}
+                </p>
+
+                <div class="level-row">
+                  <span>LV-{{ userLevel || 1 }}</span>
+                  <div class="level-track">
+                    <i :style="{ width: levelProgress }"></i>
+                    <b>{{ userLevel ? (userLevel % 10) * 20 : 0 }}/200</b>
+                  </div>
+                  <span>LV-{{ (userLevel || 1) + 1 }}</span>
+                </div>
+
+                <div class="asset-row">
+                  <span>资产</span>
+                  <strong>
+                    <WalletOutlined />
+                    {{ walletBalance }}
+                  </strong>
+                  <strong>
+                    <GiftOutlined />
+                    0
+                  </strong>
+                  <button type="button" @click="handleGoRecharge">充值</button>
+                </div>
+
+                <div class="user-shortcuts">
+                  <button type="button" @click="handleGoCenter">
+                    <UserOutlined />
+                    <span>个人中心</span>
+                  </button>
+                  <button type="button" @click="handleGoMessages">
+                    <MessageOutlined />
+                    <span>我的消息</span>
+                  </button>
+                  <button type="button" @click="handleGoWallet">
+                    <WalletOutlined />
+                    <span>我的钱包</span>
+                  </button>
+                  <button type="button" @click="handleGoLiveCenter">
+                    <VideoCameraOutlined />
+                    <span>创作中心</span>
+                  </button>
+                </div>
+
+                <button v-if="hasAdminRole" class="admin-shortcut" type="button" @click="handleGoAdmin">
+                  管理后台
+                </button>
+              </div>
             </template>
-          </a-dropdown>
+          </a-popover>
         </template>
       </div>
 
@@ -357,11 +437,6 @@ const getCategoryInitial = (name = '') => {
   background: color-mix(in srgb, var(--header-text) 12%, transparent);
 }
 
-.nav-item--accent {
-  color: var(--accent);
-}
-
-.nav-caret,
 .user-caret {
   font-size: 10px;
 }
@@ -404,6 +479,200 @@ const getCategoryInitial = (name = '') => {
       background: var(--accent);
     }
   }
+}
+
+.site-header__quick {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
+}
+
+.quick-entry {
+  position: relative;
+  display: grid;
+  min-width: 52px;
+  height: 52px;
+  place-items: center;
+  padding: 5px 7px 4px;
+  border: 0;
+  border-radius: 8px;
+  color: #6f737b;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color 0.16s ease,
+    background 0.16s ease,
+    transform 0.16s ease;
+}
+
+.quick-entry:hover {
+  color: #ff8a00;
+  background: #fff5e6;
+  transform: translateY(-1px);
+}
+
+.quick-entry svg {
+  font-size: 25px;
+}
+
+.quick-entry span {
+  color: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.quick-entry--history,
+.quick-entry--history.active {
+  color: #ff8a00;
+}
+
+.quick-entry--history.active::after {
+  position: absolute;
+  right: 13px;
+  bottom: -7px;
+  left: 13px;
+  height: 12px;
+  content: "";
+  border-top: 3px solid #ff8a00;
+  border-radius: 12px 12px 0 0;
+}
+
+:deep(.history-popover .ant-popover-inner) {
+  padding: 0;
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(31, 35, 41, 0.18) !important;
+}
+
+:deep(.history-popover .ant-popover-arrow) {
+  display: none;
+}
+
+.history-panel {
+  position: relative;
+  width: 420px;
+  padding: 18px 22px 18px;
+  border-top: 3px solid #ff8a00;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.history-panel::before {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  content: "";
+  background: #fff;
+  border-top: 3px solid #ff8a00;
+  border-left: 3px solid #ff8a00;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.history-panel__head {
+  position: relative;
+  margin-bottom: 10px;
+  padding-left: 14px;
+}
+
+.history-panel__head::before {
+  position: absolute;
+  top: 5px;
+  bottom: -244px;
+  left: 0;
+  width: 1px;
+  content: "";
+  background: #d9d9d9;
+}
+
+.history-panel__head strong {
+  color: #555;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.history-list {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.history-entry {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) 96px;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  color: #4a4d52;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.history-entry:hover .history-entry__copy strong {
+  color: #ff8a00;
+}
+
+.history-entry__dot {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: #ff8a00;
+  font-size: 15px;
+}
+
+.history-entry__dot svg {
+  font-size: 15px;
+}
+
+.history-entry__copy,
+.history-entry__room {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-entry__copy strong {
+  color: #3f4248;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.history-entry__room {
+  color: #8f9298;
+  font-size: 16px;
+}
+
+.history-more {
+  display: block;
+  width: calc(100% - 16px);
+  height: 44px;
+  margin: 12px auto 0;
+  border: 0;
+  border-radius: 22px;
+  color: #555;
+  background: #f0f1f3;
+  font-size: 16px;
+  cursor: pointer;
+  transition:
+    color 0.16s ease,
+    background 0.16s ease;
+}
+
+.history-more:hover {
+  color: #ff8a00;
+  background: #fff1df;
 }
 
 .site-header__actions {
@@ -478,6 +747,12 @@ const getCategoryInitial = (name = '') => {
   background: color-mix(in srgb, var(--header-text) 10%, transparent);
 }
 
+.user-entry--avatar-only {
+  padding: 0;
+  width: 38px;
+  justify-content: center;
+}
+
 .user-entry:hover {
   background: color-mix(in srgb, var(--header-text) 16%, transparent);
 }
@@ -487,6 +762,11 @@ const getCategoryInitial = (name = '') => {
   height: 30px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.header-avatar--large {
+  width: 38px;
+  height: 38px;
 }
 
 .user-entry__text {
@@ -510,106 +790,242 @@ const getCategoryInitial = (name = '') => {
   font-size: 11px;
 }
 
-.category-panel {
-  width: 430px;
-  max-height: 390px;
-  overflow-y: auto;
-  padding: 4px;
-  background: var(--bg-card);
+.mobile-start-btn {
+  display: none;
 }
 
-.category-panel__head {
-  display: flex;
+:deep(.user-card-popover .ant-popover-inner) {
+  padding: 0;
+  border-radius: 10px;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.2) !important;
+}
+
+:deep(.user-card-popover .ant-popover-arrow) {
+  display: none;
+}
+
+.user-card-panel {
+  position: relative;
+  width: 420px;
+  padding: 22px 18px 16px;
+  border-top: 4px solid #ff8a00;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.user-card-panel::before {
+  position: absolute;
+  top: -9px;
+  right: 28px;
+  width: 18px;
+  height: 18px;
+  content: "";
+  background: #fff;
+  border-top: 4px solid #ff8a00;
+  border-left: 4px solid #ff8a00;
+  transform: rotate(45deg);
+}
+
+.user-card-logout {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.category-panel__head strong {
-  color: var(--text-primary);
-  font-size: 15px;
-}
-
-.category-panel__head span {
-  color: var(--text-muted);
-  font-size: 12px;
-}
-
-.category-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.category-card {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  background: var(--bg-card);
-  text-align: left;
+  gap: 4px;
+  border: 0;
+  color: #444;
+  background: transparent;
+  font-size: 14px;
   cursor: pointer;
-  transition:
-    transform 0.16s ease,
-    border-color 0.16s ease,
-    background 0.16s ease;
 }
 
-.category-card:hover {
-  transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
-  background: var(--accent-light);
-}
-
-.category-card__icon {
+.user-card-avatar {
   display: grid;
-  flex: 0 0 auto;
-  width: 34px;
-  height: 34px;
   place-items: center;
-  border-radius: 8px;
-  color: var(--accent);
-  background: var(--accent-soft);
-  font-size: 16px;
+}
+
+.user-card-avatar img {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-card-name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.user-card-name strong {
+  color: #333;
+  font-size: 20px;
   font-weight: 800;
 }
 
-.category-card span:last-child {
-  min-width: 0;
+.user-card-name span {
+  color: #ff5b8f;
+  font-weight: 900;
 }
 
-.category-card strong,
-.category-card em {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.user-card-name em {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 4px;
+  color: #fff;
+  background: #5ac8fa;
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 900;
 }
 
-.category-card strong {
+.user-card-name button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  color: #24b9ff;
+  background: transparent;
+  cursor: pointer;
+}
+
+.user-card-signature {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px 0 0;
+  color: #9aa1ad;
+  font-size: 14px;
+}
+
+.level-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  margin-top: 18px;
+  color: #333;
+}
+
+.level-track {
+  position: relative;
+  height: 22px;
+  border-radius: 11px;
+  background: #ececec;
+}
+
+.level-track i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ffd966, #ff9900);
+}
+
+.level-track b {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #666;
   font-size: 13px;
 }
 
-.category-card em {
-  margin-top: 2px;
-  color: var(--text-muted);
-  font-size: 11px;
-  font-style: normal;
+.asset-row {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  gap: 12px;
+  align-items: center;
+  margin-top: 18px;
+  color: #333;
 }
 
-.mobile-start-btn {
-  display: none;
+.asset-row span {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.asset-row strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #333;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.asset-row button {
+  justify-self: end;
+  height: 34px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 17px;
+  color: #fff;
+  background: #ff8a00;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.user-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.user-shortcuts button {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 10px 4px 6px;
+  border: 0;
+  border-radius: 8px;
+  color: #666;
+  background: #fff;
+  cursor: pointer;
+}
+
+.user-shortcuts button:hover {
+  background: #fff4e3;
+  color: #ff8a00;
+}
+
+.user-shortcuts button svg {
+  font-size: 26px;
+}
+
+.user-shortcuts span {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-shortcut {
+  width: 100%;
+  height: 36px;
+  margin-top: 10px;
+  border: 1px solid #e8ebf0;
+  border-radius: 8px;
+  color: #666;
+  background: #fafafa;
+  font-weight: 800;
+  cursor: pointer;
 }
 
 @media (max-width: 1180px) {
   .brand-copy span,
   .start-live {
     display: none;
+  }
+
+  .quick-entry {
+    min-width: 46px;
   }
 }
 
@@ -639,6 +1055,11 @@ const getCategoryInitial = (name = '') => {
     max-width: none;
   }
 
+  .site-header__quick {
+    order: 3;
+    margin-left: auto;
+  }
+
   .mobile-start-btn {
     display: inline-flex;
     align-items: center;
@@ -662,12 +1083,16 @@ const getCategoryInitial = (name = '') => {
     display: none;
   }
 
-  .category-panel {
-    width: min(86vw, 430px);
+  .history-panel {
+    width: min(88vw, 420px);
   }
 
-  .category-grid {
-    grid-template-columns: 1fr;
+  .user-card-panel {
+    width: min(86vw, 420px);
+  }
+
+  .user-shortcuts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 </style>

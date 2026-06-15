@@ -1,6 +1,7 @@
 package cn.imhtb.live.modules.live.service.recommend;
 
 import cn.imhtb.live.common.enums.LiveRoomStatusEnum;
+import cn.imhtb.live.common.enums.StatusEnum;
 import cn.imhtb.live.common.enums.WatchTypeEnum;
 import cn.imhtb.live.mappers.CategoryMapper;
 import cn.imhtb.live.mappers.RoomMapper;
@@ -82,7 +83,7 @@ public class RecommendServiceImpl implements IRecommendService {
             // 2. 收集所有房间文本用于 TF-IDF
             List<Room> allRooms = roomMapper.selectList(
                 new LambdaQueryWrapper<Room>()
-                    .eq(Room::getDisabled, 1)
+                    .eq(Room::getDisabled, StatusEnum.YES.getCode())
                     .eq(Room::getStatus, LiveRoomStatusEnum.LIVING.getCode()));
             List<String> documents = allRooms.stream()
                 .map(r -> (r.getTitle() != null ? r.getTitle() : "") + " " +
@@ -189,7 +190,7 @@ public class RecommendServiceImpl implements IRecommendService {
             List<Room> hotRooms = roomMapper.selectList(
                 new LambdaQueryWrapper<Room>()
                     .eq(Room::getStatus, LiveRoomStatusEnum.LIVING.getCode())
-                    .eq(Room::getDisabled, 1)
+                    .eq(Room::getDisabled, StatusEnum.YES.getCode())
                     .notIn(!shownIds.isEmpty(), Room::getId, shownIds)
                     .orderByDesc(Room::getId)
                     .last("limit " + (limit - result.size())));

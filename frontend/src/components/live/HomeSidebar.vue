@@ -1,13 +1,5 @@
 <template>
   <aside class="side-column">
-    <section class="side-card start-card">
-      <div>
-        <h3>主播入口</h3>
-        <p>{{ isLogin ? '开播、互动和收益都在这里' : '登录后即可创建直播间' }}</p>
-      </div>
-      <button class="start-live-btn" type="button" @click="$emit('go-live-center')">我要开播</button>
-    </section>
-
     <section class="side-card">
       <div class="side-title">
         <h3>热度榜</h3>
@@ -56,13 +48,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { useStore } from '@/stores';
 import { formatHeat, getAnchorName, getRoomHeat } from '@/utils/liveRoomPresenter';
 import { onImgError } from '@/utils/fallback';
-
-const store = useStore();
-const isLogin = computed(() => store.user().isLogin);
 
 const formatAmount = (n) => {
   if (n >= 10000) return (n / 10000).toFixed(1) + '万';
@@ -77,7 +64,7 @@ defineProps({
   giftRank: { type: Array, default: () => [] },
 });
 
-defineEmits(['enter', 'go-live-center']);
+defineEmits(['enter']);
 </script>
 
 <style scoped lang="scss">
@@ -96,28 +83,6 @@ defineEmits(['enter', 'go-live-center']);
   box-shadow: var(--shadow);
 }
 
-.start-card {
-  display: grid;
-  gap: 12px;
-  background: var(--accent-gradient);
-  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
-  color: var(--accent-text);
-}
-
-.start-live-btn {
-  height: 38px;
-  border: 0;
-  border-radius: 6px;
-  color: var(--header-text-active);
-  background: var(--bg-header);
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.start-live-btn:hover {
-  background: var(--bg-header-soft);
-}
-
 .side-title {
   display: flex;
   align-items: center;
@@ -133,16 +98,9 @@ defineEmits(['enter', 'go-live-center']);
   font-weight: 900;
 }
 
-.side-title span,
-.start-card p {
+.side-title span {
   color: var(--text-muted);
   font-size: 12px;
-}
-
-.start-card p {
-  margin: 6px 0 0;
-  color: color-mix(in srgb, var(--accent-text) 78%, transparent);
-  line-height: 1.5;
 }
 
 .rank-row,

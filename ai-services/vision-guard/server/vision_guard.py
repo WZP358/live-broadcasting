@@ -37,18 +37,24 @@ def check_violence_pose(keypoints_obj):
 
     kpts = keypoints_obj.data.cpu().numpy()  # 转移到 CPU 进行逻辑计算
     for i, p1 in enumerate(kpts):
+        if p1[0][2] < 0.55:
+            continue
         head_p1 = p1[0][:2]  # 鼻尖坐标
         for j, p2 in enumerate(kpts):
             if i == j: continue
+            left_foot_ok = p2[15][2] >= 0.55
+            right_foot_ok = p2[16][2] >= 0.55
+            if not left_foot_ok and not right_foot_ok:
+                continue
             # 检查 p2 的左脚(15)或右脚(16)是否靠近 p1 的头(0)
             foot_p2_l = p2[15][:2]
             foot_p2_r = p2[16][:2]
 
-            dist_l = np.linalg.norm(head_p1 - foot_p2_l)
-            dist_r = np.linalg.norm(head_p1 - foot_p2_r)
+            dist_l = np.linalg.norm(head_p1 - foot_p2_l) if left_foot_ok else float("inf")
+            dist_r = np.linalg.norm(head_p1 - foot_p2_r) if right_foot_ok else float("inf")
 
             # 距离阈值设定为 130 像素
-            if dist_l < 130 or dist_r < 130:
+            if dist_l < 90 or dist_r < 90:
                 return True
     return False
 

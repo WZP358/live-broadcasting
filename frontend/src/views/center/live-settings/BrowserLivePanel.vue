@@ -5,7 +5,7 @@
         <span class="studio-logo">PL</span>
         <div>
           <h3>开播工作台</h3>
-          <span>房间 {{ roomId || "--" }}</span>
+          <span>房间 {{ activeRoomId || "--" }}</span>
         </div>
       </div>
       <div class="studio-top-status">
@@ -29,28 +29,28 @@
           <h4>开播方式</h4>
           <button
             class="source-item"
-            :class="{ selected: state.liveActive && state.isScreenSharing }"
+            :class="{ selected: state.liveActive ? state.isScreenSharing : state.selectedLiveMode === 'screen' }"
             type="button"
-            :disabled="state.starting"
-            @click="startScreenLive"
+            :disabled="state.starting || state.liveActive"
+            @click="setLiveMode('screen')"
           >
             <span class="source-icon"><DesktopOutlined /></span>
             <span>
               <strong>屏幕直播</strong>
-              <small>{{ state.liveActive && state.isScreenSharing ? "正在使用" : "共享屏幕" }}</small>
+              <small>{{ state.liveActive && state.isScreenSharing ? "正在使用" : state.selectedLiveMode === 'screen' ? "已选中" : "点击选择" }}</small>
             </span>
           </button>
           <button
             class="source-item"
-            :class="{ selected: state.liveActive && !state.isScreenSharing }"
+            :class="{ selected: state.liveActive ? !state.isScreenSharing : state.selectedLiveMode === 'camera' }"
             type="button"
-            :disabled="state.starting"
-            @click="startCameraLive"
+            :disabled="state.starting || state.liveActive"
+            @click="setLiveMode('camera')"
           >
             <span class="source-icon"><VideoCameraOutlined /></span>
             <span>
               <strong>摄像头直播</strong>
-              <small>{{ state.liveActive && !state.isScreenSharing ? "正在使用" : "使用摄像头" }}</small>
+              <small>{{ state.liveActive && !state.isScreenSharing ? "正在使用" : state.selectedLiveMode === 'camera' ? "已选中" : "点击选择" }}</small>
             </span>
           </button>
         </section>
@@ -121,36 +121,10 @@
             <h4>{{ streamModeText }}</h4>
             <span>{{ state.message || "准备好后即可开始直播" }}</span>
           </div>
-          <div class="room-strip-actions">
-            <a-button :loading="state.starting" @click="startScreenLive">
-              <DesktopOutlined />
-              屏幕
-            </a-button>
-            <a-button :loading="state.starting" @click="startCameraLive">
-              <VideoCameraOutlined />
-              摄像头
-            </a-button>
-            <a-button
-              :type="state.liveActive ? 'primary' : 'default'"
-              :danger="state.liveActive"
-              :disabled="!state.liveActive"
-              @click="stopBrowserLive"
-            >
-              停止直播
-            </a-button>
-          </div>
         </div>
 
         <div class="preview-stage">
           <video ref="previewRef" class="studio-preview" autoplay muted playsinline controls></video>
-          <video
-            v-if="state.isScreenSharing && state.cameraPipEnabled && state.liveActive"
-            ref="cameraVideoRef"
-            class="camera-pip-preview"
-            autoplay
-            muted
-            playsinline
-          ></video>
           <div v-if="!state.liveActive" class="preview-empty">
             <strong>等待开播</strong>
             <span>选择屏幕或摄像头</span>
@@ -174,8 +148,21 @@
               <strong>{{ denoiseCompactSummary }}</strong>
             </div>
           </div>
-          <a-button type="primary" size="large" :loading="state.starting" @click="startScreenLive">
-            {{ state.liveActive ? "切换屏幕" : "开始直播" }}
+          <a-button
+            :type="state.liveActive ? 'default' : 'primary'"
+            :danger="state.liveActive"
+            size="large"
+            :loading="state.starting"
+            @click="handlePrimaryLiveAction"
+          >
+            <template v-if="state.liveActive">
+              <PauseCircleOutlined />
+              停止直播
+            </template>
+            <template v-else>
+              <PlayCircleOutlined />
+              开始直播
+            </template>
           </a-button>
         </div>
 
@@ -189,7 +176,7 @@
               </div>
               <div>
                 <span>房间</span>
-                <strong>{{ roomId || "--" }}</strong>
+                <strong>{{ activeRoomId || "--" }}</strong>
               </div>
               <div>
                 <span>状态</span>
@@ -208,6 +195,45 @@
         <div class="chat-header">
           <h4>互动消息</h4>
           <span>{{ state.viewerCount }} 人在线</span>
+        </div>
+        <div class="caption-assistant">
+          <div class="caption-assistant__head">
+            <div>
+              <strong>字幕小脉</strong>
+              <span>{{ subtitleAssistantSummary }}</span>
+            </div>
+            <a-button size="small" :disabled="!subtitleHistory.length" @click="clearSubtitleHistory">
+              清空
+            </a-button>
+          </div>
+          <div class="caption-assistant__actions">
+            <a-button size="small" :loading="subtitleAssistant.loading" @click="runSubtitleAssistant('summary')">
+              总结字幕
+            </a-button>
+            <a-button size="small" :loading="subtitleAssistant.loading" @click="runSubtitleAssistant('topic')">
+              提炼话题
+            </a-button>
+            <a-button size="small" :loading="subtitleAssistant.loading" @click="runSubtitleAssistant('reply')">
+              生成接话
+            </a-button>
+          </div>
+          <div v-if="subtitleAssistant.result" class="caption-assistant__result">
+            <div class="caption-assistant__result-head">
+              <span>{{ subtitleAssistant.title }}</span>
+              <a-button type="link" size="small" @click="copyAssistantResult">复制</a-button>
+            </div>
+            <p :class="{ collapsed: subtitleAssistantCollapsed }">
+              {{ subtitleAssistant.result }}
+            </p>
+            <button
+              v-if="isLongAssistantResult"
+              class="caption-assistant__expand"
+              type="button"
+              @click="subtitleAssistantCollapsed = !subtitleAssistantCollapsed"
+            >
+              {{ subtitleAssistantCollapsed ? "展开" : "收起" }}
+            </button>
+          </div>
         </div>
         <div class="chat-feed">
           <div v-if="state.liveActive" class="chat-message system">
@@ -239,16 +265,19 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, reactive, ref } from "vue"
+import { computed, onBeforeUnmount, reactive, ref, watch } from "vue"
 import {
   DesktopOutlined,
   GiftOutlined,
   HeartOutlined,
   MessageOutlined,
+  PauseCircleOutlined,
+  PlayCircleOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons-vue"
 import $modal from "@/utils/message"
 import liveAPI from "@/api/live"
+import agentApi from "@/api/agent"
 import { createBrowserLiveFallbackUrls, createPeerConnection } from "@/utils/browserLive"
 import { createLiveCaptionEngine, isLiveCaptionSupported } from "@/utils/liveCaption"
 import { createLiveDenoiseEngine } from "@/utils/liveDenoise"
@@ -272,12 +301,14 @@ const props = defineProps({
 
 const emit = defineEmits(["status-change"])
 const previewRef = ref(null)
-const cameraVideoRef = ref(null)
+const resolvedRoomId = ref(null)
+const activeRoomId = computed(() => props.roomId || resolvedRoomId.value)
 
 const state = reactive({
   starting: false,
   liveActive: false,
   isScreenSharing: false,
+  selectedLiveMode: "screen",
   cameraPipEnabled: true,
   pipSwitching: false,
   message: "",
@@ -286,6 +317,7 @@ const state = reactive({
   captionSupported: isLiveCaptionSupported(),
   captionActive: false,
   subtitleText: "",
+  subtitleHistory: [],
   denoiseEnabled: window.localStorage.getItem(DENOISE_STORAGE_KEY) === "1",
   denoiseStatus: "idle",
   denoiseDetail: "",
@@ -311,6 +343,14 @@ let denoiseEngine = null
 let latencyAlignedStream = null
 let auxiliaryStreams = []
 const peerMap = new Map()
+const subtitleAssistant = reactive({
+  loading: false,
+  title: "字幕助手",
+  result: "",
+  mode: "",
+  error: "",
+})
+const subtitleAssistantCollapsed = ref(true)
 
 const resetDenoiseState = () => {
   state.denoiseStatus = "idle"
@@ -366,6 +406,20 @@ const captionSummary = computed(() => {
   return "未开启"
 })
 
+const subtitleHistory = computed(() => state.subtitleHistory)
+
+const subtitleAssistantSummary = computed(() => {
+  if (!subtitleHistory.value.length) {
+    return "等待字幕输入"
+  }
+  if (subtitleAssistant.loading) {
+    return "正在分析字幕"
+  }
+  return `已记录 ${subtitleHistory.value.length} 句`
+})
+
+const isLongAssistantResult = computed(() => String(subtitleAssistant.result || "").length > 120)
+
 const denoiseCompactSummary = computed(() => {
   if (!state.denoiseEnabled) {
     return "未开启"
@@ -381,7 +435,7 @@ const denoiseCompactSummary = computed(() => {
 
 const streamModeText = computed(() => {
   if (!state.liveActive) {
-    return "未选择画面"
+    return state.selectedLiveMode === "screen" ? "屏幕直播" : "摄像头直播"
   }
   return state.isScreenSharing ? "屏幕直播" : "摄像头直播"
 })
@@ -408,6 +462,136 @@ const getDenoiseStatusText = (status, useEnhancedOutput = false) => {
   return "降噪已启用"
 }
 
+const pushSubtitleHistory = (text) => {
+  const normalized = String(text || "").trim()
+  if (!normalized) {
+    return
+  }
+
+  const nextItem = {
+    text: normalized,
+    at: Date.now(),
+  }
+  const recent = state.subtitleHistory.slice(-19)
+  const lastItem = recent[recent.length - 1]
+  if (lastItem && (normalized.includes(lastItem.text) || lastItem.text.includes(normalized))) {
+    recent[recent.length - 1] = nextItem
+    state.subtitleHistory = recent
+    return
+  }
+  state.subtitleHistory = [...recent, nextItem]
+}
+
+const getSubtitleHistoryText = () =>
+  state.subtitleHistory
+    .map((item, index) => `${index + 1}. ${item.text}`)
+    .join("\n")
+
+const clearSubtitleHistory = () => {
+  state.subtitleHistory = []
+  subtitleAssistant.result = ""
+  subtitleAssistant.title = "字幕助手"
+  subtitleAssistant.mode = ""
+  subtitleAssistant.error = ""
+  subtitleAssistantCollapsed.value = true
+}
+
+const copyAssistantResult = async () => {
+  const text = subtitleAssistant.result || ""
+  if (!text) {
+    return
+  }
+  try {
+    await navigator.clipboard.writeText(text)
+    $modal.msgSuccess("已复制字幕助手内容")
+  } catch (error) {
+    $modal.msgWarning("复制失败，请手动选中内容")
+  }
+}
+
+const buildSubtitlePrompt = (mode) => {
+  const context = getSubtitleHistoryText()
+  const base = `以下是直播实时字幕，请基于字幕内容输出简洁、可直接用于直播现场的内容：\n${context}`
+  if (mode === "summary") {
+    return `${base}\n\n要求：先给出 1 句摘要，再给出 3 条要点。`
+  }
+  if (mode === "topic") {
+    return `${base}\n\n要求：提炼 3 到 5 个主题关键词，并给出一个适合直播间展示的标题。`
+  }
+  return `${base}\n\n要求：生成 1 到 2 句自然的主播接话，语气要轻松自然，适合直接念出来。`
+}
+
+const normalizeAssistantResponse = (data = {}, mode) => {
+  const fallbackText =
+    mode === "topic"
+      ? "暂时无法生成话题提炼，请检查 AI 服务状态。"
+      : mode === "reply"
+        ? "暂时无法生成接话，请检查 AI 服务状态。"
+        : "暂时无法生成字幕总结，请检查 AI 服务状态。"
+  const answer = data.answer || data.summary || data.message || fallbackText
+  subtitleAssistant.title =
+    mode === "topic" ? "字幕话题" : mode === "reply" ? "字幕接话" : "字幕总结"
+  subtitleAssistant.result = String(answer || fallbackText).trim()
+  subtitleAssistant.mode = mode
+  subtitleAssistant.error = ""
+  subtitleAssistantCollapsed.value = true
+}
+
+const runSubtitleAssistant = async (mode) => {
+  if (!state.subtitleHistory.length) {
+    $modal.msgWarning("还没有可分析的字幕内容")
+    return
+  }
+  if (subtitleAssistant.loading) {
+    return
+  }
+
+  subtitleAssistant.loading = true
+  subtitleAssistant.error = ""
+
+  try {
+    const prompt = buildSubtitlePrompt(mode)
+    const res = await agentApi.askHelper(prompt)
+    normalizeAssistantResponse(res?.data || {}, mode)
+    subtitleAssistant.error = ""
+  } catch (error) {
+    subtitleAssistant.error = "AI 服务暂不可用"
+    subtitleAssistant.title = mode === "topic" ? "字幕话题" : mode === "reply" ? "字幕接话" : "字幕总结"
+    subtitleAssistant.result = "AI 服务暂不可用，字幕助手无法生成结果。"
+    subtitleAssistant.mode = mode
+    subtitleAssistantCollapsed.value = true
+    $modal.msgWarning(subtitleAssistant.result)
+  } finally {
+    subtitleAssistant.loading = false
+  }
+}
+
+watch(
+  () => props.roomId,
+  (roomId) => {
+    if (roomId) {
+      resolvedRoomId.value = roomId
+    }
+  },
+  { immediate: true }
+)
+
+const ensureRoomId = async () => {
+  if (activeRoomId.value) {
+    return activeRoomId.value
+  }
+
+  const res = await liveAPI.getRoomSettingsInfo()
+  const roomId = res?.data?.id
+  if (roomId) {
+    resolvedRoomId.value = roomId
+    emit("status-change")
+    return roomId
+  }
+
+  return null
+}
+
 const ensureRoomActive = async () => {
   if (props.liveStatus === 1) {
     return
@@ -418,9 +602,9 @@ const ensureRoomActive = async () => {
 
 const createMicrophoneConstraints = () => ({
   channelCount: 1,
-  echoCancellation: false,
-  noiseSuppression: false,
-  autoGainControl: false,
+  echoCancellation: true,
+  noiseSuppression: true,
+  autoGainControl: true,
 })
 
 const describeAudioProcessingState = (stream = captureStream) => {
@@ -442,56 +626,58 @@ const describeAudioProcessingState = (stream = captureStream) => {
 const createScreenStream = async () => {
   const displayStream = await navigator.mediaDevices.getDisplayMedia({
     video: true,
-    audio: true,
+    audio: false,
   })
 
-  let microphoneStream = null
   try {
-    microphoneStream = await navigator.mediaDevices.getUserMedia({
+    const microphoneStream = await navigator.mediaDevices.getUserMedia({
       audio: createMicrophoneConstraints(),
     })
-  } catch (error) {
-    microphoneStream = null
-  }
 
-  auxiliaryStreams = [displayStream]
-  if (microphoneStream) {
+    auxiliaryStreams = [displayStream]
     auxiliaryStreams.push(microphoneStream)
-  }
 
-  // 尝试获取摄像头用于浮窗
-  if (state.cameraPipEnabled) {
-    try {
-      cameraStream = await navigator.mediaDevices.getUserMedia({
-        video: { width: { ideal: 320 }, height: { ideal: 240 } },
-        audio: false,
-      })
-      auxiliaryStreams.push(cameraStream)
-    } catch (error) {
-      cameraStream = null
+    // 尝试获取摄像头用于浮窗
+    if (state.cameraPipEnabled) {
+      try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 320 }, height: { ideal: 240 } },
+          audio: false,
+        })
+        auxiliaryStreams.push(cameraStream)
+      } catch (error) {
+        cameraStream = null
+      }
     }
+
+    const videoTracks = displayStream.getVideoTracks()
+    const audioTracks = microphoneStream.getAudioTracks()
+
+    if (!audioTracks.length) {
+      throw new Error("屏幕直播需要可用麦克风，不能使用电脑系统声音代替。")
+    }
+
+    // 如果有摄像头浮窗，用 Canvas 合成画面
+    if (cameraStream && cameraStream.getVideoTracks().length > 0) {
+      return createPipCompositeStream(displayStream, cameraStream, [...videoTracks, ...audioTracks])
+    }
+
+    return new MediaStream([...videoTracks, ...audioTracks])
+  } catch (error) {
+    displayStream.getTracks().forEach((track) => track.stop())
+    throw error
   }
-
-  const videoTracks = displayStream.getVideoTracks()
-  const microphoneTracks = microphoneStream?.getAudioTracks?.() || []
-  const displayAudioTracks = displayStream.getAudioTracks()
-  const audioTracks = microphoneTracks.length ? microphoneTracks : displayAudioTracks
-
-  // 如果有摄像头浮窗，用 Canvas 合成画面
-  if (cameraStream && cameraStream.getVideoTracks().length > 0) {
-    return createPipCompositeStream(displayStream, cameraStream, [...videoTracks, ...audioTracks])
-  }
-
-  return new MediaStream([...videoTracks, ...audioTracks])
 }
 
 const startScreenLive = async () => {
+  state.selectedLiveMode = "screen"
   state.isScreenSharing = true
   state.cameraPipEnabled = false
   await startBrowserLive(() => createScreenStream())
 }
 
 const startCameraLive = async () => {
+  state.selectedLiveMode = "camera"
   state.isScreenSharing = false
   state.cameraPipEnabled = false
   await startBrowserLive(() =>
@@ -500,6 +686,25 @@ const startCameraLive = async () => {
       audio: createMicrophoneConstraints(),
     })
   )
+}
+
+const setLiveMode = (mode) => {
+  if (state.liveActive || state.starting) {
+    return
+  }
+  state.selectedLiveMode = mode === "camera" ? "camera" : "screen"
+}
+
+const handlePrimaryLiveAction = async () => {
+  if (state.liveActive) {
+    await stopBrowserLive()
+    return
+  }
+  if (state.selectedLiveMode === "camera") {
+    await startCameraLive()
+    return
+  }
+  await startScreenLive()
 }
 
 /**
@@ -521,12 +726,6 @@ const createPipCompositeStream = (screenStream, camStream, audioTracks) => {
   camVideo.muted = true
   camVideo.playsInline = true
   camVideo.play?.().catch(ignoreMediaSideEffect)
-
-  // 驱动摄像头 PiP 预览
-  if (cameraVideoRef.value) {
-    cameraVideoRef.value.srcObject = camStream
-    cameraVideoRef.value.play?.().catch(ignoreMediaSideEffect)
-  }
 
   pipCanvas = document.createElement("canvas")
   const ctx = pipCanvas.getContext("2d")
@@ -638,9 +837,6 @@ const toggleCameraPip = async (enabled) => {
         cameraStream.getTracks().forEach((t) => t.stop())
         cameraStream = null
       }
-      if (cameraVideoRef.value) {
-        cameraVideoRef.value.srcObject = null
-      }
 
       // 用原始 captureStream 的视频 + 当前音频重建
       const audioTracks = publishingStream?.getAudioTracks?.() || []
@@ -689,7 +885,8 @@ const replacePublishingStream = async (newStream) => {
 }
 
 const startBrowserLive = async (streamFactory) => {
-  if (!props.roomId) {
+  const roomId = await ensureRoomId()
+  if (!roomId) {
     $modal.msgError("房间信息未初始化完成，暂时无法开播")
     return
   }
@@ -759,7 +956,6 @@ const buildPublishingStream = async (stream) => {
     state.denoiseModelName = ""
     state.denoiseUsingEnhanced = false
     state.denoiseRuntimeInfo = ""
-    $modal.msgWarning(state.denoiseDetail)
     await denoiseEngine.stop()
     denoiseEngine = null
     return alignPublishingLatency(stream)
@@ -929,6 +1125,9 @@ const getMediaErrorMessage = (error) => {
   if (/deepfilter|denoise|降噪服务|web audio/.test(normalizedMessage)) {
     return "降噪暂不可用，已继续使用原始麦克风声音。"
   }
+  if (/系统声音|电脑系统声音|screen live needs microphone|屏幕直播需要可用麦克风/.test(rawMessage)) {
+    return "屏幕直播只采集麦克风声音，不采集电脑系统声音；请允许麦克风权限后再开播。"
+  }
   if (/connection|socket/.test(normalizedMessage)) {
     return "直播连接暂不可用，请稍后重试。"
   }
@@ -971,7 +1170,7 @@ const connectSignal = () =>
         sendSignal({
           type: "join",
           role: "broadcaster",
-          roomId: props.roomId,
+          roomId: activeRoomId.value,
         })
       }
 
@@ -1042,6 +1241,7 @@ const handleSignalMessage = async (data) => {
   }
   if (data.type === "subtitle") {
     state.subtitleText = data.text || ""
+    pushSubtitleHistory(data.text)
     return
   }
   if (data.type === "subtitle-clear") {
@@ -1074,7 +1274,7 @@ const createOfferForViewer = async (viewerSessionId) => {
     }
     sendSignal({
       type: "ice-candidate",
-      roomId: props.roomId,
+      roomId: activeRoomId.value,
       targetSessionId: viewerSessionId,
       candidate: event.candidate,
     })
@@ -1090,7 +1290,7 @@ const createOfferForViewer = async (viewerSessionId) => {
   await peer.setLocalDescription(offer)
   sendSignal({
     type: "offer",
-    roomId: props.roomId,
+    roomId: activeRoomId.value,
     targetSessionId: viewerSessionId,
     sdp: offer,
   })
@@ -1119,9 +1319,10 @@ const toggleCaption = async () => {
     sourceStream: captureStream,
     onText: (text) => {
       state.subtitleText = text
+      pushSubtitleHistory(text)
       sendSignal({
         type: text ? "subtitle" : "subtitle-clear",
-        roomId: props.roomId,
+        roomId: activeRoomId.value,
         text,
       })
     },
@@ -1175,7 +1376,7 @@ const stopCaption = () => {
   if (state.captionActive || state.subtitleText) {
     sendSignal({
       type: "subtitle-clear",
-      roomId: props.roomId,
+      roomId: activeRoomId.value,
     })
   }
   state.captionActive = false
@@ -1208,7 +1409,7 @@ const startHeartbeat = () => {
   heartbeatTimer = window.setInterval(() => {
     sendSignal({
       type: "heartbeat",
-      roomId: props.roomId,
+      roomId: activeRoomId.value,
     })
   }, HEARTBEAT_INTERVAL)
 }
@@ -1258,7 +1459,7 @@ const captureGuardFrame = () =>
   })
 
 const runGuardCheck = async () => {
-  if (!state.liveActive || guardChecking || !props.roomId) {
+  if (!state.liveActive || guardChecking || !activeRoomId.value) {
     return
   }
   guardChecking = true
@@ -1267,10 +1468,14 @@ const runGuardCheck = async () => {
     if (!frame) {
       return
     }
-    const response = await liveAPI.checkGuardFrame(props.roomId, frame)
+    const response = await liveAPI.checkGuardFrame(activeRoomId.value, frame)
     const result = response?.data || {}
     if (result.banned) {
       await forceStopByGuard(formatGuardReason(result))
+    } else if (result.status === "REVIEW") {
+      const hint = result.reason || "风险内容已提交管理员审核，直播继续进行"
+      $modal.msgWarning(hint)
+      setMessage(hint)
     }
   } catch (error) {
     // Keep the live room running; the next scheduled check will retry.
@@ -1307,9 +1512,11 @@ const sendSignal = (payload) => {
 }
 
 const stopBrowserLive = async (options = {}) => {
+  const lastMode = state.isScreenSharing ? "screen" : "camera"
   state.liveActive = false
   state.signalConnected = false
   state.isScreenSharing = false
+  state.selectedLiveMode = lastMode
   state.cameraPipEnabled = false
   stopGuardLoop()
   const stopMessage = options.guardReason || null
@@ -1323,12 +1530,9 @@ const stopBrowserLive = async (options = {}) => {
     cameraStream.getTracks().forEach((t) => t.stop())
     cameraStream = null
   }
-  if (cameraVideoRef.value) {
-    cameraVideoRef.value.srcObject = null
-  }
   sendSignal({
     type: "leave",
-    roomId: props.roomId,
+    roomId: activeRoomId.value,
   })
   closeSignal()
   closeAllPeers()
@@ -1457,7 +1661,6 @@ onBeforeUnmount(async () => {
 .studio-brand,
 .studio-top-status,
 .room-strip,
-.room-strip-actions,
 .control-dock,
 .dock-metrics,
 .chat-header,
@@ -1735,11 +1938,6 @@ button.tool-row {
   text-overflow: ellipsis;
 }
 
-.room-strip-actions {
-  flex-shrink: 0;
-  gap: 8px;
-}
-
 .preview-stage {
   position: relative;
   min-height: 380px;
@@ -1791,22 +1989,6 @@ button.tool-row {
   color: #ffffff;
   font-size: 12px;
   font-weight: 800;
-}
-
-.camera-pip-preview {
-  position: absolute;
-  right: 16px;
-  bottom: 16px;
-  width: 25%;
-  min-width: 120px;
-  max-width: 240px;
-  height: auto;
-  border-radius: 8px;
-  border: 2px solid rgba(255, 255, 255, 0.82);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
-  z-index: 10;
-  object-fit: cover;
-  background: #0f172a;
 }
 
 .subtitle-preview {
@@ -1889,13 +2071,103 @@ button.tool-row {
 }
 
 .chat-feed {
-  height: calc(100% - 92px);
-  min-height: 500px;
+  flex: 1;
+  min-height: 260px;
   padding: 10px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   overflow: auto;
+}
+
+.caption-assistant {
+  margin: 10px;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+  border: 1px solid #383d46;
+  background: #22262d;
+}
+
+.caption-assistant__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.caption-assistant__head > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.caption-assistant__head strong {
+  color: #f5f7fb;
+  font-size: 13px;
+}
+
+.caption-assistant__head span {
+  color: #9aa3b2;
+  font-size: 12px;
+}
+
+.caption-assistant__actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.caption-assistant__actions :deep(.ant-btn) {
+  padding-inline: 6px;
+  font-size: 12px;
+}
+
+.caption-assistant__result {
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+  border-left: 3px solid #f5c542;
+  background: #282c33;
+}
+
+.caption-assistant__result-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.caption-assistant__result-head span {
+  color: #f5f7fb;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.caption-assistant__result p {
+  margin: 0;
+  color: #cdd4df;
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.caption-assistant__result p.collapsed {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.caption-assistant__expand {
+  width: fit-content;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #f6c453;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
 }
 
 .chat-message,
@@ -1972,7 +2244,6 @@ button.tool-row {
     grid-template-columns: 1fr;
   }
 
-  .room-strip-actions,
   .dock-metrics {
     width: 100%;
     flex-wrap: wrap;
@@ -2223,16 +2494,6 @@ button.tool-row:hover {
   margin-top: 6px;
 }
 
-.room-strip-actions {
-  gap: 12px;
-}
-
-.room-strip-actions :deep(.ant-btn) {
-  min-width: 88px;
-  height: 38px;
-  border-radius: 6px;
-}
-
 .preview-stage {
   min-height: 460px;
   border-radius: 8px;
@@ -2334,6 +2595,20 @@ button.tool-row:hover {
   gap: 10px;
 }
 
+.caption-assistant {
+  margin: 14px 14px 0;
+  padding: 14px;
+  border-radius: 8px;
+  background: var(--studio-surface-raised);
+  border-color: var(--studio-border);
+}
+
+.caption-assistant__result {
+  border-radius: 8px;
+  border-left-color: var(--studio-accent);
+  background: var(--studio-surface);
+}
+
 .chat-message,
 .chat-empty {
   padding: 14px;
@@ -2412,16 +2687,9 @@ button.tool-row:hover {
     grid-template-rows: auto auto auto auto;
   }
 
-  .room-strip-actions,
   .dock-metrics {
     gap: 10px;
   }
-
-  .room-strip-actions {
-    flex-direction: column;
-  }
-
-  .room-strip-actions :deep(.ant-btn),
   .control-dock :deep(.ant-btn) {
     width: 100%;
     flex: 1;
@@ -2499,6 +2767,8 @@ button.tool-row:hover {
 .room-strip h4,
 .studio-bottom h4,
 .chat-header h4,
+.caption-assistant__head strong,
+.caption-assistant__result-head span,
 .source-item strong,
 .tool-row strong,
 .status-line strong,
@@ -2516,6 +2786,7 @@ button.tool-row:hover {
 .tool-row small,
 .chat-empty span,
 .chat-message span,
+.caption-assistant__head span,
 .studio-bottom p,
 .dock-metrics span,
 .data-grid span,
@@ -2569,7 +2840,8 @@ button.tool-row:hover {
 .tool-row,
 .dock-metrics div,
 .data-grid div,
-.chat-message {
+.chat-message,
+.caption-assistant {
   background: var(--studio-surface-raised);
 }
 
@@ -2640,6 +2912,19 @@ button.tool-row:hover {
 .chat-message,
 .chat-empty {
   border-left-color: var(--studio-accent);
+}
+
+.caption-assistant__result {
+  border-left-color: var(--studio-accent);
+  background: var(--studio-surface);
+}
+
+.caption-assistant__result p {
+  color: var(--studio-muted);
+}
+
+.caption-assistant__expand {
+  color: var(--studio-accent-strong);
 }
 
 .chat-tools button {

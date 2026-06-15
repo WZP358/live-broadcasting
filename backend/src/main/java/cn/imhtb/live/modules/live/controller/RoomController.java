@@ -12,7 +12,6 @@ import cn.imhtb.live.pojo.database.Room;
 import cn.imhtb.live.pojo.vo.RoomExtraInfoResp;
 import cn.imhtb.live.pojo.vo.request.RoomInfoSaveRequest;
 import cn.imhtb.live.service.IRoomService;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +59,7 @@ public class RoomController {
     @GetMapping("/setting/info")
     public ApiResponse<Room> settingInfo(HttpServletRequest request) {
         Integer uid = JwtUtil.getId(request.getHeader(JwtUtil.getHeaderKey()));
-        Room room = roomService.getOne(new QueryWrapper<Room>().eq("user_id", uid));
+        Room room = roomService.getOrInitRoomByUserId(uid);
         return ApiResponse.ofSuccess(room);
     }
 

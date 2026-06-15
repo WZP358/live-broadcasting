@@ -42,7 +42,13 @@
       <a-list size="small" :data-source="data">
         <template #renderItem="{ item }">
           <a-list-item>
-            <MessageItem :data="item" :is-moderator="isModerator" @mute-user="handleMuteUser" @kick-user="handleKickUser" />
+            <MessageItem
+              :data="item"
+              :is-moderator="isModerator"
+              @mute-user="handleMuteUser"
+              @kick-user="handleKickUser"
+              @report-message="handleReportMessage"
+            />
           </a-list-item>
         </template>
       </a-list>
@@ -51,7 +57,7 @@
       <p class="chat-safety">请勿轻信任何主播或个人提供的兼职信息，谨防受骗</p>
       <a-flex vertical>
         <a-textarea class="chat-box" v-model:value="messageText" :placeholder="mutedUntil > Date.now() ? '你已被禁言' : isLogin ? '发个弹幕，别刷屏' : '登录后才能发送弹幕'"
-          show-count :maxlength="20" :disabled="!isLogin || mutedUntil > Date.now()" :auto-size="{ minRows: 2, maxRows: 2 }" />
+          show-count :maxlength="100" :disabled="!isLogin || mutedUntil > Date.now()" :auto-size="{ minRows: 2, maxRows: 2 }" />
         <div class="chat-btn-wrapper">
           <span class="popularity">{{ formatOnlineCount(popularity) }}在线</span>
           <a-button type="primary" size="small" @click="handleMessageSend" :disabled="!isLogin || mutedUntil > Date.now()">发送</a-button>
@@ -64,12 +70,13 @@
 
 <script setup>
 import MessageItem from "./MessageItem.vue"
-import { onBeforeMount, onMounted, ref, computed, nextTick, watch, onBeforeUnmount } from "vue"
+import { onMounted, ref, computed, nextTick, watch, onBeforeUnmount } from "vue"
 import { useStore } from "@/stores"
 import $modal from "@/utils/message"
 import ChatApi from "@/api/chat"
 import roomApi from "@/api/room"
 import moderatorApi from "@/api/moderator"
+import { appendChatMessages, createChatWebSocketUrl } from "@/utils/chatRoom"
 
 const props = defineProps({
   roomId: {
@@ -82,7 +89,7 @@ const props = defineProps({
   },
 })
 
-const emits = defineEmits(["sendGift"])
+const emits = defineEmits(["sendGift", "reportMessage", "messagesChange"])
 
 const maxReconnectCount = ref(50)
 const lockReconnect = ref(false)
@@ -123,21 +130,17 @@ const displayRanks = computed(() => {
 })
 
 onMounted(async () => {
-  if (isLogin.value) {
-    initWebSocket()
-  } else {
-    data.value = [{
+  initWebSocket()
+  if (!isLogin.value) {
+    addMessages({
       nickname: "系统消息",
       text: "游客可以观看直播，登录后可发送弹幕、送礼和参与亲密榜。",
-    }]
+      isSystem: true,
+    })
   }
   getPopularity()
   startPopularityPolling()
   getIntimacyRank()
-})
-
-onBeforeMount(() => {
-  websocket && websocket.close()
 })
 
 onBeforeUnmount(() => {
@@ -145,8 +148,45 @@ onBeforeUnmount(() => {
 })
 
 watch(data, () => {
+  emits("messagesChange", data.value)
   if (!isUserScrolling.value) {
     scrollToBottom()
+  }
+})
+
+watch(roomId, async (nextRoomId, prevRoomId) => {
+  if (!nextRoomId || nextRoomId === prevRoomId) return
+  close({ keepPopularity: true })
+  data.value = []
+  rankList.value = []
+  mutedUntil.value = 0
+  maxReconnectCount.value = 50
+  lockReconnect.value = false
+  initWebSocket()
+  if (!isLogin.value) {
+    addMessages({
+      nickname: "系统消息",
+      text: "游客可以观看直播，登录后可发送弹幕、送礼和参与亲密榜。",
+      isSystem: true,
+    })
+  }
+  await Promise.all([getPopularity(), getIntimacyRank()])
+})
+
+watch(isLogin, (loggedIn, wasLoggedIn) => {
+  if (loggedIn === wasLoggedIn) return
+  close({ keepPopularity: true })
+  data.value = []
+  mutedUntil.value = 0
+  maxReconnectCount.value = 50
+  lockReconnect.value = false
+  initWebSocket()
+  if (!loggedIn) {
+    addMessages({
+      nickname: "系统消息",
+      text: "游客可以观看直播，登录后可发送弹幕、送礼和参与亲密榜。",
+      isSystem: true,
+    })
   }
 })
 
@@ -172,6 +212,10 @@ const clearMessages = () => {
   isUserScrolling.value = false
 }
 
+const addMessages = (payload) => {
+  data.value = appendChatMessages(data.value, payload)
+}
+
 const handleScroll = () => {
   const el = scrollContainer.value
   if (!el) return
@@ -195,6 +239,9 @@ const handleMessageSend = () => {
   ChatApi.sendChatMsg({
     roomId: roomId.value,
     text,
+  }).catch((error) => {
+    messageText.value = text
+    $modal.msgError(error?.message || "弹幕发送失败，请稍后重试")
   })
 }
 
@@ -245,10 +292,10 @@ const startPopularityPolling = () => {
 
 const initWebSocket = () => {
   const token = store.user().userToken
-  if (!token) {
+  if (!roomId.value) {
     return
   }
-  let wsUrl = "ws://" + location.hostname + ":10022?token=" + encodeURIComponent(token)
+  const wsUrl = createChatWebSocketUrl({ token })
   websocket = new WebSocket(wsUrl)
   websocket.onopen = () => {
     connetRoom()
@@ -284,20 +331,19 @@ const initWebSocket = () => {
     }
     if (message.method === "guardViolation") {
       const reason = formatGuardReason(message.data)
-      data.value = data.value.concat({
+      addMessages({
         nickname: "系统消息",
         text: reason,
+        isSystem: true,
       })
-      if (data.value.length > 40) {
-        data.value = data.value.slice(-40)
-      }
       $modal.msgError(reason)
       return
     }
     if (message.method === "muteUser") {
-      data.value = data.value.concat({
+      addMessages({
         nickname: "系统消息",
         text: message.data,
+        isSystem: true,
       })
       const match = message.data && message.data.match(/(\d+)\s*秒/)
       mutedUntil.value = Date.now() + (match ? parseInt(match[1]) * 1000 : 60 * 1000)
@@ -309,10 +355,7 @@ const initWebSocket = () => {
       websocket && websocket.close(1000)
       return
     }
-    data.value = data.value.concat(message.data)
-    if (data.value.length > 40) {
-      data.value = data.value.slice(-40)
-    }
+    addMessages(message.data)
   }
 }
 
@@ -352,10 +395,7 @@ const heartBeat = () => {
 }
 
 const reconnectWebSocket = () => {
-  heartBeatTimer.value && clearInterval(heartBeatTimer.value)
-  heartBeatTimer.value = null
-  reconnectTimer.value && clearTimeout(reconnectTimer.value)
-  reconnectTimer.value = null
+  stopTimers({ keepPopularity: true })
 
   if (lockReconnect.value) {
     return
@@ -385,11 +425,31 @@ const handleKickUser = async (targetUserId) => {
   } catch (e) { $modal.msgError(e?.message || '踢出失败') }
 }
 
-const close = () => {
-  websocket && websocket.close()
-  heartBeatTimer.value && clearTimeout(heartBeatTimer.value)
-  popularityInterval.value && clearInterval(popularityInterval.value)
+const handleReportMessage = (message) => {
+  emits("reportMessage", message)
+}
+
+const close = ({ keepPopularity = false } = {}) => {
+  closeSocket()
+  stopTimers({ keepPopularity })
+}
+
+const closeSocket = () => {
+  if (websocket) {
+    websocket.close(1000)
+    websocket = null
+  }
+}
+
+const stopTimers = ({ keepPopularity = false } = {}) => {
+  heartBeatTimer.value && clearInterval(heartBeatTimer.value)
+  heartBeatTimer.value = null
   reconnectTimer.value && clearTimeout(reconnectTimer.value)
+  reconnectTimer.value = null
+  if (!keepPopularity) {
+    popularityInterval.value && clearInterval(popularityInterval.value)
+    popularityInterval.value = null
+  }
 }
 </script>
 

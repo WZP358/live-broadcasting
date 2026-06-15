@@ -257,8 +257,8 @@ public class CosineSimilarityRecommender {
      *   score(r) = α · sim_cf(r) + β · sim_content(r) + γ · popularity_zscore(r)
      *
      *   默认权重：
-     *   α = 0.35  协同过滤（用户行为相似度）
-     *   β = 0.45  内容匹配（房间特征相似度）
+     *   α = 0.30  协同过滤（用户行为相似度）
+     *   β = 0.50  内容匹配（房间特征相似度）
      *   γ = 0.20  热度加成（归一化人气值）
      * </pre>
      */
@@ -269,7 +269,7 @@ public class CosineSimilarityRecommender {
         private final double gamma; // 热度权重
 
         public HybridScorer() {
-            this(0.35, 0.45, 0.20);
+            this(0.30, 0.50, 0.20);
         }
 
         public HybridScorer(double alpha, double beta, double gamma) {

@@ -113,24 +113,29 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
+import { computed, ref } from "vue"
 import agentApi from "@/api/agent"
 
 defineEmits(["send-welcome"])
-
-const activeTab = ref("sentiment")
-const tabs = [
-  { key: "sentiment", label: "弹幕氛围", icon: "弹" },
-  { key: "brain", label: "直播摘要", icon: "摘" },
-  { key: "helper", label: "小脉问答", icon: "问" },
-]
 
 const props = defineProps({
   chatMessages: { type: Array, default: () => [] },
   roomTitle: { type: String, default: "" },
   categoryName: { type: String, default: "" },
   anchorName: { type: String, default: "" },
+  defaultTab: {
+    type: String,
+    default: "sentiment",
+    validator: (value) => ["sentiment", "brain", "helper"].includes(value),
+  },
 })
+
+const activeTab = ref(props.defaultTab)
+const tabs = [
+  { key: "sentiment", label: "弹幕氛围", icon: "弹" },
+  { key: "brain", label: "直播摘要", icon: "摘" },
+  { key: "helper", label: "小脉问答", icon: "问" },
+]
 
 const sentiment = ref({ overall: null, score: null, flags: [], summary: "" })
 const sentimentLoading = ref(false)
@@ -167,7 +172,7 @@ const analyzeSentiment = async () => {
       sentiment.value = res.data
     }
   } catch (e) {
-    sentiment.value = { overall: "neutral", score: 0, flags: [], summary: "暂时无法生成弹幕分析" }
+    sentiment.value = { overall: null, score: null, flags: [], summary: "暂时无法生成弹幕分析" }
   } finally {
     sentimentLoading.value = false
   }
@@ -211,7 +216,7 @@ const askHelper = async () => {
 
   try {
     const res = await agentApi.askHelper(q)
-    const answer = res?.data?.answer || "小脉正在休息，请稍后再问~"
+    const answer = res?.data?.answer || "AI 服务未返回有效回复，请检查智能体服务状态。"
     helperMessages.value.push({ role: "assistant", content: answer })
   } catch (e) {
     helperMessages.value.push({ role: "assistant", content: "小脉暂时无法回复，请稍后再试。" })

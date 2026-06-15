@@ -70,7 +70,7 @@ public class AliyunSmsService {
     @Value("${aliyun.sms.readTimeoutMillis:60000}")
     private Integer readTimeoutMillis;
 
-    public String sendVerifyCode(String phoneNumber, String fallbackCode) {
+    public String sendVerifyCode(String phoneNumber, String requestedCode) {
         if (!enabled) {
             throw new BusinessException("阿里云短信服务未启用");
         }
@@ -123,7 +123,7 @@ public class AliyunSmsService {
                 throw new BusinessException("短信发送失败：" + message);
             }
 
-            String verifyCode = fallbackCode;
+            String verifyCode = requestedCode;
             if (Boolean.TRUE.equals(returnVerifyCode)
                     && body.getModel() != null
                     && StringUtils.hasText(body.getModel().getVerifyCode())) {

@@ -66,7 +66,6 @@
         :hot-ranking="hotRanking"
         :gift-rank="giftRank"
         @enter="enterRoom"
-        @go-live-center="goLiveCenter"
       />
     </section>
   </div>
@@ -104,10 +103,6 @@ const enterRoom = (id) => {
   if (id) {
     router.push(`/room/${id}`);
   }
-};
-
-const goLiveCenter = () => {
-  router.push("/live/studio");
 };
 
 // 打赏总榜

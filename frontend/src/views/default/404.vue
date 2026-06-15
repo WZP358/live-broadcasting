@@ -4,7 +4,7 @@
       <div class="error-stage">
         <span class="live-badge">404</span>
         <h1>这个直播间暂时找不到</h1>
-        <p>页面地址可能已经变化，可以回到首页继续发现正在热播的内容。</p>
+        <p>页面地址可能已经变化，可以回到首页继续查看正在热播的内容。</p>
         <div class="error-actions">
           <a-button type="primary" size="large" @click="handleGoBack">返回首页</a-button>
           <a-button size="large" @click="handleGoSearch">去搜索</a-button>

@@ -30,7 +30,8 @@ public class AdminReportController {
     @Data
     public static class HandleRequest {
         private Integer reportId;
-        private Integer status;  // 1=已处理 2=已驳回
+        // 1=handled, 2=rejected.
+        private Integer status;
         private String result;
     }
 }

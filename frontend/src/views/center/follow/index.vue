@@ -16,11 +16,11 @@
         <a-empty v-else class="center-panel__empty">
           <template #description>
             <span class="empty-title">还没有关注任何主播</span>
-            <p class="empty-desc">去直播首页发现精彩内容，关注你喜欢的主播</p>
+            <p class="empty-desc">去直播首页看看正在热播的内容，关注你喜欢的主播</p>
           </template>
           <template #children>
-            <a-button type="primary" size="large" @click="$router.push('/')">
-              去发现
+            <a-button type="primary" size="large" @click="$router.push('/home')">
+              去首页
             </a-button>
           </template>
         </a-empty>

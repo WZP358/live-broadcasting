@@ -19,4 +19,9 @@ export const quickLinks = [
     desc: "统一直播内容分类和导航标签",
     path: "/system/category-manage",
   },
+  {
+    title: "内容审核",
+    desc: "处理直播风控待审记录",
+    path: "/system/content-audit",
+  },
 ]

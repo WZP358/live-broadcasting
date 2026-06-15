@@ -3,6 +3,7 @@ package cn.imhtb.live.modules.live.guard;
 import cn.imhtb.live.common.enums.LiveInfoStatusEnum;
 import cn.imhtb.live.common.enums.LiveRoomStatusEnum;
 import cn.imhtb.live.common.utils.DbSchemaInspector;
+import cn.imhtb.live.mappers.ReportMapper;
 import cn.imhtb.live.modules.live.service.IBanRecordService;
 import cn.imhtb.live.modules.live.service.ILiveInfoService;
 import cn.imhtb.live.modules.live.webrtc.BrowserLiveRegistry;
@@ -10,9 +11,11 @@ import cn.imhtb.live.modules.server.netty.domain.resp.GuardViolationRespDTO;
 import cn.imhtb.live.modules.server.netty.service.IRoomChatService;
 import cn.imhtb.live.pojo.database.BanRecord;
 import cn.imhtb.live.pojo.database.LiveInfo;
+import cn.imhtb.live.pojo.database.Report;
 import cn.imhtb.live.pojo.database.Room;
 import cn.imhtb.live.service.IRoomService;
 import cn.imhtb.live.service.ITokenService;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
@@ -26,8 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -44,11 +47,14 @@ public class LiveGuardService {
 
     private static final String STATUS_SAFE = "SAFE";
     private static final String STATUS_UNAVAILABLE = "UNAVAILABLE";
+    private static final String STATUS_REVIEW = "REVIEW";
+    public static final String TARGET_TYPE_LIVE_GUARD = "live_guard";
 
     private final GuardConfig guardConfig;
     private final IRoomService roomService;
     private final ILiveInfoService liveInfoService;
     private final IBanRecordService banRecordService;
+    private final ReportMapper reportMapper;
     private final IRoomChatService roomChatService;
     private final BrowserLiveRegistry browserLiveRegistry;
     private final ITokenService tokenService;
@@ -61,6 +67,7 @@ public class LiveGuardService {
                             IRoomService roomService,
                             ILiveInfoService liveInfoService,
                             IBanRecordService banRecordService,
+                            ReportMapper reportMapper,
                             IRoomChatService roomChatService,
                             BrowserLiveRegistry browserLiveRegistry,
                             ITokenService tokenService,
@@ -69,6 +76,7 @@ public class LiveGuardService {
         this.roomService = roomService;
         this.liveInfoService = liveInfoService;
         this.banRecordService = banRecordService;
+        this.reportMapper = reportMapper;
         this.roomChatService = roomChatService;
         this.browserLiveRegistry = browserLiveRegistry;
         this.tokenService = tokenService;
@@ -103,10 +111,11 @@ public class LiveGuardService {
 
         String reason = StringUtils.hasText(result.getReason())
                 ? result.getReason()
-                : "Live content violation detected";
-        banRoom(room, result.getStatus(), reason, result.getViolationType(), result.getViolationLabel(), result.getEvidence());
-        result.setBanned(true);
-        result.setReason(reason);
+                : "Live content triggered risk detection";
+        submitGuardReport(room, result, reason);
+        result.setStatus(STATUS_REVIEW);
+        result.setBanned(false);
+        result.setReason(reason + ", submitted for admin review");
         return result;
     }
 
@@ -167,33 +176,80 @@ public class LiveGuardService {
         }
     }
 
-    private void logGuardUnavailable(ResourceAccessException e) {
-        long now = System.currentTimeMillis();
-        if (now - lastUnavailableLogAt < 30000L) {
+    private void submitGuardReport(Room room, GuardCheckResult result, String reason) {
+        if (!dbSchemaInspector.tableExists("report")) {
+            log.warn("live guard report skipped, report table not found, roomId={}", room.getId());
             return;
         }
-        lastUnavailableLogAt = now;
-        log.warn("live guard service unavailable, endpoint={}, reason={}", guardConfig.getEndpoint(), e.getMostSpecificCause().getMessage());
+
+        String violationType = StringUtils.hasText(result.getViolationType())
+                ? result.getViolationType()
+                : resolveViolationType(result.getEvidence());
+        String violationLabel = StringUtils.hasText(result.getViolationLabel())
+                ? result.getViolationLabel()
+                : resolveViolationLabel(result.getEvidence());
+        String reportReason = StringUtils.hasText(violationLabel)
+                ? violationLabel
+                : (StringUtils.hasText(violationType) ? violationType : reason);
+        String targetId = "room:" + room.getId() + ":" + (StringUtils.hasText(violationType) ? violationType : "UNKNOWN");
+
+        Report existing = reportMapper.selectOne(new LambdaQueryWrapper<Report>()
+                        .eq(Report::getStatus, 0)
+                        .eq(Report::getRoomId, room.getId())
+                        .eq(Report::getTargetType, TARGET_TYPE_LIVE_GUARD)
+                        .eq(Report::getTargetId, targetId)
+                        .last("limit 1"),
+                false);
+        if (existing != null) {
+            log.info("live guard report already pending, roomId={}, reportId={}", room.getId(), existing.getId());
+            return;
+        }
+
+        Report report = new Report();
+        report.setReporterId(0);
+        report.setTargetUserId(room.getUserId());
+        report.setRoomId(room.getId());
+        report.setTargetType(TARGET_TYPE_LIVE_GUARD);
+        report.setTargetId(targetId);
+        report.setReason(reportReason);
+        report.setDescription(limitText(buildGuardReportDescription(result, reason, violationType, violationLabel), 500));
+        report.setStatus(0);
+        reportMapper.insert(report);
+        log.warn("live guard report submitted, roomId={}, reason={}", room.getId(), reportReason);
     }
 
-    private GuardCheckResult guardUnavailable() {
-        return GuardCheckResult.builder()
-                .status(STATUS_UNAVAILABLE)
-                .safe(true)
-                .banned(false)
-                .skipped(true)
-                .reason("Guard service unavailable")
-                .build();
+    @Transactional(rollbackFor = Exception.class)
+    public boolean confirmGuardReport(Report report, Integer handlerId, String handleResult) {
+        if (report == null || report.getStatus() == null || report.getStatus() != 0) {
+            return false;
+        }
+        if (!TARGET_TYPE_LIVE_GUARD.equals(report.getTargetType())) {
+            return false;
+        }
+        Room room = roomService.getById(report.getRoomId());
+        if (room == null) {
+            return false;
+        }
+
+        String reason = StringUtils.hasText(handleResult) ? handleResult : report.getReason();
+        banRoomAfterReview(room, "BANNED", reason, "", report.getReason(), new HashMap<>());
+
+        report.setStatus(1);
+        report.setHandleResult(reason);
+        report.setHandlerId(handlerId);
+        report.setHandleTime(LocalDateTime.now());
+        return reportMapper.updateById(report) > 0;
     }
 
-    private void banRoom(Room room,
-                         String status,
-                         String reason,
-                         String violationType,
-                         String violationLabel,
-                         Map<String, Object> evidence) {
+    private void banRoomAfterReview(Room room,
+                                    String status,
+                                    String reason,
+                                    String violationType,
+                                    String violationLabel,
+                                    Map<String, Object> evidence) {
         Room update = Room.builder()
                 .id(room.getId())
+                .disabled(-1)
                 .status(LiveRoomStatusEnum.BANNING.getCode())
                 .build();
         roomService.updateById(update);
@@ -210,7 +266,7 @@ public class LiveGuardService {
         roomChatService.sendGuardViolation(room.getId(), data);
         browserLiveRegistry.sendToRoom(room.getId(), signalPayload(room.getId(), data));
         lastCheckAt.remove(room.getId());
-        log.warn("live room banned by guard, roomId={}, reason={}", room.getId(), reason);
+        log.warn("live room banned after admin review, roomId={}, reason={}", room.getId(), reason);
     }
 
     private void finishLivingInfo(Integer roomId) {
@@ -282,15 +338,40 @@ public class LiveGuardService {
                 .build();
     }
 
+    private GuardCheckResult guardUnavailable() {
+        return GuardCheckResult.builder()
+                .status(STATUS_UNAVAILABLE)
+                .safe(true)
+                .banned(false)
+                .skipped(true)
+                .reason("Guard service unavailable")
+                .build();
+    }
+
+    private void logGuardUnavailable(ResourceAccessException e) {
+        long now = System.currentTimeMillis();
+        if (now - lastUnavailableLogAt < 30000L) {
+            return;
+        }
+        lastUnavailableLogAt = now;
+        log.warn("live guard service unavailable, endpoint={}, reason={}", guardConfig.getEndpoint(), e.getMostSpecificCause().getMessage());
+    }
+
     private String buildReason(String status, Map<String, Object> evidence, String violationType, String violationLabel) {
         String label = StringUtils.hasText(violationLabel) ? violationLabel : resolveViolationLabel(evidence);
         if (StringUtils.hasText(label)) {
-            return "直播内容触发违规检测：" + label + "，直播间已封停";
+            return "Live content triggered risk detection: " + label;
         }
-        return "直播内容触发违规检测，直播间已封停（" + status + "）";
+        if (StringUtils.hasText(violationType)) {
+            return "Live content triggered risk detection: " + violationType;
+        }
+        return "Live content triggered risk detection: " + status;
     }
 
     private String resolveViolationType(Map<String, Object> evidence) {
+        if (evidence == null) {
+            return "";
+        }
         if (Boolean.TRUE.equals(evidence.get("nude_detected"))) {
             return "EXPOSURE";
         }
@@ -307,15 +388,36 @@ public class LiveGuardService {
     private String resolveViolationLabel(Map<String, Object> evidence) {
         String type = resolveViolationType(evidence);
         if ("EXPOSURE".equals(type)) {
-            return "过于暴露";
+            return "Exposed content";
         }
         if ("VIOLENCE".equals(type)) {
-            return "暴力行为";
+            return "Violent behavior";
         }
         if ("WEAPON".equals(type)) {
-            return "违规刀具";
+            return "Weapon";
         }
         return "";
+    }
+
+    private String buildGuardReportDescription(GuardCheckResult result,
+                                               String reason,
+                                               String violationType,
+                                               String violationLabel) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("source", "live_guard");
+        payload.put("status", result.getStatus());
+        payload.put("reason", reason);
+        payload.put("violationType", violationType);
+        payload.put("violationLabel", violationLabel);
+        payload.put("evidence", result.getEvidence());
+        return JSON.toJSONString(payload);
+    }
+
+    private String limitText(String text, int maxLength) {
+        if (text == null || text.length() <= maxLength) {
+            return text;
+        }
+        return text.substring(0, Math.max(0, maxLength - 3)) + "...";
     }
 
     private static class MultipartFileResource extends ByteArrayResource {

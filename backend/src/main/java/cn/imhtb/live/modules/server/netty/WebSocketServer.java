@@ -19,6 +19,7 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -38,6 +39,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "pulselive.websocket.enabled", havingValue = "true", matchIfMissing = true)
 public class WebSocketServer {
 
     public static final int INET_PORT = 10022;

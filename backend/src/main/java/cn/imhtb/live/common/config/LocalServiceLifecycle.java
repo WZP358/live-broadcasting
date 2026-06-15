@@ -134,6 +134,12 @@ public class LocalServiceLifecycle {
             ));
         }
 
+        if ("live-agent".equals(serviceName)) {
+            return new ServiceSpec(serviceName, Collections.singletonList(
+                    getIntProperty("pulselive.agent-port", "PULSELIVE_AGENT_PORT", 8100)
+            ));
+        }
+
         return null;
     }
 
@@ -177,6 +183,14 @@ public class LocalServiceLifecycle {
             builder.directory(captionDir.toFile());
             builder.environment().put("PULSELIVE_WHISPER_MODEL",
                     getStringProperty("pulselive.whisper-model", "PULSELIVE_WHISPER_MODEL", "tiny"));
+            return builder;
+        }
+
+        if ("live-agent".equals(spec.getName())) {
+            Path agentDir = projectRoot.resolve("ai-services").resolve("live-agent");
+            ProcessBuilder builder = new ProcessBuilder(resolvePython().toString(), "server.py");
+            builder.directory(agentDir.toFile());
+            builder.environment().put("PULSELIVE_AGENT_PORT", String.valueOf(spec.getPorts().get(0)));
             return builder;
         }
 

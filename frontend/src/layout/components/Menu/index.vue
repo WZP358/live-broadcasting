@@ -71,7 +71,35 @@ const getSelectMenus = (i, path, menus) => {
 const getMenus = async () => {
   const res = await systemApi.getMenus()
   items.value = buildMenuItems(res.data)
+  ensureAuditMenu()
+  ensureCustomerServiceMenu()
   state.openKeys = []
+}
+
+const ensureAuditMenu = () => {
+  const hasAuditMenu = items.value.some((item) => item.path === "content-audit")
+  if (hasAuditMenu || !availableSystemPaths.has("/system/content-audit")) {
+    return
+  }
+  items.value.push({
+    key: "content-audit",
+    label: "内容审核",
+    title: "内容审核",
+    path: "content-audit",
+  })
+}
+
+const ensureCustomerServiceMenu = () => {
+  const hasCustomerServiceMenu = items.value.some((item) => item.path === "customer-service")
+  if (hasCustomerServiceMenu || !availableSystemPaths.has("/system/customer-service")) {
+    return
+  }
+  items.value.push({
+    key: "customer-service",
+    label: "客服处理",
+    title: "客服处理",
+    path: "customer-service",
+  })
 }
 
 const buildMenuItems = (menus, parentPaths = []) => {

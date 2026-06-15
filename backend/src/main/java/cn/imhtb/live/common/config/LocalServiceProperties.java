@@ -20,7 +20,8 @@ public class LocalServiceProperties {
     private List<String> services = new ArrayList<>(Arrays.asList(
             "local-live",
             "maxine-denoise",
-            "live-guard"
+            "live-guard",
+            "live-agent"
     ));
 
     private List<Integer> shutdownPorts = new ArrayList<>(Arrays.asList(
@@ -29,6 +30,7 @@ public class LocalServiceProperties {
             8080,
             18765,
             8000,
+            8100,
             8200
     ));
 }

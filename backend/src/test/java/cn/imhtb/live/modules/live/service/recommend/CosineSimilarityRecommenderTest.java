@@ -273,8 +273,8 @@ class CosineSimilarityRecommenderTest {
                 new CosineSimilarityRecommender.HybridScorer(3, 5, 2);
             // 按权重评分: 高协同 + 低内容 + 中热度
             double score = scorer.score(1.0, 0.0, 0.0);
-            assertTrue(score > 0.25 && score < 0.4,
-                "协同权重约占 0.3: " + score);
+            assertTrue(score >= 0.39 && score <= 0.41,
+                "协同权重 0.3 + 中等热度贡献 0.1: " + score);
         }
 
         @Test

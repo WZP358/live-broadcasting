@@ -41,6 +41,16 @@ const routes = [
         meta: { title: "消息管理", requiresAuth: true, adminOnly: true },
       },
       {
+        path: "/system/content-audit",
+        component: () => import("@/views/system/audit/index.vue"),
+        meta: { title: "内容审核", requiresAuth: true, adminOnly: true },
+      },
+      {
+        path: "/system/customer-service",
+        component: () => import("@/views/system/customer-service/index.vue"),
+        meta: { title: "客服处理", requiresAuth: true, adminOnly: true },
+      },
+      {
         path: "/system/user-auth",
         component: () => import("@/views/system/auth/index.vue"),
         meta: { title: "认证管理", requiresAuth: true, adminOnly: true },
@@ -101,6 +111,11 @@ const routes = [
       {
         path: "/home",
         component: () => import("@/views/home.vue"),
+        meta: { title: "首页" },
+      },
+      {
+        path: "/discover",
+        redirect: "/home",
         meta: { title: "首页" },
       },
       {
@@ -170,11 +185,6 @@ const routes = [
             meta: { title: "礼物记录", requiresAuth: true },
           },
           {
-            path: "statistic/comment",
-            component: () => import("@/views/center/comment/index.vue"),
-            meta: { title: "评论记录", requiresAuth: true },
-          },
-          {
             path: "dollar/recharge",
             component: () => import("@/views/center/recharge/index.vue"),
             meta: { title: "充值", requiresAuth: true },
@@ -197,6 +207,11 @@ const routes = [
             path: "messages/pm",
             component: () => import("@/views/center/messages/pm.vue"),
             meta: { title: "私信", requiresAuth: true },
+          },
+          {
+            path: "messages/customer-service",
+            component: () => import("@/views/center/customer-service/index.vue"),
+            meta: { title: "联系客服", requiresAuth: true },
           },
           {
             path: "live/guardian",

@@ -5,12 +5,14 @@
       <RouterView />
     </div>
     <Footer></Footer>
+    <XiaoMaiAssistant />
   </div>
 </template>
 
 <script setup>
 import Header from "@/components/Header.vue"
 import Footer from "@/components/Footer.vue"
+import XiaoMaiAssistant from "@/components/XiaoMaiAssistant.vue"
 </script>
 
 <style lang="scss" scoped>

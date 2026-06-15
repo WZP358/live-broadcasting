@@ -3,6 +3,7 @@ package cn.imhtb.live.modules.live.service;
 import cn.imhtb.live.mappers.RoomMapper;
 import cn.imhtb.live.pojo.database.Room;
 import cn.imhtb.live.common.enums.LiveRoomStatusEnum;
+import cn.imhtb.live.common.enums.StatusEnum;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -75,7 +76,7 @@ public class HeatIndexService {
             List<Room> livingRooms = roomMapper.selectList(
                 new LambdaQueryWrapper<Room>()
                     .eq(Room::getStatus, LiveRoomStatusEnum.LIVING.getCode())
-                    .eq(Room::getDisabled, 1));
+                    .eq(Room::getDisabled, StatusEnum.YES.getCode()));
 
             for (Room room : livingRooms) {
                 int viewers = getIntValue(VIEWERS_KEY + room.getId());

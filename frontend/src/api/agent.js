@@ -23,7 +23,21 @@ export default {
     return request({
       url: `${AGENT_BASE}/summarize`,
       method: 'post',
-      data: params,
+      data: {
+        title: params.title,
+        category: params.category,
+        anchor_name: params.anchorName || params.anchor_name,
+        highlights: params.highlights || [],
+      },
+    }).then((res) => {
+      const data = res?.data || {}
+      return {
+        ...res,
+        data: {
+          ...data,
+          welcomeMsg: data.welcomeMsg || data.welcome_msg || '',
+        },
+      }
     })
   },
 

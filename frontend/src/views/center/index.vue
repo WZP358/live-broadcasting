@@ -1,36 +1,8 @@
 <template>
   <div class="center-page">
-    <section class="profile-hero">
-      <img draggable="false" :src="userAvatar" class="hero-avatar" @error="onImgError" />
-      <div class="hero-info">
-        <div class="hero-top">
-          <h1>{{ userDisplayName }}</h1>
-          <span class="account-pill">{{ isAdmin ? "运营账号" : "直播用户" }}</span>
-        </div>
-        <p>{{ userSignature }}</p>
-        <div class="hero-stats">
-          <div class="hero-stat">
-            <span>账号</span>
-            <strong>{{ userInfo.username || "-" }}</strong>
-          </div>
-          <div class="hero-stat">
-            <span>邮箱</span>
-            <strong>{{ userInfo.email || "未绑定" }}</strong>
-          </div>
-          <div class="hero-stat">
-            <span>手机号</span>
-            <strong>{{ userInfo.mobile || "未绑定" }}</strong>
-          </div>
-        </div>
-        <div class="hero-actions">
-          <button class="hero-action hero-action--primary" type="button" @click="route.push('/live/studio')">我要开播</button>
-          <button class="hero-action" type="button" @click="route.push('/center/personnel/follow')">我的关注</button>
-        </div>
-      </div>
-    </section>
-
     <div class="center-body">
       <aside class="center-menu">
+        <div class="menu-caption">个人中心</div>
         <a-menu :selectedKeys="current" :openKeys="current" mode="inline" :items="items" @click="handleClick" />
       </aside>
       <section class="center-content">
@@ -44,19 +16,10 @@
 
 <script setup>
 import { BarChartOutlined, MailOutlined, MessageOutlined, PlaySquareOutlined, WalletOutlined } from "@ant-design/icons-vue"
-import { computed, h, onMounted, ref } from "vue"
+import { h, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
-import { useStore } from "@/stores"
-import { onImgError } from "@/utils/fallback"
 
-const store = useStore()
 const route = useRouter()
-const userStore = store.user()
-const userInfo = computed(() => userStore.userInfo || {})
-const isAdmin = computed(() => userStore.isAdmin)
-const userAvatar = computed(() => userInfo.value.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Crect fill='%23e2e8f0' width='160' height='160' rx='24'/%3E%3Ccircle fill='%2394a3b8' cx='80' cy='64' r='24'/%3E%3Cellipse fill='%2394a3b8' cx='80' cy='134' rx='40' ry='26'/%3E%3C/svg%3E")
-const userDisplayName = computed(() => userInfo.value.nickName || userInfo.value.nickname || userInfo.value.username || "直播用户")
-const userSignature = computed(() => userInfo.value.signature || "保持稳定开播，持续打磨内容与直播体验。")
 
 onMounted(() => {
   const path = route.currentRoute.value.path.split("/").slice(-2)
@@ -116,7 +79,6 @@ const items = ref([
     children: [
       { key: "overview", label: "数据总览", title: "数据总览" },
       { key: "gift-list", label: "礼物流水", title: "礼物流水" },
-      { key: "punishment", label: "运营奖惩", title: "运营奖惩" },
     ],
   },
   {
@@ -129,113 +91,130 @@ const items = ref([
     ],
   },
 ])
+
+const serviceMenu = items.value.find((item) => item.key === "messages")
+if (serviceMenu && !serviceMenu.children?.some((item) => item.key === "customer-service")) {
+  serviceMenu.children = serviceMenu.children || []
+  serviceMenu.children.push({ key: "customer-service", label: "联系客服", title: "联系客服" })
+}
 </script>
 
 <style lang="scss" scoped>
-.center-page { max-width: 1340px; margin: 0 auto; padding: 20px; }
-.profile-hero {
-  position: relative;
-  overflow: hidden;
-  display: flex; gap: 20px; align-items: center; padding: 24px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+.center-page {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 16px 14px 30px;
   background:
-    linear-gradient(90deg, var(--accent-light), transparent 58%),
-    var(--bg-card);
-  box-shadow: var(--shadow);
+    radial-gradient(circle at 12% 0, color-mix(in srgb, var(--accent) 7%, transparent), transparent 28%),
+    transparent;
 }
-.profile-hero::after {
-  content: none;
-}
-.hero-avatar {
-  position: relative;
-  z-index: 1;
-  width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
-  border: 3px solid var(--bg-card);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 26%, transparent);
-}
-.hero-info { position: relative; z-index: 1; flex: 1; }
-.hero-top { display: flex; align-items: center; gap: 10px; }
-.hero-top h1 { margin: 0; font-size: 24px; color: var(--text-primary); }
-.account-pill {
-  display: inline-flex;
-  height: 24px;
-  align-items: center;
-  padding: 0 9px;
-  border-radius: 4px;
-  color: var(--accent-strong);
-  background: var(--accent-light);
-  font-size: 12px;
-  font-weight: 900;
-}
-.hero-info > p { margin: 6px 0 0; color: var(--text-secondary); font-size: 13px; }
-.hero-stats {
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 16px;
-}
-.hero-stat {
-  padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-secondary);
-  span { display: block; color: var(--text-muted); font-size: 12px; }
-  strong { display: block; margin-top: 4px; color: var(--text-primary); font-size: 14px; }
-}
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 16px;
-}
-.hero-action {
-  height: 34px;
-  padding: 0 16px;
-  border: 1px solid var(--border);
-  border-radius: 17px;
-  color: var(--text-secondary);
-  background: var(--bg-secondary);
-  font-weight: 800;
-  cursor: pointer;
-}
-.hero-action--primary {
-  border-color: var(--accent);
-  color: var(--accent-text);
-  background: var(--accent);
-}
+
 .center-body {
-  display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 16px;
-  margin-top: 16px; align-items: start;
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  min-height: calc(100vh - 72px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--bg-card) 86%, var(--bg-primary));
+  box-shadow: var(--shadow);
 }
+
 .center-menu {
-  padding: 8px 0;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg-card);
-  box-shadow: var(--shadow);
-  position: sticky; top: 80px;
+  position: sticky;
+  top: 60px;
+  align-self: start;
+  min-height: calc(100vh - 72px);
+  padding: 24px 0;
+  border-right: 1px solid var(--border);
+  border-radius: 0;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 5%, transparent), transparent 190px),
+    var(--bg-card);
+  box-shadow: none;
 }
+
+.menu-caption {
+  padding: 0 28px 18px;
+  color: var(--text-primary);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
 .center-content {
-  min-height: 640px; min-width: 0; overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  min-width: 0;
+  overflow: hidden;
   background: var(--bg-card);
-  box-shadow: var(--shadow);
 }
-.center-content__inner { padding: 20px; }
+
+.center-content__inner {
+  padding: 0;
+}
 
 :deep(.ant-menu-light.ant-menu-inline) {
   border-inline-end: 0;
 }
 
+:deep(.ant-menu-inline) {
+  background: transparent !important;
+}
+
+:deep(.ant-menu-submenu-title),
+:deep(.ant-menu-item) {
+  width: calc(100% - 20px);
+  height: 48px;
+  margin: 3px 10px;
+  border-radius: 8px;
+  color: var(--text-secondary) !important;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+:deep(.ant-menu-submenu-title .ant-menu-item-icon),
+:deep(.ant-menu-item .ant-menu-item-icon) {
+  color: var(--text-muted);
+  font-size: 20px;
+}
+
 :deep(.ant-menu-item-selected) {
-  color: var(--accent);
-  background: var(--accent-light);
-  font-weight: 800;
+  color: var(--accent) !important;
+  background: var(--accent-light) !important;
+  font-weight: 900;
+}
+
+:deep(.ant-menu-item-selected::after) {
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+  border-inline-end: 0;
+  border-left: 0;
 }
 
 :deep(.ant-menu-submenu-selected > .ant-menu-submenu-title) {
-  color: var(--accent);
+  color: var(--accent) !important;
+  background: var(--accent-light) !important;
 }
+
+:deep(.ant-menu-submenu .ant-menu-item) {
+  padding-left: 52px !important;
+  font-size: 15px;
+}
+
 @media (max-width: 960px) {
-  .center-page { padding: 14px; }
-  .profile-hero { flex-direction: column; align-items: flex-start; }
-  .hero-stats, .center-body { grid-template-columns: 1fr; }
-  .center-menu { position: static; }
+  .center-page {
+    padding: 0;
+  }
+
+  .center-body {
+    grid-template-columns: 1fr;
+    border-inline: 0;
+  }
+
+  .center-menu {
+    position: static;
+    min-height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
 }
 </style>

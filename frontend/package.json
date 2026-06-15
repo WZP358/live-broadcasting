@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --mode dev",
     "prod": "vite --mode prod",
-    "test": "node --test tests/unit/liveCaption.test.mjs tests/unit/mediaLatency.test.mjs tests/unit/liveRoomPresenter.test.mjs tests/unit/stores.test.mjs tests/unit/notificationStore.test.mjs tests/unit/chatMessage.test.mjs tests/unit/requestInterceptor.test.mjs tests/bdd/mediaLatency.spec.mjs tests/bdd/userFlows.spec.mjs tests/bdd/roomLifecycle.spec.mjs tests/bdd/watchFollow.spec.mjs tests/bdd/recommendFallback.spec.mjs tests/bdd/cosineRecommendation.spec.mjs",
+    "test": "node --test tests/unit/liveCaption.test.mjs tests/unit/mediaLatency.test.mjs tests/unit/liveRoomPresenter.test.mjs tests/unit/stores.test.mjs tests/unit/notificationStore.test.mjs tests/unit/chatMessage.test.mjs tests/unit/chatRoom.test.mjs tests/unit/requestInterceptor.test.mjs tests/bdd/mediaLatency.spec.mjs tests/bdd/userFlows.spec.mjs tests/bdd/roomLifecycle.spec.mjs tests/bdd/watchFollow.spec.mjs tests/bdd/recommendFallback.spec.mjs tests/bdd/cosineRecommendation.spec.mjs",
     "build": "vite build",
     "preview": "vite preview"
   },

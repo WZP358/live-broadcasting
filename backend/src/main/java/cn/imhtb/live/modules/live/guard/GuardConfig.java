@@ -28,4 +28,14 @@ public class GuardConfig {
      * 前端帧上报间隔（秒），也用于后端限流
      */
     private int intervalSeconds = 2;
+
+    /**
+     * 同类违规连续命中多少次后才封停
+     */
+    private int confirmHits = 2;
+
+    /**
+     * 是否允许暴力行为直接封停
+     */
+    private boolean violenceImmediateBan = false;
 }

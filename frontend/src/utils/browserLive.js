@@ -9,7 +9,7 @@ export const createBrowserLiveFallbackUrls = () => {
   const wsProtocol = location.protocol === "https:" ? "wss" : "ws"
   const host = location.hostname
   return [
-    `${wsProtocol}://${host}:10022/`,
+    localStorage.getItem("live.browser.signalUrl") || `${wsProtocol}://${host}:10022/`,
     `${wsProtocol}://${host}:9000/ws/browser-live`,
   ]
 }
