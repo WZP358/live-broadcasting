@@ -1,19 +1,23 @@
 package cn.imhtb.live.modules.user.model.req;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotBlank;
+
 /**
- * @author PinTeh
- * @date 2020/5/6
+ * 用户基础资料更新请求。
  */
 @Data
 public class UserInfoUpdateReq {
 
-    @Length(min = 1, max = 16, message = "昵称长度限制1～16位字符")
+    @JsonAlias("nickname")
+    @NotBlank(message = "昵称不能为空")
+    @Length(min = 1, max = 16, message = "昵称长度限制 1 到 16 个字符")
     private String nickName;
 
-    @Length(max = 64, message = "最大签名长度限制64位字符")
+    @Length(max = 64, message = "个性签名最多 64 个字符")
     private String signature;
 
 }

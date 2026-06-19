@@ -1,6 +1,7 @@
 package cn.imhtb.live.service.impl;
 
 import cn.imhtb.live.common.PageData;
+import cn.imhtb.live.common.enums.StatusEnum;
 import cn.imhtb.live.common.enums.WatchTypeEnum;
 import cn.imhtb.live.mappers.RoomMapper;
 import cn.imhtb.live.mappers.UserMapper;
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 /**
  * @author PinTeh
@@ -38,10 +39,16 @@ public class IWatchServiceImpl extends ServiceImpl<WatchMapper, Watch> implement
 
     @Override
     public PageData<WatchResponse> listWatches(Integer userId, Integer type, Integer limit, Integer page) {
+        if (userId == null || !isSupportedWatchType(type)) {
+            return new PageData<>(0L, new ArrayList<>());
+        }
+        int currentPage = page == null || page < 1 ? 1 : page;
+        int pageSize = limit == null || limit < 1 ? 10 : limit;
         LambdaQueryWrapper<Watch> wrapper = new LambdaQueryWrapper<Watch>().eq(Watch::getUserId, userId)
                 .eq(Watch::getWatchType, type)
+                .orderByDesc(Watch::getUpdateTime)
                 .orderByDesc(Watch::getId);
-        Page<Watch> watchPage = page(new Page<>(page, limit), wrapper);
+        Page<Watch> watchPage = baseMapper.selectPage(new Page<>(currentPage, pageSize), wrapper);
         PageData<WatchResponse> pageData = new PageData<>();
         pageData.setTotal(watchPage.getTotal());
         pageData.setList(packageWatch(watchPage.getRecords()));
@@ -50,26 +57,42 @@ public class IWatchServiceImpl extends ServiceImpl<WatchMapper, Watch> implement
 
     @Override
     public Boolean saveHistory(Integer userId, Integer roomId) {
-        Long count = lambdaQuery().eq(Watch::getUserId, userId)
-                .eq(Watch::getRoomId, roomId)
-                .eq(Watch::getWatchType, WatchTypeEnum.HISTORY.getCode())
-                .count();
-        if (count != 0) {
+        if (userId == null || roomId == null) {
             return false;
+        }
+        Long count = baseMapper.selectCount(new LambdaQueryWrapper<Watch>().eq(Watch::getUserId, userId)
+                .eq(Watch::getRoomId, roomId)
+                .eq(Watch::getWatchType, WatchTypeEnum.HISTORY.getCode()));
+        if (count != 0) {
+            Watch update = new Watch();
+            update.setUpdateTime(LocalDateTime.now());
+            return baseMapper.update(update, new LambdaQueryWrapper<Watch>()
+                    .eq(Watch::getUserId, userId)
+                    .eq(Watch::getRoomId, roomId)
+                    .eq(Watch::getWatchType, WatchTypeEnum.HISTORY.getCode())) > 0;
         }
         Watch watch = new Watch();
         watch.setUserId(userId);
         watch.setRoomId(roomId);
         watch.setWatchType(WatchTypeEnum.HISTORY.getCode());
-        return save(watch);
+        return baseMapper.insert(watch) > 0;
     }
 
     @Override
     public Boolean follow(Integer userId, Integer roomId) {
-        Long count = lambdaQuery().eq(Watch::getUserId, userId)
+        if (userId == null || roomId == null) {
+            return false;
+        }
+        Room room = roomMapper.selectById(roomId);
+        if (room == null || Objects.equals(room.getUserId(), userId)) {
+            return false;
+        }
+        if (Objects.equals(room.getDisabled(), StatusEnum.NO.getCode())) {
+            return false;
+        }
+        Long count = baseMapper.selectCount(new LambdaQueryWrapper<Watch>().eq(Watch::getUserId, userId)
                 .eq(Watch::getRoomId, roomId)
-                .eq(Watch::getWatchType, WatchTypeEnum.FOLLOW.getCode())
-                .count();
+                .eq(Watch::getWatchType, WatchTypeEnum.FOLLOW.getCode()));
         if (count != 0) {
             return false;
         }
@@ -77,26 +100,32 @@ public class IWatchServiceImpl extends ServiceImpl<WatchMapper, Watch> implement
         watch.setUserId(userId);
         watch.setRoomId(roomId);
         watch.setWatchType(WatchTypeEnum.FOLLOW.getCode());
-        boolean saved = save(watch);
+        boolean saved = baseMapper.insert(watch) > 0;
         if (saved) {
-            Room room = roomMapper.selectById(roomId);
-            if (room != null) {
-                eventBus.publish(new FollowedEvent(roomId, room.getUserId(), userId));
-            }
+            eventBus.publish(new FollowedEvent(roomId, room.getUserId(), userId));
         }
         return saved;
     }
 
     @Override
     public Boolean unFollow(Integer userId, Integer roomId) {
-        return lambdaUpdate().eq(Watch::getUserId, userId).eq(Watch::getRoomId, roomId).remove();
+        if (userId == null || roomId == null) {
+            return false;
+        }
+        return baseMapper.delete(new LambdaQueryWrapper<Watch>()
+                .eq(Watch::getUserId, userId)
+                .eq(Watch::getRoomId, roomId)
+                .eq(Watch::getWatchType, WatchTypeEnum.FOLLOW.getCode())) > 0;
     }
 
     @Override
     public Boolean clearHistory(Integer userId) {
-        return remove(new LambdaQueryWrapper<Watch>()
+        if (userId == null) {
+            return false;
+        }
+        return baseMapper.delete(new LambdaQueryWrapper<Watch>()
                 .eq(Watch::getUserId, userId)
-                .eq(Watch::getWatchType, WatchTypeEnum.HISTORY.getCode()));
+                .eq(Watch::getWatchType, WatchTypeEnum.HISTORY.getCode())) > 0;
     }
 
 
@@ -114,13 +143,22 @@ public class IWatchServiceImpl extends ServiceImpl<WatchMapper, Watch> implement
             WatchResponse response = new WatchResponse();
             response.setId(watch.getId());
             response.setCover(room.getCover());
+            response.setAvatar(user != null ? user.getAvatar() : null);
+            response.setAnchorUserId(room.getUserId());
             response.setName(user != null && user.getNickname() != null ? user.getNickname() : "主播");
             response.setTitle(room.getTitle());
             response.setRoomId(room.getId());
             response.setLiveStatus(room.getStatus());
+            response.setWatchType(watch.getWatchType());
+            response.setCreateTime(watch.getCreateTime());
             list.add(response);
         }
         return list;
+    }
+
+    private boolean isSupportedWatchType(Integer type) {
+        return Objects.equals(type, WatchTypeEnum.HISTORY.getCode())
+                || Objects.equals(type, WatchTypeEnum.FOLLOW.getCode());
     }
 
 }

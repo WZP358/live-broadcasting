@@ -22,7 +22,7 @@ import liveApi from '@/api/live';
 import levelApi from '@/api/level';
 import walletApi from '@/api/wallet';
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
-import { FALLBACK_AVATAR, onImgError } from '@/utils/fallback';
+import { FALLBACK_AVATAR, onImgError, resolveSafeImageUrl } from '@/utils/fallback';
 
 const router = useRouter();
 const store = useStore();
@@ -39,6 +39,7 @@ const userInfo = computed(() => userStore.userInfo || {});
 const isLogin = computed(() => userStore.isLogin);
 const hasAdminRole = computed(() => userStore.isAdmin);
 const displayName = computed(() => userInfo.value?.nickName || userInfo.value?.nickname || userInfo.value?.username || '用户');
+const safeUserAvatar = computed(() => resolveSafeImageUrl(userInfo.value?.avatar, FALLBACK_AVATAR));
 const userLevel = ref(0);
 const walletBalance = ref(0);
 const unreadCount = computed(() => notificationStore.unreadCount);
@@ -99,6 +100,10 @@ const handleGoHome = () => {
 
 const handleGoCenter = () => {
   router.push('/center');
+};
+
+const handleGoProfile = () => {
+  router.push('/center/personnel/profile');
 };
 
 const handleGoFollow = () => {
@@ -258,7 +263,7 @@ const getHistoryCategory = (item = {}) =>
           </a-badge>
           <a-popover placement="bottomRight" trigger="click" overlayClassName="user-card-popover">
             <button class="user-entry user-entry--avatar-only" type="button">
-              <img class="header-avatar header-avatar--large" :src="userInfo?.avatar || FALLBACK_AVATAR" alt="" @error="onImgError" />
+              <img class="header-avatar header-avatar--large" :src="safeUserAvatar" alt="" @error="onImgError" />
             </button>
             <template #content>
               <div class="user-card-panel">
@@ -268,22 +273,22 @@ const getHistoryCategory = (item = {}) =>
                 </button>
 
                 <div class="user-card-avatar">
-                  <img :src="userInfo?.avatar || FALLBACK_AVATAR" alt="" @error="onImgError" />
+                  <img :src="safeUserAvatar" alt="" @error="onImgError" />
                 </div>
 
                 <div class="user-card-name">
                   <strong>{{ displayName }}</strong>
                   <span>♀</span>
                   <em>LV{{ userLevel || 1 }}</em>
-                  <button type="button">
+                  <button type="button" aria-label="编辑个人资料" @click.stop="handleGoProfile">
                     <EditOutlined />
                   </button>
                 </div>
 
-                <p class="user-card-signature">
+                <button class="user-card-signature" type="button" @click.stop="handleGoProfile">
                   <EditOutlined />
                   {{ userInfo?.signature || '点击编辑个性签名' }}
-                </p>
+                </button>
 
                 <div class="level-row">
                   <span>LV-{{ userLevel || 1 }}</span>
@@ -890,20 +895,39 @@ const getHistoryCategory = (item = {}) =>
   justify-content: center;
   width: 22px;
   height: 22px;
-  border: 0;
+  border: 1px solid transparent;
+  border-radius: 4px;
   color: #24b9ff;
   background: transparent;
   cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.user-card-name button:hover {
+  color: #ff5b8f;
+  border-color: rgba(255, 91, 143, 0.38);
+  background: rgba(255, 91, 143, 0.08);
 }
 
 .user-card-signature {
+  width: 100%;
+  border: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   margin: 8px 0 0;
+  padding: 0;
   color: #9aa1ad;
+  background: transparent;
+  cursor: pointer;
   font-size: 14px;
+  line-height: 1.5;
+  transition: color 0.18s ease;
+}
+
+.user-card-signature:hover {
+  color: #ff7a00;
 }
 
 .level-row {

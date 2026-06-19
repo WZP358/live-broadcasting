@@ -16,6 +16,9 @@ export function useRoomPage() {
   const roomExtraInfo = ref({});
   const recommendRooms = ref([]);
   const anchorName = computed(() => getAnchorName(roomInfo.value));
+  const myUserId = computed(() => store.user().userInfo?.userId || 0);
+  const isOwnRoom = computed(() => Boolean(myUserId.value && roomInfo.value?.userId === myUserId.value));
+  const followLoading = ref(false);
 
   const loadRoomInfo = async () => {
     try {
@@ -52,7 +55,7 @@ export function useRoomPage() {
     if (isLogin.value) {
       await Promise.all([loadRoomExtraInfo(), saveHistory()]);
     } else {
-      roomExtraInfo.value = {};
+      await loadRoomExtraInfo();
     }
   };
 
@@ -61,18 +64,32 @@ export function useRoomPage() {
       router.push("/login");
       return;
     }
+    if (isOwnRoom.value || followLoading.value) {
+      return;
+    }
 
+    followLoading.value = true;
     try {
       if (roomExtraInfo.value.follow) {
-        await watchApi.unFollow({ roomId: roomId.value });
-        $modal.msgSuccess("已取消关注");
+        const res = await watchApi.unFollow({ roomId: roomId.value });
+        if (res?.data) {
+          $modal.msgSuccess("已取消关注");
+        } else {
+          $modal.msgWarning("当前没有关注该直播间");
+        }
       } else {
-        await watchApi.follow({ roomId: roomId.value });
-        $modal.msgSuccess("关注成功");
+        const res = await watchApi.follow({ roomId: roomId.value });
+        if (res?.data) {
+          $modal.msgSuccess("关注成功");
+        } else {
+          $modal.msgWarning("暂时无法关注该直播间");
+        }
       }
       await loadRoomExtraInfo();
     } catch (error) {
-      $modal.msgError("操作失败，请稍后重试");
+      $modal.msgError(error?.message || "操作失败，请稍后重试");
+    } finally {
+      followLoading.value = false;
     }
   };
 
@@ -96,6 +113,8 @@ export function useRoomPage() {
     anchorName,
     copyRoomLink,
     goLogin,
+    followLoading,
+    isOwnRoom,
     isLogin,
     recommendRooms,
     refreshRoom,

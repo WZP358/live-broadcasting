@@ -3,6 +3,7 @@ package cn.imhtb.live.modules.live.service;
 import cn.imhtb.live.common.enums.LiveInfoStatusEnum;
 import cn.imhtb.live.common.enums.LiveRoomStatusEnum;
 import cn.imhtb.live.mappers.RoomMapper;
+import cn.imhtb.live.modules.system.service.impl.SystemDemoServiceImpl;
 import cn.imhtb.live.modules.live.webrtc.BrowserLiveRegistry;
 import cn.imhtb.live.modules.server.netty.live.NettyBrowserLiveRegistry;
 import cn.imhtb.live.pojo.database.LiveInfo;
@@ -44,6 +45,9 @@ public class LiveStatusScheduledTask {
 
         int fixed = 0;
         for (Room room : livingRooms) {
+            if (SystemDemoServiceImpl.isDemoRoom(room)) {
+                continue;
+            }
             Integer roomId = room.getId();
             // 检查是否在任一 browser live registry 中
             boolean nettyLive = nettyBrowserLiveRegistry.isBrowserLive(roomId);

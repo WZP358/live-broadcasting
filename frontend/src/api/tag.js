@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export default {
   listByRoom(roomId) {
-    return request({ url: `/api/v1/tag/room/${roomId}`, method: 'get' })
+    return request({ url: `/api/v1/tag/room/${roomId}`, method: 'get', silentError: true })
   },
   save(data) {
     return request({ url: '/api/v1/tag/room/save', method: 'post', data })

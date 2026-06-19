@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { FireOutlined, PlayCircleFilled } from '@ant-design/icons-vue';
 import ChatApi from '@/api/chat';
-import { FALLBACK_AVATAR, FALLBACK_COVER, onImgError } from '@/utils/fallback';
+import { FALLBACK_AVATAR, FALLBACK_COVER, onImgError, resolveSafeImageUrl } from '@/utils/fallback';
 
 const router = useRouter();
 const props = defineProps({
@@ -22,6 +22,8 @@ const popularity = ref(Number(props.room?.popularity || props.room?.heat || 0));
 const popularityTimer = ref(null);
 const fallbackCover = FALLBACK_COVER;
 const fallbackAvatar = FALLBACK_AVATAR;
+const safeCover = computed(() => resolveSafeImageUrl(props.room?.cover, FALLBACK_COVER));
+const safeAnchorAvatar = computed(() => resolveSafeImageUrl(props.room?.userInfo?.avatar, FALLBACK_AVATAR));
 
 const handleItemClick = () => {
   if (props.room?.id) {
@@ -44,8 +46,9 @@ const formatPopularity = (value) => {
 };
 
 const anchorName = computed(() => props.room?.userInfo?.name || props.room?.userInfo?.nickName || '主播');
-const categoryName = computed(() => props.room?.categoryInfo?.name || '推荐');
+const categoryName = computed(() => props.room?.categoryInfo?.name || props.room?.categoryName || '推荐');
 const isBrowserLive = computed(() => Boolean(props.room?.browserLive));
+const recommendReason = computed(() => props.room?.recommendReason || props.room?.reason || '');
 
 const loadPopularity = async () => {
   if (!props.enableHeatPolling || document.visibilityState === 'hidden') {
@@ -107,7 +110,7 @@ onBeforeUnmount(() => {
 <template>
   <article class="live-card" @click="handleItemClick">
     <div class="live-card__media" :data-category="categoryName">
-      <img draggable="false" class="live-card__cover" :src="room.cover || fallbackCover" alt="" @error="(e) => onImgError(e, fallbackCover)" />
+      <img draggable="false" class="live-card__cover" :src="safeCover" alt="" @error="(e) => onImgError(e, fallbackCover)" />
       <div class="live-card__shade"></div>
       <span class="live-card__status">
         <i></i>
@@ -126,11 +129,12 @@ onBeforeUnmount(() => {
       <h3>{{ room.title || '直播间' }}</h3>
       <div class="live-card__meta">
         <span class="live-card__anchor">
-          <img :src="room.userInfo?.avatar || fallbackAvatar" alt="" @error="onImgError" />
+          <img :src="safeAnchorAvatar" alt="" @error="onImgError" />
           {{ anchorName }}
         </span>
         <span class="live-card__category">{{ categoryName }}</span>
       </div>
+      <p v-if="recommendReason" class="live-card__reason">{{ recommendReason }}</p>
     </div>
   </article>
 </template>
@@ -311,6 +315,16 @@ onBeforeUnmount(() => {
   color: var(--accent);
   font-size: 12px;
   font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-card__reason {
+  margin: 8px 0 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.4;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

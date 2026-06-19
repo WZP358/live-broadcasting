@@ -85,11 +85,11 @@
         </div>
 
         <a-form ref="formRef" :model="formState" class="register-form" :rules="rules" layout="vertical">
-          <a-form-item name="nickname" label="用户昵称">
-            <a-input v-model:value="formState.nickname" size="large" type="text" placeholder="请输入用户昵称" />
+          <a-form-item name="nickname" label="用户名">
+            <a-input v-model:value="formState.nickname" size="large" type="text" placeholder="请输入对外展示的用户名" />
           </a-form-item>
-          <a-form-item name="username" label="用户名">
-            <a-input v-model:value="formState.username" size="large" type="text" placeholder="请输入用户名" />
+          <a-form-item name="username" label="用户账号">
+            <a-input v-model:value="formState.username" size="large" type="text" placeholder="请输入登录账号" />
           </a-form-item>
           <a-form-item name="password" label="登录密码">
             <a-input-password v-model:value="formState.password" size="large" placeholder="请输入登录密码" />
@@ -135,8 +135,8 @@ const formState = reactive({
 })
 const success = ref(false)
 const rules = {
-  nickname: [{ required: true, message: "请输入用户昵称!" }],
-  username: [{ required: true, message: "请输入用户名!" }],
+  nickname: [{ required: true, message: "请输入用户名!" }],
+  username: [{ required: true, message: "请输入用户账号!" }],
   password: [{ required: true, message: "请输入登录密码!" }],
   passwordConfirm: [
     {

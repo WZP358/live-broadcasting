@@ -15,6 +15,11 @@ export const quickLinks = [
     path: "/system/present-manage",
   },
   {
+    title: "礼物流水",
+    desc: "核对送礼明细、主播收益和平台礼物流水",
+    path: "/system/gift-flow",
+  },
+  {
     title: "分类管理",
     desc: "统一直播内容分类和导航标签",
     path: "/system/category-manage",

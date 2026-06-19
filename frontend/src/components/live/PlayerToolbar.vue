@@ -55,6 +55,12 @@
         />
       </div>
 
+      <a-tooltip :title="danmakuEnabled ? '关闭弹幕' : '开启弹幕'">
+        <button class="toolbar-icon-btn" :class="{ active: danmakuEnabled }" type="button" @click="toggleDanmaku">
+          <MessageOutlined />
+        </button>
+      </a-tooltip>
+
       <a-tooltip title="全屏观看">
         <button class="toolbar-icon-btn toolbar-icon-btn--strong" type="button" @click="$emit('fullscreen')">
           <FullscreenOutlined />
@@ -66,15 +72,16 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import { AudioMutedOutlined, SoundOutlined, FullscreenOutlined, DownOutlined } from "@ant-design/icons-vue";
+import { AudioMutedOutlined, SoundOutlined, FullscreenOutlined, DownOutlined, MessageOutlined } from "@ant-design/icons-vue";
 
 const props = defineProps({
   isLive: { type: Boolean, default: false },
   viewerCount: { type: Number, default: 0 },
   lines: { type: Array, default: () => [1, 2, 3] },
+  danmakuEnabled: { type: Boolean, default: true },
 });
 
-const emit = defineEmits(["line-change", "quality-change", "volume-change", "fullscreen"]);
+const emit = defineEmits(["line-change", "quality-change", "volume-change", "danmaku-toggle", "fullscreen"]);
 
 const visible = ref(true);
 const currentLine = ref(1);
@@ -115,6 +122,10 @@ const toggleMute = () => {
 const onVolumeChange = (val) => {
   if (val > 0) muted.value = false;
   emit("volume-change", val);
+};
+
+const toggleDanmaku = () => {
+  emit("danmaku-toggle", !props.danmakuEnabled);
 };
 
 const formatCount = (n) => {
@@ -236,6 +247,11 @@ const formatCount = (n) => {
 .toolbar-icon-btn:hover {
   color: #fff;
   background: rgba(255, 255, 255, 0.08);
+}
+
+.toolbar-icon-btn.active {
+  color: #ffb020;
+  background: rgba(255, 176, 32, 0.13);
 }
 
 .toolbar-icon-btn--strong:hover {

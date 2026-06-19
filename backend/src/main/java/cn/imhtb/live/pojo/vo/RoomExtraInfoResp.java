@@ -13,4 +13,7 @@ public class RoomExtraInfoResp {
     @ApiModelProperty("关注房间状态")
     private Boolean follow;
 
+    @ApiModelProperty("直播间关注人数")
+    private Long followCount;
+
 }

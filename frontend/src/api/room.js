@@ -23,6 +23,7 @@ export default {
             url: '/api/v1/room/extra/info',
             method: 'get',
             params,
+            silentError: true,
         })
     },
     getIntimacyRank(params) {

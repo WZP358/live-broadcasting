@@ -60,7 +60,6 @@ MAIL_PASSWORD=邮箱授权码
 | `REDIS_HOST` / `REDIS_PORT` / `REDIS_PASSWORD` | Redis 连接信息 |
 | `MAIL_USERNAME` / `MAIL_PASSWORD` | 邮件验证码发送账号和授权码 |
 | `TENCENT_SMS_*` | 腾讯云短信配置 |
-| `TENCENT_LIVE_*` | 腾讯云直播域名、API 密钥和防盗链 KEY |
 | `TENCENT_COS_*` | 腾讯云 COS 存储配置 |
 | `ALIYUN_SMS_*` | 阿里云短信配置 |
 | `ALIPAY_*` | 支付宝沙箱或正式环境配置 |

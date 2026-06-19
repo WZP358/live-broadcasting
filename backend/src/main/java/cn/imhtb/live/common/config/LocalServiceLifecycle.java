@@ -124,13 +124,7 @@ public class LocalServiceLifecycle {
 
         if ("live-guard".equals(serviceName)) {
             return new ServiceSpec(serviceName, Collections.singletonList(
-                    getIntProperty("pulselive.guard-port", "PULSELIVE_GUARD_PORT", 8000)
-            ));
-        }
-
-        if ("live-caption".equals(serviceName)) {
-            return new ServiceSpec(serviceName, Collections.singletonList(
-                    getIntProperty("pulselive.caption-port", "PULSELIVE_CAPTION_PORT", 8200)
+                    getIntProperty("pulselive.guard-port", "PULSELIVE_GUARD_PORT", 8300)
             ));
         }
 
@@ -169,20 +163,7 @@ public class LocalServiceLifecycle {
             ProcessBuilder builder = new ProcessBuilder(resolvePython().toString(), "vision_guard.py");
             builder.directory(guardDir.toFile());
             builder.environment().put("YOLO_CONFIG_DIR", guardDir.resolve(".ultralytics").toString());
-            return builder;
-        }
-
-        if ("live-caption".equals(spec.getName())) {
-            Path captionDir = projectRoot.resolve("ai-services").resolve("live-agent");
-            ProcessBuilder builder = new ProcessBuilder(
-                    resolvePython().toString(),
-                    "stt_server.py",
-                    "--port",
-                    String.valueOf(spec.getPorts().get(0))
-            );
-            builder.directory(captionDir.toFile());
-            builder.environment().put("PULSELIVE_WHISPER_MODEL",
-                    getStringProperty("pulselive.whisper-model", "PULSELIVE_WHISPER_MODEL", "tiny"));
+            builder.environment().put("PULSELIVE_GUARD_PORT", String.valueOf(spec.getPorts().get(0)));
             return builder;
         }
 

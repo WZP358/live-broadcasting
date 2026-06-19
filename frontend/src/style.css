@@ -274,6 +274,65 @@ button {
   color: var(--accent) !important;
 }
 
+.sider-menu.ant-menu,
+.sider-menu.ant-menu-dark,
+.sider-menu.ant-menu-dark .ant-menu-sub,
+.sider-menu .ant-menu-sub {
+  color: var(--header-text) !important;
+  background: transparent !important;
+}
+
+.sider-menu .ant-menu-item,
+.sider-menu .ant-menu-submenu-title,
+.sider-menu .ant-menu-title-content,
+.sider-menu .ant-menu-item a {
+  color: var(--header-text) !important;
+}
+
+.sider-menu .ant-menu-item .ant-menu-item-icon,
+.sider-menu .ant-menu-submenu-title .ant-menu-item-icon,
+.sider-menu .ant-menu-submenu-arrow,
+.sider-menu svg {
+  color: color-mix(in srgb, var(--header-text) 88%, transparent) !important;
+}
+
+.sider-menu .ant-menu-item:hover,
+.sider-menu .ant-menu-submenu-title:hover {
+  color: var(--header-text-active) !important;
+  background: color-mix(in srgb, var(--header-text) 11%, transparent) !important;
+}
+
+.sider-menu .ant-menu-item:hover .ant-menu-title-content,
+.sider-menu .ant-menu-submenu-title:hover .ant-menu-title-content,
+.sider-menu .ant-menu-item:hover .ant-menu-item-icon,
+.sider-menu .ant-menu-submenu-title:hover .ant-menu-item-icon,
+.sider-menu .ant-menu-submenu-title:hover .ant-menu-submenu-arrow,
+.sider-menu .ant-menu-item:hover svg,
+.sider-menu .ant-menu-submenu-title:hover svg {
+  color: var(--header-text-active) !important;
+}
+
+.sider-menu .ant-menu-item-selected {
+  color: var(--header-text-active) !important;
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--accent) 30%, transparent),
+      color-mix(in srgb, var(--accent) 12%, transparent)
+    ) !important;
+}
+
+.sider-menu .ant-menu-item-selected .ant-menu-title-content,
+.sider-menu .ant-menu-item-selected .ant-menu-item-icon,
+.sider-menu .ant-menu-item-selected svg,
+.sider-menu .ant-menu-submenu-selected > .ant-menu-submenu-title,
+.sider-menu .ant-menu-submenu-selected > .ant-menu-submenu-title .ant-menu-title-content,
+.sider-menu .ant-menu-submenu-selected > .ant-menu-submenu-title .ant-menu-item-icon,
+.sider-menu .ant-menu-submenu-selected > .ant-menu-submenu-title .ant-menu-submenu-arrow,
+.sider-menu .ant-menu-submenu-selected > .ant-menu-submenu-title svg {
+  color: var(--header-text-active) !important;
+}
+
 :where(.ant-switch) {
   background: var(--border-strong) !important;
 }

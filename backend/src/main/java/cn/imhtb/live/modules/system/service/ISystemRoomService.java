@@ -10,4 +10,6 @@ import cn.imhtb.live.modules.system.model.SystemRoomUpdate;
  * @date 2025/12/07
  */
 public interface ISystemRoomService extends IBaseService<SystemRoomDetail, SystemRoomQuery, SystemRoomDetail, SystemRoomUpdate> {
+
+    boolean toggleStatus(Integer roomId, Integer disabled, Integer handlerId);
 }

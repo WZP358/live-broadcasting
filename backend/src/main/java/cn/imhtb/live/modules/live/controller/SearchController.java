@@ -22,8 +22,9 @@ public class SearchController {
     @GetMapping("/rooms")
     public ApiResponse<PageData<SearchResultVO>> searchRooms(
             @RequestParam String keyword,
+            @RequestParam(required = false) Integer categoryId,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "12") Integer limit) {
-        return ApiResponse.ofSuccess(searchService.searchRooms(keyword, page, limit));
+        return ApiResponse.ofSuccess(searchService.searchRooms(keyword, categoryId, page, limit));
     }
 }

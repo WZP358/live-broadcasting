@@ -57,16 +57,6 @@
 
         <section class="studio-panel tool-panel">
           <h4>直播工具</h4>
-          <button class="tool-row" type="button" @click="toggleCaption">
-            <span>
-              <strong>实时字幕</strong>
-              <small>{{ captionSummary }}</small>
-            </span>
-            <em :class="{ on: state.captionActive, warn: !state.captionSupported }">
-              {{ state.captionActive ? "开" : state.captionSupported ? "关" : "不可用" }}
-            </em>
-          </button>
-
           <div class="tool-row">
             <span>
               <strong>实时降噪</strong>
@@ -79,6 +69,19 @@
               checked-children="开"
               un-checked-children="关"
               @change="handleDenoiseSwitch"
+            />
+          </div>
+
+          <div class="tool-row">
+            <span>
+              <strong>打赏动效</strong>
+              <small>{{ giftEffectSummary }}</small>
+            </span>
+            <a-switch
+              :checked="state.anchorGiftEffectsEnabled"
+              checked-children="开"
+              un-checked-children="关"
+              @change="handleAnchorGiftEffectsSwitch"
             />
           </div>
 
@@ -98,6 +101,27 @@
           </div>
         </section>
 
+        <section class="studio-panel preflight-panel">
+          <div class="preflight-head">
+            <h4>开播前检测</h4>
+            <a-button size="small" :loading="preflight.checking" @click="runManualPreflight">检测</a-button>
+          </div>
+          <div class="preflight-list">
+            <div
+              v-for="item in visiblePreflightItems"
+              :key="item.key"
+              class="preflight-item"
+              :class="`preflight-item--${item.status}`"
+            >
+              <span>
+                <i></i>
+                {{ item.label }}
+              </span>
+              <small>{{ item.detail }}</small>
+            </div>
+          </div>
+        </section>
+
         <section class="studio-panel status-panel">
           <h4>直播状态</h4>
           <div class="status-line">
@@ -112,6 +136,14 @@
             <span>当前画面</span>
             <strong>{{ streamModeText }}</strong>
           </div>
+          <div class="status-line">
+            <span>连麦</span>
+            <strong>{{ cohostStatusText }}</strong>
+          </div>
+          <div class="status-line">
+            <span>PK</span>
+            <strong>{{ pkStatusText }}</strong>
+          </div>
         </section>
       </aside>
 
@@ -123,14 +155,43 @@
           </div>
         </div>
 
-        <div class="preview-stage">
-          <video ref="previewRef" class="studio-preview" autoplay muted playsinline controls></video>
-          <div v-if="!state.liveActive" class="preview-empty">
+        <div
+          ref="previewStageRef"
+          class="preview-stage"
+          :class="{ 'preview-stage--fullscreen': previewFullscreen, 'preview-stage--pk': pkStageActive }"
+        >
+          <video ref="previewRef" class="studio-preview" autoplay muted playsinline controlslist="nofullscreen nodownload noremoteplayback"></video>
+          <div v-if="!state.liveActive && !pkStageActive" class="preview-empty">
             <strong>等待开播</strong>
             <span>选择屏幕或摄像头</span>
           </div>
           <span v-if="state.liveActive" class="preview-live-tag">直播中</span>
-          <div v-if="state.subtitleText" class="subtitle-preview">{{ state.subtitleText }}</div>
+          <div v-if="pkStageActive" class="pk-stage-card">
+            <div class="interaction-video-head">
+              <span>{{ pk.remoteName || "对方主播" }}</span>
+              <button type="button" @click="endPk">结束 PK</button>
+            </div>
+            <video ref="pkVideoRef" autoplay playsinline></video>
+            <small>{{ pk.connectionText || "正在连接对方主播" }}</small>
+          </div>
+          <button
+            class="preview-fullscreen-btn"
+            type="button"
+            :aria-label="previewFullscreen ? '退出放大预览' : '放大预览'"
+            :title="previewFullscreen ? '退出放大预览' : '放大预览'"
+            @click="togglePreviewFullscreen"
+          >
+            <FullscreenExitOutlined v-if="previewFullscreen" />
+            <FullscreenOutlined v-else />
+          </button>
+          <div v-if="cohost.active || cohost.status === 'connecting'" class="cohost-stage-card">
+            <div class="interaction-video-head">
+              <span>连麦</span>
+              <button type="button" @click="endCohost">挂断</button>
+            </div>
+            <video ref="cohostVideoRef" autoplay playsinline></video>
+            <small>{{ cohost.connectionText || cohostStatusText }}</small>
+          </div>
         </div>
 
         <div class="control-dock">
@@ -138,10 +199,6 @@
             <div>
               <span>连接</span>
               <strong>{{ state.signalConnected ? "正常" : "等待" }}</strong>
-            </div>
-            <div>
-              <span>字幕</span>
-              <strong>{{ captionSummary }}</strong>
             </div>
             <div>
               <span>降噪</span>
@@ -196,96 +253,136 @@
           <h4>互动消息</h4>
           <span>{{ state.viewerCount }} 人在线</span>
         </div>
-        <div class="caption-assistant">
-          <div class="caption-assistant__head">
-            <div>
-              <strong>字幕小脉</strong>
-              <span>{{ subtitleAssistantSummary }}</span>
+        <div class="interaction-panel">
+          <div class="interaction-section">
+            <div class="interaction-section__head">
+              <div>
+                <strong>观众连麦</strong>
+                <span>{{ cohost.requests.length ? `${cohost.requests.length} 个申请待处理` : cohostStatusText }}</span>
+              </div>
+              <a-button size="small" :disabled="!cohost.active && cohost.status !== 'connecting'" @click="endCohost">
+                结束
+              </a-button>
             </div>
-            <a-button size="small" :disabled="!subtitleHistory.length" @click="clearSubtitleHistory">
-              清空
-            </a-button>
-          </div>
-          <div class="caption-assistant__actions">
-            <a-button size="small" :loading="subtitleAssistant.loading" @click="runSubtitleAssistant('summary')">
-              总结字幕
-            </a-button>
-            <a-button size="small" :loading="subtitleAssistant.loading" @click="runSubtitleAssistant('topic')">
-              提炼话题
-            </a-button>
-            <a-button size="small" :loading="subtitleAssistant.loading" @click="runSubtitleAssistant('reply')">
-              生成接话
-            </a-button>
-          </div>
-          <div v-if="subtitleAssistant.result" class="caption-assistant__result">
-            <div class="caption-assistant__result-head">
-              <span>{{ subtitleAssistant.title }}</span>
-              <a-button type="link" size="small" @click="copyAssistantResult">复制</a-button>
+            <div v-if="cohost.requests.length" class="request-list">
+              <div v-for="item in cohost.requests" :key="item.fromSessionId" class="request-item">
+                <img :src="safeInteractionAvatar(item.applicantAvatar)" alt="" @error="onInteractionImgError" />
+                <div>
+                  <strong>{{ item.applicantName || "观众" }}</strong>
+                  <span>申请上麦互动</span>
+                </div>
+                <div class="request-actions">
+                  <a-button size="small" type="primary" @click="acceptCohostRequest(item)">同意</a-button>
+                  <a-button size="small" @click="rejectCohostRequest(item)">拒绝</a-button>
+                </div>
+              </div>
             </div>
-            <p :class="{ collapsed: subtitleAssistantCollapsed }">
-              {{ subtitleAssistant.result }}
-            </p>
-            <button
-              v-if="isLongAssistantResult"
-              class="caption-assistant__expand"
-              type="button"
-              @click="subtitleAssistantCollapsed = !subtitleAssistantCollapsed"
-            >
-              {{ subtitleAssistantCollapsed ? "展开" : "收起" }}
-            </button>
+            <p v-else class="interaction-empty">观众发起申请后会出现在这里，主播同意后才会建立音视频连麦。</p>
+          </div>
+
+          <div class="interaction-section">
+            <div class="interaction-section__head">
+              <div>
+                <strong>主播 PK</strong>
+                <span>{{ pkStatusText }}</span>
+              </div>
+              <a-button size="small" :disabled="!pkActive" @click="endPk">结束</a-button>
+            </div>
+            <div v-if="pk.pendingInvite" class="pk-invite-card">
+              <strong>{{ pk.pendingInvite.inviterName || "对方主播" }} 发起 PK</strong>
+              <span>房间 {{ pk.pendingInvite.fromRoomId || "--" }}</span>
+              <div>
+                <a-button size="small" type="primary" @click="acceptPkInvite">接受</a-button>
+                <a-button size="small" @click="rejectPkInvite">拒绝</a-button>
+              </div>
+            </div>
+            <div v-if="pkActive" class="pk-status-card">
+              <strong>{{ pk.remoteName || "对方主播" }}</strong>
+              <span>{{ pk.connectionText || "正在连接对方主播" }}</span>
+            </div>
+            <div v-else class="pk-form">
+              <a-input
+                v-model:value="pk.targetRoomId"
+                class="pk-target-input"
+                size="small"
+                placeholder="输入对方房间号"
+                :disabled="!state.liveActive || pk.status === 'inviting'"
+                @pressEnter="invitePk"
+              />
+              <a-button size="small" type="primary" :loading="pk.status === 'inviting'" :disabled="!state.liveActive" @click="invitePk">
+                发起
+              </a-button>
+            </div>
           </div>
         </div>
         <div class="chat-feed">
-          <div v-if="state.liveActive" class="chat-message system">
-            <strong>系统</strong>
-            <span>直播已开始，等待观众互动</span>
+          <div
+            v-for="item in anchorChatMessages"
+            :key="item.id"
+            class="chat-message"
+            :class="{ system: item.isSystem || item.nickname === '系统消息', self: item.isSelf, gift: item.isGift }"
+          >
+            <strong>{{ item.isSelf ? "我" : item.nickname || "观众" }}</strong>
+            <span>{{ item.text }}</span>
           </div>
-          <div v-else class="chat-empty">
+          <div v-if="!anchorChatMessages.length" class="chat-empty">
             <strong>暂无互动</strong>
             <span>开播后显示弹幕和礼物消息</span>
           </div>
         </div>
-        <div class="chat-tools">
-          <button type="button">
-            <MessageOutlined />
-            弹幕
-          </button>
-          <button type="button">
-            <GiftOutlined />
-            礼物
-          </button>
-          <button type="button">
-            <HeartOutlined />
-            关注
-          </button>
+        <div class="anchor-chat-composer">
+          <a-input
+            v-model:value="anchorChatText"
+            size="small"
+            :maxlength="100"
+            :disabled="!state.liveActive || anchorChatSending"
+            :placeholder="state.liveActive ? '以主播身份发送弹幕' : '开播后可发送弹幕'"
+            @pressEnter="sendAnchorChat"
+          />
+          <a-button
+            type="primary"
+            size="small"
+            :loading="anchorChatSending"
+            :disabled="!state.liveActive || !anchorChatText.trim()"
+            @click="sendAnchorChat"
+          >
+            发送
+          </a-button>
         </div>
       </aside>
     </div>
+    <GiftEffects v-if="state.anchorGiftEffectsEnabled" ref="giftEffectsRef" />
   </section>
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, reactive, ref, watch } from "vue"
+import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue"
 import {
   DesktopOutlined,
-  GiftOutlined,
-  HeartOutlined,
-  MessageOutlined,
+  FullscreenExitOutlined,
+  FullscreenOutlined,
   PauseCircleOutlined,
   PlayCircleOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons-vue"
 import $modal from "@/utils/message"
 import liveAPI from "@/api/live"
-import agentApi from "@/api/agent"
+import ChatApi from "@/api/chat"
+import { useStore } from "@/stores"
 import { createBrowserLiveFallbackUrls, createPeerConnection } from "@/utils/browserLive"
-import { createLiveCaptionEngine, isLiveCaptionSupported } from "@/utils/liveCaption"
+import { appendChatMessages, createChatWebSocketUrl } from "@/utils/chatRoom"
 import { createLiveDenoiseEngine } from "@/utils/liveDenoise"
 import { createAlignedLatencyStream } from "@/utils/mediaLatency"
+import { runBroadcastPreflight } from "@/utils/demoDiagnostics"
+import { resolveSafeImageUrl } from "@/utils/fallback"
+
+const GiftEffects = defineAsyncComponent(() => import("@/components/live/GiftEffects.vue"))
 
 const HEARTBEAT_INTERVAL = 15000
+const CHAT_HEARTBEAT_INTERVAL = 9500
 const GUARD_CHECK_INTERVAL = 2000
 const DENOISE_STORAGE_KEY = "live.browser.denoise.enabled"
+const ANCHOR_GIFT_EFFECT_STORAGE_KEY = "live.browser.anchorGiftEffect.enabled"
 const LIVE_SYNC_LATENCY_MS = 1000
 
 const props = defineProps({
@@ -300,9 +397,19 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["status-change"])
+const store = useStore()
+const previewStageRef = ref(null)
 const previewRef = ref(null)
+const cohostVideoRef = ref(null)
+const pkVideoRef = ref(null)
+const giftEffectsRef = ref(null)
+const previewFullscreen = ref(false)
 const resolvedRoomId = ref(null)
 const activeRoomId = computed(() => props.roomId || resolvedRoomId.value)
+const anchorChatText = ref("")
+const anchorChatSending = ref(false)
+const anchorChatMessages = ref([])
+let anchorChatMessageId = 0
 
 const state = reactive({
   starting: false,
@@ -314,11 +421,8 @@ const state = reactive({
   message: "",
   viewerCount: 0,
   signalConnected: false,
-  captionSupported: isLiveCaptionSupported(),
-  captionActive: false,
-  subtitleText: "",
-  subtitleHistory: [],
   denoiseEnabled: window.localStorage.getItem(DENOISE_STORAGE_KEY) === "1",
+  anchorGiftEffectsEnabled: window.localStorage.getItem(ANCHOR_GIFT_EFFECT_STORAGE_KEY) === "1",
   denoiseStatus: "idle",
   denoiseDetail: "",
   denoiseSwitching: false,
@@ -329,6 +433,12 @@ const state = reactive({
   guardActive: false,
 })
 
+const preflight = reactive({
+  checking: false,
+  items: [],
+  lastCheckedAt: null,
+})
+
 let signalSocket = null
 let captureStream = null
 let publishingStream = null
@@ -336,21 +446,44 @@ let cameraStream = null
 let pipCanvas = null
 let pipAnimationId = null
 let heartbeatTimer = null
+let chatSocket = null
+let chatHeartbeatTimer = null
+let chatReconnectTimer = null
+let chatReconnectCount = 0
 let guardTimer = null
 let guardChecking = false
-let captionEngine = null
 let denoiseEngine = null
 let latencyAlignedStream = null
 let auxiliaryStreams = []
 const peerMap = new Map()
-const subtitleAssistant = reactive({
-  loading: false,
-  title: "字幕助手",
-  result: "",
-  mode: "",
-  error: "",
+const defaultInteractionAvatar =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' rx='16' fill='%23ff9f1a'/%3E%3Ccircle cx='48' cy='36' r='18' fill='%23fff7df'/%3E%3Cpath d='M18 82c5-18 17-28 30-28s25 10 30 28' fill='%23fff7df'/%3E%3C/svg%3E"
+const safeInteractionAvatar = (url) => resolveSafeImageUrl(url, defaultInteractionAvatar)
+const cohost = reactive({
+  status: "idle",
+  requests: [],
+  active: false,
+  peer: null,
+  remoteStream: null,
+  remoteSessionId: "",
+  remoteName: "",
+  connectionText: "",
 })
-const subtitleAssistantCollapsed = ref(true)
+const pk = reactive({
+  status: "idle",
+  targetRoomId: "",
+  pendingInvite: null,
+  peer: null,
+  remoteStream: null,
+  remoteSessionId: "",
+  remoteRoomId: null,
+  remoteName: "",
+  connectionText: "",
+})
+let cohostPeer = null
+let cohostRemoteStream = null
+let pkPeer = null
+let pkRemoteStream = null
 
 const resetDenoiseState = () => {
   state.denoiseStatus = "idle"
@@ -396,30 +529,6 @@ const denoiseSummary = computed(() => {
   return "实时降噪运行中"
 })
 
-const captionSummary = computed(() => {
-  if (state.captionActive) {
-    return "识别中"
-  }
-  if (!state.captionSupported) {
-    return "暂不可用"
-  }
-  return "未开启"
-})
-
-const subtitleHistory = computed(() => state.subtitleHistory)
-
-const subtitleAssistantSummary = computed(() => {
-  if (!subtitleHistory.value.length) {
-    return "等待字幕输入"
-  }
-  if (subtitleAssistant.loading) {
-    return "正在分析字幕"
-  }
-  return `已记录 ${subtitleHistory.value.length} 句`
-})
-
-const isLongAssistantResult = computed(() => String(subtitleAssistant.result || "").length > 120)
-
 const denoiseCompactSummary = computed(() => {
   if (!state.denoiseEnabled) {
     return "未开启"
@@ -433,12 +542,75 @@ const denoiseCompactSummary = computed(() => {
   return state.liveActive ? "运行中" : "已开启"
 })
 
+const giftEffectSummary = computed(() =>
+  state.anchorGiftEffectsEnabled ? "主播和观众都能看到" : "仅观众端显示"
+)
+
+const currentUserProfile = computed(() => {
+  const info = store.user().userInfo || {}
+  return {
+    name: info.nickName || info.nickname || info.name || info.username || "主播",
+    avatar: info.avatar || "",
+  }
+})
+
+const cohostStatusText = computed(() => {
+  if (cohost.active) {
+    return cohost.remoteName ? `与 ${cohost.remoteName} 连麦中` : "连麦中"
+  }
+  if (cohost.status === "connecting") {
+    return "正在建立连麦"
+  }
+  if (cohost.status === "invited") {
+    return "有观众申请"
+  }
+  return "待申请"
+})
+
+const pkActive = computed(() => pk.status === "inviting" || pk.status === "connecting" || pk.status === "active")
+const pkStageActive = computed(() => pk.status === "connecting" || pk.status === "active")
+
+const pkStatusText = computed(() => {
+  if (pk.status === "active") {
+    return pk.remoteName ? `与 ${pk.remoteName} PK 中` : "PK 中"
+  }
+  if (pk.status === "connecting") {
+    return "正在建立 PK"
+  }
+  if (pk.status === "inviting") {
+    return "等待对方接受"
+  }
+  if (pk.pendingInvite) {
+    return "收到 PK 邀请"
+  }
+  return "未开始"
+})
+
 const streamModeText = computed(() => {
   if (!state.liveActive) {
     return state.selectedLiveMode === "screen" ? "屏幕直播" : "摄像头直播"
   }
   return state.isScreenSharing ? "屏幕直播" : "摄像头直播"
 })
+
+const preflightPlaceholderItems = computed(() => [
+  {
+    key: "capture",
+    label: state.selectedLiveMode === "screen" ? "屏幕采集能力" : "摄像头采集能力",
+    status: "warn",
+    detail: "点击检测或开始直播时自动检查。",
+  },
+  {
+    key: "live-signal",
+    label: "直播信令通道",
+    status: "warn",
+    detail: "点击检测或开始直播时自动检查。",
+  },
+])
+
+const visiblePreflightItems = computed(() =>
+  preflight.items.length ? preflight.items : preflightPlaceholderItems.value
+)
 
 const setMessage = (text) => {
   state.message = text
@@ -462,107 +634,130 @@ const getDenoiseStatusText = (status, useEnhancedOutput = false) => {
   return "降噪已启用"
 }
 
-const pushSubtitleHistory = (text) => {
-  const normalized = String(text || "").trim()
-  if (!normalized) {
-    return
-  }
-
-  const nextItem = {
-    text: normalized,
-    at: Date.now(),
-  }
-  const recent = state.subtitleHistory.slice(-19)
-  const lastItem = recent[recent.length - 1]
-  if (lastItem && (normalized.includes(lastItem.text) || lastItem.text.includes(normalized))) {
-    recent[recent.length - 1] = nextItem
-    state.subtitleHistory = recent
-    return
-  }
-  state.subtitleHistory = [...recent, nextItem]
+const getCurrentUserId = () => {
+  const info = store.user().userInfo || {}
+  return Number(info.userId || info.id || 0)
 }
 
-const getSubtitleHistoryText = () =>
-  state.subtitleHistory
-    .map((item, index) => `${index + 1}. ${item.text}`)
-    .join("\n")
+const normalizeAnchorChatPayload = (payload = {}, options = {}) => {
+  if (typeof payload === "string") {
+    return {
+      id: ++anchorChatMessageId,
+      nickname: "系统消息",
+      text: payload,
+      isSystem: true,
+      createdAt: Date.now(),
+    }
+  }
 
-const clearSubtitleHistory = () => {
-  state.subtitleHistory = []
-  subtitleAssistant.result = ""
-  subtitleAssistant.title = "字幕助手"
-  subtitleAssistant.mode = ""
-  subtitleAssistant.error = ""
-  subtitleAssistantCollapsed.value = true
+  const fromUserId = Number(payload?.fromUserId || payload?.senderId || 0)
+  const text = payload?.text ?? payload?.content ?? ""
+  return {
+    ...payload,
+    id: payload?.id || `${Date.now()}-${++anchorChatMessageId}`,
+    nickname: payload?.nickname || payload?.senderName || payload?.username || "观众",
+    text: String(text || ""),
+    fromUserId,
+    isSelf: Boolean(fromUserId && fromUserId === getCurrentUserId()),
+    isSystem: Boolean(options.isSystem || payload?.isSystem || payload?.nickname === "系统消息"),
+    isGift: Boolean(options.isGift),
+    createdAt: Date.now(),
+  }
 }
 
-const copyAssistantResult = async () => {
-  const text = subtitleAssistant.result || ""
-  if (!text) {
+const pushAnchorChatMessage = (payload, options = {}) => {
+  const normalized = normalizeAnchorChatPayload(payload, options)
+  if (!normalized.text) {
     return
+  }
+  anchorChatMessages.value = appendChatMessages(anchorChatMessages.value, normalized, 80)
+}
+
+const pushAnchorSystemMessage = (text) => {
+  pushAnchorChatMessage({ nickname: "系统消息", text, isSystem: true })
+}
+
+const parseGiftPayload = (payload = {}) => {
+  if (typeof payload !== "string") {
+    return payload
   }
   try {
-    await navigator.clipboard.writeText(text)
-    $modal.msgSuccess("已复制字幕助手内容")
+    return JSON.parse(payload)
   } catch (error) {
-    $modal.msgWarning("复制失败，请手动选中内容")
+    return payload
   }
 }
 
-const buildSubtitlePrompt = (mode) => {
-  const context = getSubtitleHistoryText()
-  const base = `以下是直播实时字幕，请基于字幕内容输出简洁、可直接用于直播现场的内容：\n${context}`
-  if (mode === "summary") {
-    return `${base}\n\n要求：先给出 1 句摘要，再给出 3 条要点。`
+const resolveGiftPayload = (payload = {}) => {
+  const parsedPayload = parseGiftPayload(payload)
+  if (parsedPayload && typeof parsedPayload === "object") {
+    return {
+      giftName: parsedPayload.giftName || parsedPayload.presentName || "礼物",
+      senderName: parsedPayload.senderName || parsedPayload.nickname || "观众",
+      count: Number(parsedPayload.count || parsedPayload.number || 1),
+      giftId: parsedPayload.giftId || parsedPayload.presentId || parsedPayload.id || 0,
+      text: parsedPayload.text || parsedPayload.content || "",
+    }
   }
-  if (mode === "topic") {
-    return `${base}\n\n要求：提炼 3 到 5 个主题关键词，并给出一个适合直播间展示的标题。`
+  return {
+    giftName: String(parsedPayload || "礼物"),
+    senderName: "观众",
+    count: 1,
+    giftId: 0,
+    text: "",
   }
-  return `${base}\n\n要求：生成 1 到 2 句自然的主播接话，语气要轻松自然，适合直接念出来。`
 }
 
-const normalizeAssistantResponse = (data = {}, mode) => {
-  const fallbackText =
-    mode === "topic"
-      ? "暂时无法生成话题提炼，请检查 AI 服务状态。"
-      : mode === "reply"
-        ? "暂时无法生成接话，请检查 AI 服务状态。"
-        : "暂时无法生成字幕总结，请检查 AI 服务状态。"
-  const answer = data.answer || data.summary || data.message || fallbackText
-  subtitleAssistant.title =
-    mode === "topic" ? "字幕话题" : mode === "reply" ? "字幕接话" : "字幕总结"
-  subtitleAssistant.result = String(answer || fallbackText).trim()
-  subtitleAssistant.mode = mode
-  subtitleAssistant.error = ""
-  subtitleAssistantCollapsed.value = true
-}
-
-const runSubtitleAssistant = async (mode) => {
-  if (!state.subtitleHistory.length) {
-    $modal.msgWarning("还没有可分析的字幕内容")
+const playAnchorGiftEffect = (payload) => {
+  if (!state.anchorGiftEffectsEnabled) {
     return
   }
-  if (subtitleAssistant.loading) {
+  const gift = resolveGiftPayload(payload)
+  giftEffectsRef.value?.playGiftEffect(gift.giftName, gift.senderName, {
+    count: gift.count,
+    giftId: gift.giftId,
+    text: gift.text,
+  })
+}
+
+const handleAnchorGiftEffectsSwitch = (checked) => {
+  state.anchorGiftEffectsEnabled = checked
+  window.localStorage.setItem(ANCHOR_GIFT_EFFECT_STORAGE_KEY, checked ? "1" : "0")
+}
+
+const appendAnchorGiftMessage = (payload) => {
+  const gift = resolveGiftPayload(payload)
+  const count = Math.max(1, Number(gift.count || 1))
+  pushAnchorChatMessage({
+    nickname: "系统消息",
+    text: gift.text || `${gift.senderName || "观众"} 送出了 ${gift.giftName || "礼物"} x ${count}`,
+    isSystem: true,
+  }, { isGift: true, isSystem: true })
+}
+
+const sendAnchorChat = async () => {
+  if (!state.liveActive) {
+    $modal.msgWarning("开播后才能发送弹幕")
+    return
+  }
+  const roomId = activeRoomId.value
+  const text = anchorChatText.value.trim()
+  if (!roomId || !text || anchorChatSending.value) {
     return
   }
 
-  subtitleAssistant.loading = true
-  subtitleAssistant.error = ""
-
+  anchorChatSending.value = true
+  anchorChatText.value = ""
   try {
-    const prompt = buildSubtitlePrompt(mode)
-    const res = await agentApi.askHelper(prompt)
-    normalizeAssistantResponse(res?.data || {}, mode)
-    subtitleAssistant.error = ""
+    await ChatApi.sendChatMsg({
+      roomId: Number(roomId),
+      text,
+    })
   } catch (error) {
-    subtitleAssistant.error = "AI 服务暂不可用"
-    subtitleAssistant.title = mode === "topic" ? "字幕话题" : mode === "reply" ? "字幕接话" : "字幕总结"
-    subtitleAssistant.result = "AI 服务暂不可用，字幕助手无法生成结果。"
-    subtitleAssistant.mode = mode
-    subtitleAssistantCollapsed.value = true
-    $modal.msgWarning(subtitleAssistant.result)
+    anchorChatText.value = text
+    $modal.msgError(error?.message || "弹幕发送失败，请稍后重试")
   } finally {
-    subtitleAssistant.loading = false
+    anchorChatSending.value = false
   }
 }
 
@@ -574,6 +769,17 @@ watch(
     }
   },
   { immediate: true }
+)
+
+watch(
+  () => [state.liveActive, activeRoomId.value],
+  ([liveActive, roomId]) => {
+    if (liveActive && roomId) {
+      connectAnchorChatSocket()
+      return
+    }
+    closeAnchorChatSocket()
+  }
 )
 
 const ensureRoomId = async () => {
@@ -606,6 +812,73 @@ const createMicrophoneConstraints = () => ({
   noiseSuppression: true,
   autoGainControl: true,
 })
+
+const ensureMediaCaptureAvailable = (captureType = "camera") => {
+  const mediaDevices = navigator.mediaDevices
+  const requiredMethod = captureType === "screen" ? "getDisplayMedia" : "getUserMedia"
+  if (mediaDevices?.[requiredMethod]) {
+    return true
+  }
+
+  const message = captureType === "screen"
+    ? "屏幕开播需要安全浏览器环境。请在主播电脑使用 http://localhost:5173 开播，或把外网域名配置为 HTTPS。"
+    : "摄像头开播需要安全浏览器环境。请在主播电脑使用 http://localhost:5173 开播，或把外网域名配置为 HTTPS。"
+  setMessage(message)
+  $modal.msgWarning(message)
+  return false
+}
+
+const runPreflightCheck = async ({ silent = false } = {}) => {
+  if (preflight.checking) {
+    return {
+      ok: false,
+      items: preflight.items,
+    }
+  }
+
+  preflight.checking = true
+  try {
+    const result = await runBroadcastPreflight({
+      mode: state.selectedLiveMode,
+      denoiseEnabled: state.denoiseEnabled,
+    })
+    preflight.items = result.items
+    preflight.lastCheckedAt = result.checkedAt
+    const blockingErrors = result.items.filter((item) => item.blocking && item.status === "error")
+    if (blockingErrors.length) {
+      const message = blockingErrors[0].detail || "开播前检测未通过，请先处理异常项。"
+      setMessage(message)
+      if (!silent) {
+        $modal.msgWarning(message)
+      }
+      return { ...result, ok: false }
+    }
+    if (!silent) {
+      $modal.msgSuccess("开播前检测通过")
+    }
+    return { ...result, ok: true }
+  } catch (error) {
+    const message = error?.message || "开播前检测失败，请稍后重试。"
+    preflight.items = [{
+      key: "preflight-error",
+      label: "开播前检测",
+      status: "error",
+      detail: message,
+      blocking: true,
+    }]
+    setMessage(message)
+    if (!silent) {
+      $modal.msgError(message)
+    }
+    return { ok: false, items: preflight.items }
+  } finally {
+    preflight.checking = false
+  }
+}
+
+const runManualPreflight = () => {
+  runPreflightCheck()
+}
 
 const describeAudioProcessingState = (stream = captureStream) => {
   const [audioTrack] = stream?.getAudioTracks?.() || []
@@ -670,6 +943,9 @@ const createScreenStream = async () => {
 }
 
 const startScreenLive = async () => {
+  if (!ensureMediaCaptureAvailable("screen")) {
+    return
+  }
   state.selectedLiveMode = "screen"
   state.isScreenSharing = true
   state.cameraPipEnabled = false
@@ -677,6 +953,9 @@ const startScreenLive = async () => {
 }
 
 const startCameraLive = async () => {
+  if (!ensureMediaCaptureAvailable("camera")) {
+    return
+  }
   state.selectedLiveMode = "camera"
   state.isScreenSharing = false
   state.cameraPipEnabled = false
@@ -700,11 +979,41 @@ const handlePrimaryLiveAction = async () => {
     await stopBrowserLive()
     return
   }
+  const preflightResult = await runPreflightCheck({ silent: true })
+  if (!preflightResult.ok) {
+    $modal.msgWarning("开播前检测未通过，请先处理异常项。")
+    return
+  }
   if (state.selectedLiveMode === "camera") {
     await startCameraLive()
     return
   }
   await startScreenLive()
+}
+
+const syncPreviewFullscreenState = () => {
+  previewFullscreen.value = document.fullscreenElement === previewStageRef.value
+}
+
+const togglePreviewFullscreen = async () => {
+  const previewStage = previewStageRef.value
+  if (!previewStage || !previewStage.requestFullscreen) {
+    $modal.msgWarning("当前浏览器不支持放大预览")
+    return
+  }
+  try {
+    if (document.fullscreenElement === previewStage) {
+      await document.exitFullscreen?.()
+      return
+    }
+    if (document.fullscreenElement) {
+      await document.exitFullscreen?.()
+      await nextTick()
+    }
+    await previewStage.requestFullscreen()
+  } catch (error) {
+    $modal.msgWarning("放大预览失败，请检查浏览器权限")
+  }
 }
 
 /**
@@ -808,6 +1117,7 @@ const stopPipComposite = () => {
  */
 const toggleCameraPip = async (enabled) => {
   if (!state.liveActive || !state.isScreenSharing) return
+  if (enabled && !ensureMediaCaptureAvailable("camera")) return
   state.pipSwitching = true
   state.cameraPipEnabled = enabled
 
@@ -863,8 +1173,9 @@ const replacePublishingStream = async (newStream) => {
   attachPreview()
 
   // 更新所有已连接观众的画面与声音
-  for (const [sessionId, peer] of peerMap) {
-    if (peer.connectionState !== "connected") continue
+  const peers = [...Array.from(peerMap.values()), cohostPeer, pkPeer].filter(Boolean)
+  for (const peer of peers) {
+    if (!["connected", "connecting", "new"].includes(peer.connectionState)) continue
     const senders = peer.getSenders()
     oldStream?.getTracks().forEach((oldTrack) => {
       const sender = senders.find((s) => s.track?.kind === oldTrack.kind)
@@ -910,7 +1221,6 @@ const startBrowserLive = async (streamFactory) => {
     closeAllPeers()
     closeSignal()
     await releaseMediaResources()
-    stopCaption()
     const errorMessage = getMediaErrorMessage(error)
     setMessage(errorMessage)
     $modal.msgError(errorMessage)
@@ -1000,6 +1310,12 @@ const stopLatencyAlignment = async ({ stopDerivedTracks = false, protectedStream
 
 const replacePeerTrack = async (kind, nextTrack) => {
   const peers = Array.from(peerMap.values())
+  if (cohostPeer) {
+    peers.push(cohostPeer)
+  }
+  if (pkPeer) {
+    peers.push(pkPeer)
+  }
   await Promise.all(
     peers.map(async (peer) => {
       const sender = peer.getSenders().find((item) => item.track?.kind === kind)
@@ -1205,7 +1521,9 @@ const connectSignal = () =>
           state.liveActive = false
           setMessage("直播连接已断开，请重新开播")
           closeAllPeers()
-          stopCaption()
+          resetCohost()
+          resetPk()
+          releaseMediaResources()
         }
       }
     }
@@ -1236,16 +1554,93 @@ const handleSignalMessage = async (data) => {
     }
     return
   }
+  if (data.type === "cohost-request" && data.fromSessionId) {
+    if (cohost.active || cohost.status === "connecting") {
+      sendSignal({
+        type: "cohost-rejected",
+        roomId: activeRoomId.value,
+        targetSessionId: data.fromSessionId,
+        reason: "主播当前已有连麦",
+      })
+      return
+    }
+    removeCohostRequest(data.fromSessionId)
+    cohost.requests.unshift({
+      ...data,
+      receivedAt: Date.now(),
+    })
+    cohost.status = "invited"
+    return
+  }
+  if (data.type === "cohost-answer" && data.fromSessionId && data.sdp && cohostPeer) {
+    await cohostPeer.setRemoteDescription(new RTCSessionDescription(data.sdp))
+    cohost.active = true
+    cohost.status = "active"
+    cohost.connectionText = "音视频已接入"
+    return
+  }
+  if (data.type === "cohost-ice-candidate" && data.candidate && cohostPeer) {
+    await cohostPeer.addIceCandidate(new RTCIceCandidate(data.candidate))
+    return
+  }
+  if (data.type === "cohost-ended") {
+    resetCohost()
+    return
+  }
+  if (data.type === "pk-invite" && data.fromSessionId) {
+    if (pkActive.value) {
+      sendSignal({
+        type: "pk-rejected",
+        roomId: activeRoomId.value,
+        targetSessionId: data.fromSessionId,
+        targetRoomId: data.fromRoomId,
+        reason: "对方主播正在 PK 或邀请中",
+      })
+      return
+    }
+    pk.pendingInvite = data
+    pk.status = "idle"
+    return
+  }
+  if (data.type === "pk-accepted" && data.fromSessionId) {
+    pk.status = "connecting"
+    pk.remoteSessionId = data.fromSessionId
+    pk.remoteRoomId = data.fromRoomId || data.targetRoomId
+    pk.remoteName = data.acceptorName || "对方主播"
+    pk.connectionText = "对方已接受，正在建立 PK"
+    await createPkOffer(data.fromSessionId, pk.remoteRoomId)
+    return
+  }
+  if (data.type === "pk-rejected") {
+    const reason = data.reason || "对方主播拒绝了 PK"
+    $modal.msgWarning(reason)
+    resetPk()
+    return
+  }
+  if (data.type === "pk-unavailable") {
+    $modal.msgWarning(data.message || "目标主播暂不可用")
+    resetPk()
+    return
+  }
+  if (data.type === "pk-offer" && data.fromSessionId && data.sdp) {
+    await answerPkOffer(data)
+    return
+  }
+  if (data.type === "pk-answer" && data.fromSessionId && data.sdp && pkPeer) {
+    await pkPeer.setRemoteDescription(new RTCSessionDescription(data.sdp))
+    pk.status = "active"
+    pk.connectionText = "对方画面已接入"
+    return
+  }
+  if (data.type === "pk-ice-candidate" && data.candidate && pkPeer) {
+    await pkPeer.addIceCandidate(new RTCIceCandidate(data.candidate))
+    return
+  }
+  if (data.type === "pk-ended") {
+    resetPk()
+    return
+  }
   if (data.type === "heartbeat-ack") {
-    return
-  }
-  if (data.type === "subtitle") {
-    state.subtitleText = data.text || ""
-    pushSubtitleHistory(data.text)
-    return
-  }
-  if (data.type === "subtitle-clear") {
-    state.subtitleText = ""
     return
   }
   if (data.type === "guard-violation") {
@@ -1296,91 +1691,360 @@ const createOfferForViewer = async (viewerSessionId) => {
   })
 }
 
-const toggleCaption = async () => {
-  if (!state.captionSupported) {
-    $modal.msgWarning("实时字幕暂不可用，请稍后重试")
-    return
-  }
-  if (!state.liveActive) {
-    $modal.msgWarning("请先开播，再开启实时字幕")
-    return
-  }
-  if (!captureStream?.getAudioTracks?.().some((track) => track.readyState === "live")) {
-    $modal.msgWarning("未检测到可用麦克风声音，请重新开启摄像头直播")
-    return
-  }
-  if (state.captionActive) {
-    stopCaption()
-    setMessage("实时字幕已关闭")
-    return
-  }
-
-  captionEngine = createLiveCaptionEngine({
-    sourceStream: captureStream,
-    onText: (text) => {
-      state.subtitleText = text
-      pushSubtitleHistory(text)
-      sendSignal({
-        type: text ? "subtitle" : "subtitle-clear",
-        roomId: activeRoomId.value,
-        text,
-      })
-    },
-    onError: (event, options = {}) => {
-      const error = event?.error || event?.code || event?.message || ""
-      if (options.recoverable) {
-        setMessage(error === "no-speech" ? "实时字幕等待主播说话..." : "实时字幕正在自动恢复")
-        return
-      }
-      state.captionActive = false
-      captionEngine = null
-      const hint =
-        error === "not-allowed" || error === "service-not-allowed"
-          ? "字幕识别没有麦克风权限，请在浏览器地址栏允许麦克风后重试"
-          : error === "audio-capture"
-            ? "字幕识别没有可用麦克风，请检查设备后重试"
-            : error === "network" || error === "service-unavailable"
-              ? "实时字幕暂不可用，请稍后重试"
-              : "字幕识别已中断，请检查麦克风权限后重试"
-      $modal.msgWarning(hint)
-      setMessage(hint)
-    },
-  })
-
-  if (!captionEngine) {
-    $modal.msgWarning("实时字幕暂不可用，请稍后重试")
-    return
-  }
-
-  try {
-    setMessage("正在开启实时字幕...")
-    await captionEngine.start()
-    state.captionActive = true
-    setMessage("实时字幕已开启")
-  } catch (error) {
-    captionEngine = null
-    const hint =
-      error?.code === "audio-capture"
-        ? "字幕识别没有可用麦克风，请检查设备后重试"
-        : "实时字幕暂不可用，请稍后重试"
-    $modal.msgError(hint)
-    setMessage(hint)
-  }
+const onInteractionImgError = (event) => {
+  event.target.src = defaultInteractionAvatar
 }
 
-const stopCaption = () => {
-  if (captionEngine) {
-    captionEngine.stop()
-    captionEngine = null
+const getPublishTracks = () => publishingStream?.getTracks?.() || []
+
+const attachInteractionStream = async (videoRef, stream, muted = false) => {
+  await nextTick()
+  const video = videoRef.value
+  if (!video || !stream) {
+    return
   }
-  if (state.captionActive || state.subtitleText) {
+  video.srcObject = stream
+  video.muted = muted
+  video.playsInline = true
+  video.play?.().catch(() => {})
+}
+
+const resetCohost = ({ notify = false } = {}) => {
+  if (notify && cohost.remoteSessionId) {
     sendSignal({
-      type: "subtitle-clear",
+      type: "cohost-ended",
       roomId: activeRoomId.value,
+      targetSessionId: cohost.remoteSessionId,
     })
   }
-  state.captionActive = false
-  state.subtitleText = ""
+  cohostPeer?.close?.()
+  cohostPeer = null
+  cohostRemoteStream = null
+  if (cohostVideoRef.value) {
+    cohostVideoRef.value.srcObject = null
+  }
+  cohost.status = "idle"
+  cohost.active = false
+  cohost.peer = null
+  cohost.remoteStream = null
+  cohost.remoteSessionId = ""
+  cohost.remoteName = ""
+  cohost.connectionText = ""
+}
+
+const resetPk = ({ notify = false } = {}) => {
+  if (notify && pk.remoteSessionId) {
+    sendSignal({
+      type: "pk-ended",
+      roomId: activeRoomId.value,
+      targetSessionId: pk.remoteSessionId,
+      targetRoomId: pk.remoteRoomId,
+    })
+  }
+  pkPeer?.close?.()
+  pkPeer = null
+  pkRemoteStream = null
+  if (pkVideoRef.value) {
+    pkVideoRef.value.srcObject = null
+  }
+  pk.status = "idle"
+  pk.pendingInvite = null
+  pk.peer = null
+  pk.remoteStream = null
+  pk.remoteSessionId = ""
+  pk.remoteRoomId = null
+  pk.remoteName = ""
+  pk.connectionText = ""
+}
+
+const removeCohostRequest = (sessionId) => {
+  cohost.requests = cohost.requests.filter((item) => item.fromSessionId !== sessionId)
+}
+
+const acceptCohostRequest = async (request) => {
+  if (!state.liveActive || !publishingStream) {
+    $modal.msgWarning("请先开播，再处理连麦申请")
+    return
+  }
+  if (!request?.fromSessionId) {
+    return
+  }
+  resetCohost()
+  removeCohostRequest(request.fromSessionId)
+  cohost.status = "connecting"
+  cohost.remoteSessionId = request.fromSessionId
+  cohost.remoteName = request.applicantName || "观众"
+  cohost.connectionText = "正在建立连麦"
+
+  sendSignal({
+    type: "cohost-accepted",
+    roomId: activeRoomId.value,
+    targetSessionId: request.fromSessionId,
+    acceptorName: currentUserProfile.value.name,
+  })
+  await createCohostOffer(request.fromSessionId)
+}
+
+const rejectCohostRequest = (request, reason = "主播暂时无法连麦") => {
+  if (!request?.fromSessionId) {
+    return
+  }
+  removeCohostRequest(request.fromSessionId)
+  sendSignal({
+    type: "cohost-rejected",
+    roomId: activeRoomId.value,
+    targetSessionId: request.fromSessionId,
+    reason,
+  })
+}
+
+const endCohost = () => {
+  resetCohost({ notify: true })
+}
+
+const createCohostOffer = async (targetSessionId) => {
+  const peer = createPeerConnection()
+  cohostPeer = peer
+  cohost.peer = peer
+  cohostRemoteStream = new MediaStream()
+  cohost.remoteStream = cohostRemoteStream
+  await attachInteractionStream(cohostVideoRef, cohostRemoteStream)
+
+  getPublishTracks().forEach((track) => peer.addTrack(track, publishingStream))
+  peer.ontrack = (event) => {
+    const incoming = event.streams?.[0]
+    if (incoming) {
+      cohostRemoteStream = incoming
+      cohost.remoteStream = incoming
+      attachInteractionStream(cohostVideoRef, incoming)
+    } else if (event.track && !cohostRemoteStream.getTracks().some((track) => track.id === event.track.id)) {
+      cohostRemoteStream.addTrack(event.track)
+      attachInteractionStream(cohostVideoRef, cohostRemoteStream)
+    }
+    cohost.active = true
+    cohost.status = "active"
+    cohost.connectionText = "音视频已接入"
+  }
+  peer.onicecandidate = (event) => {
+    if (!event.candidate) return
+    sendSignal({
+      type: "cohost-ice-candidate",
+      roomId: activeRoomId.value,
+      targetSessionId,
+      candidate: event.candidate,
+    })
+  }
+  peer.onconnectionstatechange = () => {
+    if (peer.connectionState === "connected") {
+      cohost.active = true
+      cohost.status = "active"
+      cohost.connectionText = "音视频已接入"
+    }
+    if (["failed", "disconnected", "closed"].includes(peer.connectionState)) {
+      resetCohost()
+    }
+  }
+
+  const offer = await peer.createOffer()
+  await peer.setLocalDescription(offer)
+  sendSignal({
+    type: "cohost-offer",
+    roomId: activeRoomId.value,
+    targetSessionId,
+    sdp: offer,
+  })
+}
+
+const invitePk = async () => {
+  if (!state.liveActive) {
+    $modal.msgWarning("请先开播，再发起 PK")
+    return
+  }
+  const targetRoomId = Number(pk.targetRoomId)
+  if (!targetRoomId || targetRoomId === Number(activeRoomId.value)) {
+    $modal.msgWarning("请输入另一个正在开播的房间号")
+    return
+  }
+  resetPk()
+  pk.status = "inviting"
+  pk.remoteRoomId = targetRoomId
+  pk.connectionText = "等待对方接受"
+  sendSignal({
+    type: "pk-invite",
+    roomId: activeRoomId.value,
+    targetRoomId,
+    inviterName: currentUserProfile.value.name,
+    inviterAvatar: currentUserProfile.value.avatar,
+  })
+}
+
+const acceptPkInvite = async () => {
+  const invite = pk.pendingInvite
+  if (!invite?.fromSessionId) {
+    return
+  }
+  if (!state.liveActive || !publishingStream) {
+    $modal.msgWarning("请先开播，再接受 PK")
+    return
+  }
+  resetPk()
+  pk.status = "connecting"
+  pk.remoteSessionId = invite.fromSessionId
+  pk.remoteRoomId = invite.fromRoomId
+  pk.remoteName = invite.inviterName || "对方主播"
+  pk.connectionText = "正在建立 PK"
+  sendSignal({
+    type: "pk-accepted",
+    roomId: activeRoomId.value,
+    targetSessionId: invite.fromSessionId,
+    targetRoomId: invite.fromRoomId,
+    acceptorName: currentUserProfile.value.name,
+  })
+}
+
+const rejectPkInvite = () => {
+  const invite = pk.pendingInvite
+  if (!invite?.fromSessionId) {
+    pk.pendingInvite = null
+    return
+  }
+  sendSignal({
+    type: "pk-rejected",
+    roomId: activeRoomId.value,
+    targetSessionId: invite.fromSessionId,
+    targetRoomId: invite.fromRoomId,
+    reason: "对方主播暂时无法 PK",
+  })
+  pk.pendingInvite = null
+}
+
+const endPk = () => {
+  resetPk({ notify: true })
+}
+
+const createPkOffer = async (targetSessionId, targetRoomId) => {
+  const peer = createPeerConnection()
+  pkPeer = peer
+  pk.peer = peer
+  pkRemoteStream = new MediaStream()
+  pk.remoteStream = pkRemoteStream
+  pk.remoteSessionId = targetSessionId
+  pk.remoteRoomId = targetRoomId || pk.remoteRoomId
+  await attachInteractionStream(pkVideoRef, pkRemoteStream)
+
+  getPublishTracks().forEach((track) => peer.addTrack(track, publishingStream))
+  peer.ontrack = (event) => {
+    const incoming = event.streams?.[0]
+    if (incoming) {
+      pkRemoteStream = incoming
+      pk.remoteStream = incoming
+      attachInteractionStream(pkVideoRef, incoming)
+    } else if (event.track && !pkRemoteStream.getTracks().some((track) => track.id === event.track.id)) {
+      pkRemoteStream.addTrack(event.track)
+      attachInteractionStream(pkVideoRef, pkRemoteStream)
+    }
+    pk.status = "active"
+    pk.connectionText = "对方画面已接入"
+  }
+  peer.onicecandidate = (event) => {
+    if (!event.candidate) return
+    sendSignal({
+      type: "pk-ice-candidate",
+      roomId: activeRoomId.value,
+      targetSessionId,
+      targetRoomId,
+      candidate: event.candidate,
+    })
+  }
+  peer.onconnectionstatechange = () => {
+    if (peer.connectionState === "connected") {
+      pk.status = "active"
+      pk.connectionText = "对方画面已接入"
+    }
+    if (["failed", "disconnected", "closed"].includes(peer.connectionState)) {
+      resetPk()
+    }
+  }
+
+  const offer = await peer.createOffer()
+  await peer.setLocalDescription(offer)
+  sendSignal({
+    type: "pk-offer",
+    roomId: activeRoomId.value,
+    targetSessionId,
+    targetRoomId,
+    inviterName: currentUserProfile.value.name,
+    sdp: offer,
+  })
+}
+
+const answerPkOffer = async (data) => {
+  if (!state.liveActive || !publishingStream) {
+    sendSignal({
+      type: "pk-rejected",
+      roomId: activeRoomId.value,
+      targetSessionId: data.fromSessionId,
+      targetRoomId: data.fromRoomId,
+      reason: "对方主播未开播",
+    })
+    return
+  }
+  resetPk()
+  pk.status = "connecting"
+  pk.remoteSessionId = data.fromSessionId
+  pk.remoteRoomId = data.fromRoomId
+  pk.remoteName = data.inviterName || data.acceptorName || "对方主播"
+
+  const peer = createPeerConnection()
+  pkPeer = peer
+  pk.peer = peer
+  pkRemoteStream = new MediaStream()
+  pk.remoteStream = pkRemoteStream
+  await attachInteractionStream(pkVideoRef, pkRemoteStream)
+  getPublishTracks().forEach((track) => peer.addTrack(track, publishingStream))
+  peer.ontrack = (event) => {
+    const incoming = event.streams?.[0]
+    if (incoming) {
+      pkRemoteStream = incoming
+      pk.remoteStream = incoming
+      attachInteractionStream(pkVideoRef, incoming)
+    } else if (event.track && !pkRemoteStream.getTracks().some((track) => track.id === event.track.id)) {
+      pkRemoteStream.addTrack(event.track)
+      attachInteractionStream(pkVideoRef, pkRemoteStream)
+    }
+    pk.status = "active"
+    pk.connectionText = "对方画面已接入"
+  }
+  peer.onicecandidate = (event) => {
+    if (!event.candidate) return
+    sendSignal({
+      type: "pk-ice-candidate",
+      roomId: activeRoomId.value,
+      targetSessionId: data.fromSessionId,
+      targetRoomId: data.fromRoomId,
+      candidate: event.candidate,
+    })
+  }
+  peer.onconnectionstatechange = () => {
+    if (peer.connectionState === "connected") {
+      pk.status = "active"
+      pk.connectionText = "对方画面已接入"
+    }
+    if (["failed", "disconnected", "closed"].includes(peer.connectionState)) {
+      resetPk()
+    }
+  }
+
+  await peer.setRemoteDescription(new RTCSessionDescription(data.sdp))
+  const answer = await peer.createAnswer()
+  await peer.setLocalDescription(answer)
+  sendSignal({
+    type: "pk-answer",
+    roomId: activeRoomId.value,
+    targetSessionId: data.fromSessionId,
+    targetRoomId: data.fromRoomId,
+    sdp: answer,
+  })
 }
 
 const handleDenoiseSwitch = async (checked) => {
@@ -1402,6 +2066,116 @@ const handleDenoiseSwitch = async (checked) => {
   } finally {
     state.denoiseSwitching = false
   }
+}
+
+const connectAnchorChatSocket = () => {
+  const roomId = activeRoomId.value
+  if (!roomId || chatSocket?.readyState === WebSocket.OPEN || chatSocket?.readyState === WebSocket.CONNECTING) {
+    return
+  }
+
+  clearAnchorChatTimers()
+  const token = store.user().userToken
+  chatSocket = new WebSocket(createChatWebSocketUrl({ token }))
+
+  chatSocket.onopen = () => {
+    chatReconnectCount = 0
+    sendAnchorChatMessage({
+      msgType: 0,
+      data: JSON.stringify({
+        roomId: Number(roomId),
+        anchorMonitor: true,
+      }),
+    })
+    pushAnchorSystemMessage("已连接直播间弹幕")
+    startAnchorChatHeartbeat()
+  }
+
+  chatSocket.onmessage = (event) => {
+    let message
+    try {
+      message = JSON.parse(event.data)
+    } catch (error) {
+      return
+    }
+    if (message.method === "giftMessage") {
+      appendAnchorGiftMessage(message.data)
+      playAnchorGiftEffect(message.data)
+      return
+    }
+    if (message.method === "chatMessage" || message.method === "welcomeMessage") {
+      pushAnchorChatMessage(message.data)
+      return
+    }
+    if (message.method === "guardViolation") {
+      pushAnchorSystemMessage("直播内容触发风控，请前往审核记录查看处理结果")
+      return
+    }
+    if (message.method === "muteUser" || message.method === "kickUser") {
+      pushAnchorChatMessage(message.data)
+    }
+  }
+
+  chatSocket.onerror = () => {}
+
+  chatSocket.onclose = (event) => {
+    clearAnchorChatTimers()
+    chatSocket = null
+    if (!state.liveActive || event.code === 1000 || event.code === 1005) {
+      return
+    }
+    scheduleAnchorChatReconnect()
+  }
+}
+
+const sendAnchorChatMessage = (payload) => {
+  if (chatSocket?.readyState === WebSocket.OPEN) {
+    chatSocket.send(JSON.stringify(payload))
+  }
+}
+
+const startAnchorChatHeartbeat = () => {
+  if (chatHeartbeatTimer) {
+    window.clearInterval(chatHeartbeatTimer)
+  }
+  chatHeartbeatTimer = window.setInterval(() => {
+    sendAnchorChatMessage({ msgType: 2 })
+  }, CHAT_HEARTBEAT_INTERVAL)
+}
+
+const scheduleAnchorChatReconnect = () => {
+  if (chatReconnectTimer || chatReconnectCount >= 12) {
+    return
+  }
+  chatReconnectCount += 1
+  chatReconnectTimer = window.setTimeout(() => {
+    chatReconnectTimer = null
+    connectAnchorChatSocket()
+  }, 3000)
+}
+
+const clearAnchorChatTimers = () => {
+  if (chatHeartbeatTimer) {
+    window.clearInterval(chatHeartbeatTimer)
+    chatHeartbeatTimer = null
+  }
+  if (chatReconnectTimer) {
+    window.clearTimeout(chatReconnectTimer)
+    chatReconnectTimer = null
+  }
+}
+
+const closeAnchorChatSocket = () => {
+  clearAnchorChatTimers()
+  if (!chatSocket) {
+    return
+  }
+  chatSocket.onopen = null
+  chatSocket.onmessage = null
+  chatSocket.onclose = null
+  chatSocket.onerror = null
+  chatSocket.close(1000)
+  chatSocket = null
 }
 
 const startHeartbeat = () => {
@@ -1518,14 +2292,16 @@ const stopBrowserLive = async (options = {}) => {
   state.isScreenSharing = false
   state.selectedLiveMode = lastMode
   state.cameraPipEnabled = false
+  closeAnchorChatSocket()
   stopGuardLoop()
   const stopMessage = options.guardReason || null
   setMessage("直播已停止")
   if (stopMessage) {
     setMessage(stopMessage)
   }
-  stopCaption()
   stopPipComposite()
+  resetCohost({ notify: true })
+  resetPk({ notify: true })
   if (cameraStream) {
     cameraStream.getTracks().forEach((t) => t.stop())
     cameraStream = null
@@ -1623,16 +2399,26 @@ const updateViewerCount = () => {
 
 syncIdleDenoiseHint()
 
+onMounted(() => {
+  document.addEventListener("fullscreenchange", syncPreviewFullscreenState)
+})
+
 onBeforeUnmount(async () => {
+  document.removeEventListener("fullscreenchange", syncPreviewFullscreenState)
+  if (document.fullscreenElement === previewStageRef.value) {
+    await document.exitFullscreen?.().catch(() => {})
+  }
   stopGuardLoop()
-  stopCaption()
   stopPipComposite()
   if (cameraStream) {
     cameraStream.getTracks().forEach((t) => t.stop())
     cameraStream = null
   }
+  closeAnchorChatSocket()
   closeSignal()
   closeAllPeers()
+  resetCohost()
+  resetPk()
   await releaseMediaResources()
 })
 </script>
@@ -1663,8 +2449,7 @@ onBeforeUnmount(async () => {
 .room-strip,
 .control-dock,
 .dock-metrics,
-.chat-header,
-.chat-tools {
+.chat-header {
   display: flex;
   align-items: center;
 }
@@ -1765,8 +2550,7 @@ onBeforeUnmount(async () => {
 
 .section-tabs button,
 .source-item,
-.tool-row,
-.chat-tools button {
+.tool-row {
   border: 0;
   font: inherit;
 }
@@ -1940,6 +2724,8 @@ button.tool-row {
 
 .preview-stage {
   position: relative;
+  width: 100%;
+  height: 100%;
   min-height: 380px;
   display: grid;
   place-items: center;
@@ -1952,12 +2738,38 @@ button.tool-row {
   border: 1px solid #111418;
 }
 
+.preview-stage:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  border: 0;
+  background: #050609;
+}
+
 .studio-preview {
   width: 100%;
   height: 100%;
   min-height: 380px;
   object-fit: contain;
   background: #05070a;
+}
+
+.preview-stage--pk {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0;
+  align-items: stretch;
+}
+
+.preview-stage--pk .studio-preview {
+  min-width: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.preview-stage:fullscreen .studio-preview {
+  min-height: 0;
+  max-width: 100vw;
+  max-height: 100vh;
+  object-fit: contain;
 }
 
 .preview-empty {
@@ -1991,19 +2803,32 @@ button.tool-row {
   font-weight: 800;
 }
 
-.subtitle-preview {
+.preview-fullscreen-btn {
   position: absolute;
-  left: 50%;
-  bottom: 26px;
-  transform: translateX(-50%);
-  max-width: calc(100% - 48px);
-  padding: 10px 16px;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.86);
-  color: #ffffff;
-  font-size: 15px;
-  line-height: 1.5;
-  text-align: center;
+  right: 14px;
+  bottom: 14px;
+  z-index: 12;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  color: #fff;
+  background: rgba(5, 6, 9, 0.68);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.preview-fullscreen-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 159, 26, 0.58);
+  background: rgba(255, 159, 26, 0.86);
 }
 
 .control-dock {
@@ -2080,92 +2905,225 @@ button.tool-row {
   overflow: auto;
 }
 
-.caption-assistant {
-  margin: 10px;
-  padding: 12px;
+.interaction-panel {
+  margin: 14px 14px 0;
   display: grid;
-  gap: 10px;
-  border: 1px solid #383d46;
-  background: #22262d;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 12px;
 }
 
-.caption-assistant__head {
+.interaction-section {
+  min-width: 0;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--studio-border);
+  border-radius: 8px;
+  background: var(--studio-surface-raised);
+}
+
+.interaction-section__head,
+.request-item,
+.pk-form,
+.pk-invite-card > div,
+.interaction-video-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+}
+
+.interaction-section__head {
   justify-content: space-between;
   gap: 10px;
 }
 
-.caption-assistant__head > div {
+.interaction-section__head > div {
   min-width: 0;
   display: grid;
   gap: 3px;
 }
 
-.caption-assistant__head strong {
-  color: #f5f7fb;
+.interaction-section__head strong,
+.request-item strong,
+.pk-invite-card strong {
+  color: var(--studio-text);
   font-size: 13px;
 }
 
-.caption-assistant__head span {
-  color: #9aa3b2;
+.interaction-section__head span,
+.request-item span,
+.interaction-empty,
+.pk-invite-card span,
+.pk-status-card span {
+  color: var(--studio-muted);
   font-size: 12px;
 }
 
-.caption-assistant__actions {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.caption-assistant__actions :deep(.ant-btn) {
-  padding-inline: 6px;
-  font-size: 12px;
-}
-
-.caption-assistant__result {
-  padding: 10px;
+.request-list {
   display: grid;
   gap: 8px;
-  border-left: 3px solid #f5c542;
-  background: #282c33;
 }
 
-.caption-assistant__result-head {
-  display: flex;
+.request-item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 8px;
+  min-width: 0;
+  padding: 8px;
   align-items: center;
+  border-radius: 6px;
+  background: var(--studio-surface);
+}
+
+.request-item img {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.request-item > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.request-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
+
+.request-actions :deep(.ant-btn) {
+  min-width: 64px;
+}
+
+.request-item strong,
+.request-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.interaction-empty {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.pk-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.pk-target-input,
+.pk-form :deep(.ant-input) {
+  min-width: 0;
+  width: 100%;
+}
+
+.pk-invite-card {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border-left: 3px solid var(--studio-accent);
+  border-radius: 6px;
+  background: var(--studio-surface);
+}
+
+.pk-invite-card > div {
+  gap: 8px;
+}
+
+.pk-status-card {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border-left: 3px solid var(--studio-accent);
+  border-radius: 6px;
+  background: var(--studio-surface);
+}
+
+.pk-stage-card {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 380px;
+  overflow: hidden;
+  background: #05070a;
+}
+
+.pk-stage-card video {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: var(--player-bg);
+  object-fit: contain;
+}
+
+.pk-stage-card small {
+  display: block;
+  padding: 8px 10px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  background: rgba(5, 7, 10, 0.74);
+}
+
+.cohost-stage-card {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  z-index: 6;
+  width: min(260px, 34%);
+  min-width: 180px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(12, 14, 18, 0.88);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
+}
+
+.cohost-stage-card video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #05070a;
+  object-fit: cover;
+}
+
+.cohost-stage-card small {
+  display: block;
+  padding: 7px 9px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+}
+
+.interaction-video-head {
   justify-content: space-between;
   gap: 8px;
+  padding: 8px 9px;
+  color: #fff;
+  background: rgba(5, 7, 10, 0.74);
 }
 
-.caption-assistant__result-head span {
-  color: #f5f7fb;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.caption-assistant__result p {
-  margin: 0;
-  color: #cdd4df;
+.interaction-video-head span {
   font-size: 12px;
-  line-height: 1.7;
-  white-space: pre-wrap;
+  font-weight: 800;
 }
 
-.caption-assistant__result p.collapsed {
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-}
-
-.caption-assistant__expand {
-  width: fit-content;
+.interaction-video-head button {
   padding: 0;
   border: 0;
+  color: #ffb4b4;
   background: transparent;
-  color: #f6c453;
-  font: inherit;
   font-size: 12px;
   cursor: pointer;
 }
@@ -2187,26 +3145,30 @@ button.tool-row {
   background: transparent;
 }
 
-.chat-tools {
-  height: 46px;
+.anchor-chat-composer {
+  min-height: 56px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   gap: 8px;
-  padding: 8px;
   background: #242830;
   border-top: 1px solid #383d46;
 }
 
-.chat-tools button {
-  flex: 1;
-  height: 30px;
-  border-radius: 4px;
-  background: #333840;
-  color: #cdd4df;
-  cursor: pointer;
+.anchor-chat-composer :deep(.ant-input) {
+  min-width: 0;
+  color: #f5f7fb;
+  background: #191c21;
+  border-color: #383d46;
 }
 
-.chat-tools button:hover {
-  color: #ffffff;
-  background: #414751;
+.chat-message.self {
+  border-left-color: #5db7ff;
+}
+
+.chat-message.gift {
+  border-left-color: #ffcf4a;
 }
 
 @media (max-width: 1180px) {
@@ -2527,12 +3489,6 @@ button.tool-row:hover {
   background: var(--studio-danger);
 }
 
-.subtitle-preview {
-  bottom: 30px;
-  padding: 11px 18px;
-  border-radius: 8px;
-}
-
 .control-dock {
   padding: 16px 18px;
   gap: 18px;
@@ -2595,20 +3551,6 @@ button.tool-row:hover {
   gap: 10px;
 }
 
-.caption-assistant {
-  margin: 14px 14px 0;
-  padding: 14px;
-  border-radius: 8px;
-  background: var(--studio-surface-raised);
-  border-color: var(--studio-border);
-}
-
-.caption-assistant__result {
-  border-radius: 8px;
-  border-left-color: var(--studio-accent);
-  background: var(--studio-surface);
-}
-
 .chat-message,
 .chat-empty {
   padding: 14px;
@@ -2617,23 +3559,11 @@ button.tool-row:hover {
   border-left-color: var(--studio-accent);
 }
 
-.chat-tools {
-  height: 60px;
-  gap: 10px;
-  padding: 10px 12px;
+.anchor-chat-composer {
+  min-height: 62px;
+  padding: 12px;
   background: #191c21;
   border-top-color: var(--studio-border);
-}
-
-.chat-tools button {
-  height: 38px;
-  border-radius: 6px;
-  background: var(--studio-surface-soft);
-  color: var(--studio-muted);
-}
-
-.chat-tools button:hover {
-  background: #333944;
 }
 
 @media (min-width: 1540px) {
@@ -2751,7 +3681,7 @@ button.tool-row:hover {
 
 .studio-topbar,
 .chat-header,
-.chat-tools {
+.anchor-chat-composer {
   background: var(--studio-topbar-bg);
   border-color: var(--studio-border);
 }
@@ -2767,8 +3697,6 @@ button.tool-row:hover {
 .room-strip h4,
 .studio-bottom h4,
 .chat-header h4,
-.caption-assistant__head strong,
-.caption-assistant__result-head span,
 .source-item strong,
 .tool-row strong,
 .status-line strong,
@@ -2786,7 +3714,6 @@ button.tool-row:hover {
 .tool-row small,
 .chat-empty span,
 .chat-message span,
-.caption-assistant__head span,
 .studio-bottom p,
 .dock-metrics span,
 .data-grid span,
@@ -2840,8 +3767,7 @@ button.tool-row:hover {
 .tool-row,
 .dock-metrics div,
 .data-grid div,
-.chat-message,
-.caption-assistant {
+.chat-message {
   background: var(--studio-surface-raised);
 }
 
@@ -2874,6 +3800,71 @@ button.tool-row:hover {
 .tool-row em.on {
   background: color-mix(in srgb, var(--studio-success) 14%, transparent);
   color: var(--studio-success);
+}
+
+.preflight-panel {
+  gap: 12px;
+}
+
+.preflight-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.preflight-head h4 {
+  margin: 0;
+}
+
+.preflight-list {
+  display: grid;
+  gap: 8px;
+}
+
+.preflight-item {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border: 1px solid var(--studio-border);
+  border-radius: 6px;
+  background: var(--studio-surface-raised);
+}
+
+.preflight-item span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: var(--studio-text);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.preflight-item i {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--studio-subtle);
+}
+
+.preflight-item small {
+  color: var(--studio-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.preflight-item--ok i {
+  background: var(--studio-success);
+}
+
+.preflight-item--warn i {
+  background: var(--studio-accent);
+}
+
+.preflight-item--error i {
+  background: var(--studio-danger);
 }
 
 .status-line {
@@ -2914,31 +3905,10 @@ button.tool-row:hover {
   border-left-color: var(--studio-accent);
 }
 
-.caption-assistant__result {
-  border-left-color: var(--studio-accent);
-  background: var(--studio-surface);
-}
-
-.caption-assistant__result p {
-  color: var(--studio-muted);
-}
-
-.caption-assistant__expand {
-  color: var(--studio-accent-strong);
-}
-
-.chat-tools button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+.anchor-chat-composer :deep(.ant-input) {
+  color: var(--studio-text);
   background: var(--studio-surface-raised);
-  color: var(--studio-muted);
-}
-
-.chat-tools button:hover {
-  background: var(--studio-accent-soft);
-  color: var(--studio-accent-strong);
+  border-color: var(--studio-border);
 }
 
 @media (min-width: 1540px) {

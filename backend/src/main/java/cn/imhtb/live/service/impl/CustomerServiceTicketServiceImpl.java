@@ -19,11 +19,19 @@ public class CustomerServiceTicketServiceImpl extends ServiceImpl<CustomerServic
 
     @Override
     public CustomerServiceTicket submit(Integer userId, String category, String title, String content) {
+        if (userId == null) {
+            throw new IllegalArgumentException("userId must not be null");
+        }
+        String normalizedTitle = StringUtils.defaultString(title).trim();
+        String normalizedContent = StringUtils.defaultString(content).trim();
+        if (StringUtils.isBlank(normalizedTitle) || StringUtils.isBlank(normalizedContent)) {
+            throw new IllegalArgumentException("title and content must not be blank");
+        }
         CustomerServiceTicket ticket = new CustomerServiceTicket();
         ticket.setUserId(userId);
         ticket.setCategory(StringUtils.defaultIfBlank(category, "general"));
-        ticket.setTitle(StringUtils.abbreviate(StringUtils.defaultString(title).trim(), 80));
-        ticket.setContent(StringUtils.abbreviate(StringUtils.defaultString(content).trim(), 1000));
+        ticket.setTitle(StringUtils.abbreviate(normalizedTitle, 80));
+        ticket.setContent(StringUtils.abbreviate(normalizedContent, 1000));
         ticket.setStatus(0);
         LocalDateTime now = LocalDateTime.now();
         ticket.setCreateTime(now);
@@ -76,11 +84,18 @@ public class CustomerServiceTicketServiceImpl extends ServiceImpl<CustomerServic
         if (nextStatus != 1 && nextStatus != 2 && nextStatus != 0) {
             return false;
         }
+        String normalizedReply = StringUtils.defaultString(reply).trim();
+        if (nextStatus == 1 && StringUtils.isBlank(normalizedReply)) {
+            return false;
+        }
         ticket.setHandlerId(handlerId);
-        ticket.setReply(StringUtils.abbreviate(StringUtils.defaultString(reply).trim(), 1000));
+        ticket.setReply(StringUtils.abbreviate(normalizedReply, 1000));
         ticket.setStatus(nextStatus);
-        ticket.setReplyTime(LocalDateTime.now());
-        ticket.setUpdateTime(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        if (nextStatus == 1 || StringUtils.isNotBlank(normalizedReply)) {
+            ticket.setReplyTime(now);
+        }
+        ticket.setUpdateTime(now);
         return updateById(ticket);
     }
 
@@ -89,6 +104,9 @@ public class CustomerServiceTicketServiceImpl extends ServiceImpl<CustomerServic
         CustomerServiceTicket ticket = getById(ticketId);
         if (ticket == null || !userId.equals(ticket.getUserId())) {
             return false;
+        }
+        if (ticket.getStatus() != null && ticket.getStatus() == 2) {
+            return true;
         }
         ticket.setStatus(2);
         ticket.setUpdateTime(LocalDateTime.now());

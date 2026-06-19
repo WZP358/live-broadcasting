@@ -36,7 +36,7 @@ class ReportControllerTest {
     @Test
     @DisplayName("提交举报成功")
     void shouldSubmitReportSuccessfully() {
-        when(reportService.save(any(Report.class))).thenReturn(true);
+        when(reportService.submitReport(any(Report.class))).thenReturn(true);
 
         ReportController.SubmitRequest req = new ReportController.SubmitRequest();
         req.setTargetUserId(100);
@@ -51,7 +51,7 @@ class ReportControllerTest {
         assertTrue(res.isSuccess());
 
         ArgumentCaptor<Report> captor = ArgumentCaptor.forClass(Report.class);
-        verify(reportService).save(captor.capture());
+        verify(reportService).submitReport(captor.capture());
         Report saved = captor.getValue();
         assertEquals(999, saved.getReporterId());
         assertEquals(100, saved.getTargetUserId());
@@ -62,7 +62,7 @@ class ReportControllerTest {
     @Test
     @DisplayName("提交举报失败返回错误消息")
     void shouldReturnErrorWhenSaveFails() {
-        when(reportService.save(any(Report.class))).thenReturn(false);
+        when(reportService.submitReport(any(Report.class))).thenReturn(false);
 
         ReportController.SubmitRequest req = new ReportController.SubmitRequest();
         req.setReason("欺诈诈骗");

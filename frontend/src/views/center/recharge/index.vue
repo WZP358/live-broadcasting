@@ -83,6 +83,64 @@ const readBalance = async () => {
   return Number(res.data?.balance || 0)
 }
 
+const escapeHtml = (value = "") => String(value)
+  .replace(/&/g, "&amp;")
+  .replace(/</g, "&lt;")
+  .replace(/>/g, "&gt;")
+  .replace(/"/g, "&quot;")
+  .replace(/'/g, "&#39;")
+
+const buildCashierHtml = (payHtml) => {
+  const source = String(payHtml || "")
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(source, "text/html")
+  const form = doc.querySelector("form")
+  if (!form) {
+    return source
+  }
+
+  const action = form.getAttribute("action") || ""
+  const method = form.getAttribute("method") || "post"
+  const fields = Array.from(form.querySelectorAll("input"))
+    .map((input) => {
+      const name = input.getAttribute("name")
+      if (!name) return ""
+      return `<input type="hidden" name="${escapeHtml(name)}" value="${escapeHtml(input.getAttribute("value") || "")}" />`
+    })
+    .join("")
+
+  return `<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>支付宝沙箱收银台</title>
+  <style>
+    body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f6f7fb;color:#1f2937;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    main{width:min(420px,calc(100vw - 32px));padding:28px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;box-shadow:0 18px 45px rgba(15,23,42,.12);text-align:center}
+    h1{margin:0 0 10px;font-size:20px}
+    p{margin:0 0 18px;color:#64748b;line-height:1.7}
+    button{height:42px;padding:0 18px;border:0;border-radius:6px;background:#1677ff;color:#fff;font-weight:700;cursor:pointer}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>正在进入支付宝沙箱收银台</h1>
+    <p>如果没有自动跳转，请点击下方按钮继续。</p>
+    <form id="cashierForm" action="${escapeHtml(action)}" method="${escapeHtml(method)}">
+      ${fields}
+      <button type="submit">进入收银台</button>
+    </form>
+  </main>
+  <script>
+    window.setTimeout(function () {
+      var form = document.getElementById("cashierForm");
+      if (form) form.submit();
+    }, 80);
+  <\/script>
+</body>
+</html>`
+}
+
 const stopPayWatcher = () => {
   if (payWatcher) {
     window.clearInterval(payWatcher)
@@ -117,24 +175,37 @@ const watchPaymentResult = (cashierWindow, beforeBalance) => {
 }
 
 const recharge = async () => {
-  const fee = chargeList.value[currentSelect.value - 1].fee
+  const selected = chargeList.value.find((item) => item.id === currentSelect.value) || chargeList.value[0]
+  if (!selected) {
+    $modal.msgWarning("请选择充值档位")
+    return
+  }
+  const fee = selected.fee
   const cashierWindow = window.open("", "_blank")
   if (!cashierWindow) {
     $modal.msgWarning("浏览器阻止了收银台弹窗，请允许弹窗后重试")
     return
   }
 
+  cashierWindow.document.open()
+  cashierWindow.document.write("<!doctype html><title>支付宝沙箱收银台</title><p style='font-family:sans-serif;padding:24px'>正在创建支付订单...</p>")
+  cashierWindow.document.close()
+
   paying.value = true
   try {
     const beforeBalance = await readBalance()
     const res = await WalletApi.recharge({ fee })
+    if (!res?.data?.payHtml) {
+      throw new Error("后端未返回支付宝收银台表单")
+    }
     cashierWindow.document.open()
-    cashierWindow.document.write(res.data.payHtml)
+    cashierWindow.document.write(buildCashierHtml(res.data.payHtml))
     cashierWindow.document.close()
     $modal.msgSuccess("已打开收银台，支付完成后余额会自动入账")
     watchPaymentResult(cashierWindow, beforeBalance)
   } catch (error) {
     cashierWindow.close()
+    $modal.msgError(error?.message || "支付宝沙箱收银台打开失败")
   } finally {
     paying.value = false
   }

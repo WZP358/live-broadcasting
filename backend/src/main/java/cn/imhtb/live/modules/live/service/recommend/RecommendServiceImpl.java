@@ -6,6 +6,11 @@ import cn.imhtb.live.common.enums.WatchTypeEnum;
 import cn.imhtb.live.mappers.CategoryMapper;
 import cn.imhtb.live.mappers.RoomMapper;
 import cn.imhtb.live.mappers.WatchMapper;
+import cn.imhtb.live.modules.live.event.LiveEvent;
+import cn.imhtb.live.modules.live.event.LiveEventBus;
+import cn.imhtb.live.modules.live.event.LiveEventObserver;
+import cn.imhtb.live.modules.live.event.LiveStartedEvent;
+import cn.imhtb.live.modules.live.event.LiveStoppedEvent;
 import cn.imhtb.live.pojo.database.Category;
 import cn.imhtb.live.pojo.database.Room;
 import cn.imhtb.live.pojo.database.Watch;
@@ -27,14 +32,13 @@ import java.util.stream.Collectors;
  * <ol>
  *   <li><b>协同过滤</b> — 找到与当前用户行为最相似的 K 个用户，推荐他们正在看的房间</li>
  *   <li><b>内容匹配</b> — 将用户历史行为的房间特征向量取平均，与所有直播中房间计算余弦相似度</li>
- *   <li><b>分类偏好</b> — 用户最常看的分类 × 分类下热门房间</li>
- *   <li><b>热度兜底</b> — 按人气值降序补全不足的推荐位</li>
+ *   <li><b>实时补全</b> — 按最近开播房间补全不足的推荐位，保证推荐结果仍然可观看</li>
  * </ol>
  *
  * <h3>特征向量构成（归一化后拼接）</h3>
  * <pre>
  *   V = [ c₁, c₂, ..., cₘ  | w₁, w₂, ..., wₙ ]
- *        ← 分类独热编码 →    ← TF-IDF 关键词 →
+ *        ← 分类独热编码 →    ← 标题/简介 TF-IDF 关键词 →
  * </pre>
  *
  * @author PulseLive Recommendation Team
@@ -42,27 +46,28 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class RecommendServiceImpl implements IRecommendService {
+public class RecommendServiceImpl implements IRecommendService, LiveEventObserver {
 
     private final RoomMapper roomMapper;
     private final WatchMapper watchMapper;
     private final CategoryMapper categoryMapper;
 
+    @Autowired(required = false)
+    private LiveEventBus eventBus;
+
     // 缓存：房间 ID → 特征向量
     private final Map<Integer, double[]> roomVectors = new ConcurrentHashMap<>();
     // 缓存：分类 ID → 分类索引
     private final Map<Integer, Integer> categoryIndex = new ConcurrentHashMap<>();
-    // 缓存：词汇表索引
-    private List<String> vocabulary = new ArrayList<>();
     private volatile boolean modelReady = false;
-
-    private final CosineSimilarityRecommender.HybridScorer scorer =
-        new CosineSimilarityRecommender.HybridScorer(0.30, 0.50, 0.20);
 
     // ─── 生命周期 ────────────────────────────────────────────
 
     @PostConstruct
     public void init() {
+        if (eventBus != null) {
+            eventBus.register(this);
+        }
         refreshModel();
     }
 
@@ -70,10 +75,11 @@ public class RecommendServiceImpl implements IRecommendService {
     public synchronized void refreshModel() {
         log.info("[推荐引擎] 开始刷新推荐模型...");
         long t0 = System.currentTimeMillis();
+        modelReady = false;
 
         try {
             // 1. 构建分类索引
-            List<Category> categories = categoryMapper.selectList(null);
+            List<Category> categories = listEnabledCategories();
             categoryIndex.clear();
             for (int i = 0; i < categories.size(); i++) {
                 categoryIndex.put(categories.get(i).getId(), i);
@@ -84,26 +90,30 @@ public class RecommendServiceImpl implements IRecommendService {
             List<Room> allRooms = roomMapper.selectList(
                 new LambdaQueryWrapper<Room>()
                     .eq(Room::getDisabled, StatusEnum.YES.getCode())
+                    .in(!categoryIndex.isEmpty(), Room::getCategoryId, categoryIndex.keySet())
                     .eq(Room::getStatus, LiveRoomStatusEnum.LIVING.getCode()));
             List<String> documents = allRooms.stream()
                 .map(r -> (r.getTitle() != null ? r.getTitle() : "") + " " +
                           (r.getIntroduce() != null ? r.getIntroduce() : ""))
                 .collect(Collectors.toList());
 
+            List<Map<Integer, Double>> tfidfVectors = new ArrayList<>(documents.size());
+            int tfidfDim = 0;
+            for (int i = 0; i < documents.size(); i++) {
+                Map<Integer, Double> tfidfVec = CosineSimilarityRecommender.computeTfIdfVector(documents, i);
+                tfidfVectors.add(tfidfVec);
+                for (Integer idx : tfidfVec.keySet()) {
+                    tfidfDim = Math.max(tfidfDim, idx + 1);
+                }
+            }
+
             // 3. 为每个房间构建特征向量
             roomVectors.clear();
             for (int i = 0; i < allRooms.size(); i++) {
                 Room room = allRooms.get(i);
-                double[] vec = buildRoomVector(room, catDim, documents, i);
+                double[] vec = buildRoomVector(room, catDim, tfidfVectors.get(i), tfidfDim);
                 roomVectors.put(room.getId(), vec);
             }
-
-            // 4. 更新词汇表
-            Set<String> vocabSet = new LinkedHashSet<>();
-            for (String doc : documents) {
-                vocabSet.addAll(tokenizeStatic(doc));
-            }
-            vocabulary = new ArrayList<>(vocabSet);
 
             modelReady = true;
             log.info("[推荐引擎] 模型刷新完成, 耗时 {}ms, {} 个房间已索引",
@@ -113,11 +123,27 @@ public class RecommendServiceImpl implements IRecommendService {
         }
     }
 
+    @Override
+    public void onEvent(LiveEvent event) {
+        if (event == null) {
+            return;
+        }
+        if (LiveStartedEvent.TYPE.equals(event.getEventType())
+                || LiveStoppedEvent.TYPE.equals(event.getEventType())) {
+            log.info("[推荐引擎] 收到直播状态事件, type={}, roomId={}, 自动刷新模型",
+                event.getEventType(), event.getRoomId());
+            refreshModel();
+        }
+    }
+
     // ─── 对外接口 ────────────────────────────────────────────
 
     @Override
     public List<Map<String, Object>> recommendForUser(Integer userId, int limit) {
         if (!modelReady) refreshModel();
+        if (categoryIndex.isEmpty()) {
+            return Collections.emptyList();
+        }
 
         Set<Integer> shownIds = new HashSet<>();
         List<Map<String, Object>> result = new ArrayList<>();
@@ -151,7 +177,11 @@ public class RecommendServiceImpl implements IRecommendService {
                     for (Room r : theirRooms) {
                         if (result.size() >= limit) break;
                         if (shownIds.add(r.getId()) && !interactedRoomIds.contains(r.getId())) {
-                            result.add(packageResult(r, su.getValue()));
+                            result.add(packageResult(
+                                r,
+                                su.getValue(),
+                                "collaborative",
+                                "与你兴趣相近的用户也关注了这个直播间"));
                         }
                     }
                 }
@@ -176,8 +206,12 @@ public class RecommendServiceImpl implements IRecommendService {
                     for (Map.Entry<Integer, Double> e : topK) {
                         if (shownIds.add(e.getKey())) {
                             Room room = roomMapper.selectById(e.getKey());
-                            if (room != null) {
-                                result.add(packageResult(room, e.getValue()));
+                            if (isRecommendableRoom(room)) {
+                                result.add(packageResult(
+                                    room,
+                                    e.getValue(),
+                                    "content",
+                                    "与你最近观看或关注的内容相似"));
                             }
                         }
                     }
@@ -185,18 +219,23 @@ public class RecommendServiceImpl implements IRecommendService {
             }
         }
 
-        // ── 策略3: 热度兜底 ──
+        // ── 策略3: 实时补全 ──
         if (result.size() < limit) {
             List<Room> hotRooms = roomMapper.selectList(
                 new LambdaQueryWrapper<Room>()
                     .eq(Room::getStatus, LiveRoomStatusEnum.LIVING.getCode())
                     .eq(Room::getDisabled, StatusEnum.YES.getCode())
+                    .in(!categoryIndex.isEmpty(), Room::getCategoryId, categoryIndex.keySet())
                     .notIn(!shownIds.isEmpty(), Room::getId, shownIds)
                     .orderByDesc(Room::getId)
                     .last("limit " + (limit - result.size())));
             for (Room r : hotRooms) {
                 if (shownIds.add(r.getId())) {
-                    result.add(packageResult(r, 0.0));
+                    result.add(packageResult(
+                        r,
+                        0.0,
+                        "hot",
+                        "正在直播且近期热度较高"));
                 }
             }
         }
@@ -209,6 +248,9 @@ public class RecommendServiceImpl implements IRecommendService {
     @Override
     public List<Map<String, Object>> similarRooms(Integer roomId, int limit) {
         if (!modelReady) refreshModel();
+        if (categoryIndex.isEmpty()) {
+            return Collections.emptyList();
+        }
 
         double[] targetVec = roomVectors.get(roomId);
         if (targetVec == null) {
@@ -227,8 +269,12 @@ public class RecommendServiceImpl implements IRecommendService {
         List<Map<String, Object>> result = new ArrayList<>();
         for (Map.Entry<Integer, Double> e : topK) {
             Room room = roomMapper.selectById(e.getKey());
-            if (room != null) {
-                result.add(packageResult(room, e.getValue()));
+            if (isRecommendableRoom(room)) {
+                result.add(packageResult(
+                    room,
+                    e.getValue(),
+                    "similar",
+                    "与当前直播间分类和内容相似"));
             }
         }
         enrichCategoryNames(result);
@@ -245,7 +291,7 @@ public class RecommendServiceImpl implements IRecommendService {
      *   tⱼ = TF-IDF of token j in room title + introduce
      * </pre>
      */
-    private double[] buildRoomVector(Room room, int catDim, List<String> allDocs, int docIndex) {
+    private double[] buildRoomVector(Room room, int catDim, Map<Integer, Double> tfidfVec, int tfidfDim) {
         // 分类独热
         double[] catVec = new double[catDim];
         if (room.getCategoryId() != null) {
@@ -255,20 +301,8 @@ public class RecommendServiceImpl implements IRecommendService {
             }
         }
 
-        // TF-IDF 关键词向量
-        Map<Integer, Double> tfidfVec = CosineSimilarityRecommender.computeTfIdfVector(allDocs, docIndex);
-        int tfidfDim = allDocs.isEmpty() ? 0 :
-            CosineSimilarityRecommender.computeTfIdfVector(allDocs, 0).size();
-
-        // 找到最大维度
-        int maxTfidfIdx = 0;
-        for (int idx : tfidfVec.keySet()) {
-            if (idx > maxTfidfIdx) maxTfidfIdx = idx;
-        }
-        int actualTfidfDim = maxTfidfIdx + 1;
-
         // 拼接: [分类独热 | TF-IDF]
-        double[] vec = new double[catDim + actualTfidfDim];
+        double[] vec = new double[catDim + tfidfDim];
         System.arraycopy(catVec, 0, vec, 0, catDim);
         for (Map.Entry<Integer, Double> entry : tfidfVec.entrySet()) {
             vec[catDim + entry.getKey()] = entry.getValue();
@@ -364,12 +398,18 @@ public class RecommendServiceImpl implements IRecommendService {
         return roomMapper.selectList(
             new LambdaQueryWrapper<Room>()
                 .in(Room::getId, roomIds)
-                .eq(Room::getStatus, LiveRoomStatusEnum.LIVING.getCode()));
+                .eq(Room::getStatus, LiveRoomStatusEnum.LIVING.getCode())
+                .eq(Room::getDisabled, StatusEnum.YES.getCode())
+                .in(!categoryIndex.isEmpty(), Room::getCategoryId, categoryIndex.keySet()));
     }
 
     // ─── 工具方法 ────────────────────────────────────────────
 
     private Map<String, Object> packageResult(Room room, double score) {
+        return packageResult(room, score, "hot", "正在直播且近期热度较高");
+    }
+
+    private Map<String, Object> packageResult(Room room, double score, String recommendType, String recommendReason) {
         Map<String, Object> m = new LinkedHashMap<>();
         m.put("id", room.getId());
         m.put("title", room.getTitle());
@@ -377,6 +417,8 @@ public class RecommendServiceImpl implements IRecommendService {
         m.put("status", room.getStatus());
         m.put("categoryId", room.getCategoryId());
         m.put("score", Math.round(score * 10000.0) / 10000.0);
+        m.put("recommendType", recommendType);
+        m.put("recommendReason", recommendReason);
         return m;
     }
 
@@ -389,13 +431,23 @@ public class RecommendServiceImpl implements IRecommendService {
             .collect(Collectors.toList());
         if (catIds.isEmpty()) return;
 
-        List<Category> cats = categoryMapper.selectBatchIds(catIds);
+        List<Category> cats = categoryMapper.selectList(new LambdaQueryWrapper<Category>()
+            .in(Category::getId, catIds)
+            .eq(Category::getStatus, StatusEnum.YES.getCode()));
         Map<Integer, String> catMap = cats.stream()
             .collect(Collectors.toMap(Category::getId, Category::getName));
         for (Map<String, Object> m : result) {
             Integer cid = (Integer) m.get("categoryId");
             if (cid != null) m.put("categoryName", catMap.getOrDefault(cid, ""));
         }
+    }
+
+    private boolean isRecommendableRoom(Room room) {
+        return room != null
+            && Objects.equals(room.getStatus(), LiveRoomStatusEnum.LIVING.getCode())
+            && Objects.equals(room.getDisabled(), StatusEnum.YES.getCode())
+            && room.getCategoryId() != null
+            && categoryIndex.containsKey(room.getCategoryId());
     }
 
     private void normalizeL2(double[] vec) {
@@ -407,16 +459,11 @@ public class RecommendServiceImpl implements IRecommendService {
         }
     }
 
-    private static List<String> tokenizeStatic(String text) {
-        if (text == null || text.isEmpty()) return Collections.emptyList();
-        Set<String> stopWords = Set.of(
-            "的", "了", "在", "是", "我", "有", "和", "就", "不", "人", "都", "一",
-            "the", "a", "an", "is", "are", "was", "were", "be", "been", "to", "of",
-            "in", "for", "on", "with", "at", "by", "from", "and", "but", "or", "not"
-        );
-        return Arrays.stream(text.toLowerCase().split("[^a-z0-9\\u4e00-\\u9fff]+"))
-            .filter(t -> t.length() >= 2)
-            .filter(t -> !stopWords.contains(t))
-            .collect(Collectors.toList());
+    private List<Category> listEnabledCategories() {
+        return categoryMapper.selectList(new LambdaQueryWrapper<Category>()
+            .eq(Category::getStatus, StatusEnum.YES.getCode())
+            .orderByDesc(Category::getSort)
+            .orderByAsc(Category::getId));
     }
+
 }

@@ -3,28 +3,34 @@ import assert from "node:assert/strict"
 import {
   appendChatMessages,
   createChatWebSocketUrl,
+  getSameOriginWebSocketBase,
   normalizeChatPayload,
+  normalizeWebSocketToken,
 } from "../../src/utils/chatRoom.js"
 
-test("chat websocket url uses protocol and optional token", () => {
+test("chat websocket url uses same-origin proxy path and optional token", () => {
   assert.equal(
     createChatWebSocketUrl({
       protocol: "http:",
-      hostname: "localhost",
-      port: 10022,
-      token: "abc 123",
+      host: "localhost:5173",
+      token: "Bearer abc 123",
     }),
-    "ws://localhost:10022/?token=abc+123",
+    "ws://localhost:5173/ws-netty?token=abc+123",
   )
   assert.equal(
     createChatWebSocketUrl({
       protocol: "https:",
-      hostname: "live.example.com",
-      port: 10022,
+      host: "live.example.com",
       token: "",
     }),
-    "wss://live.example.com:10022/",
+    "wss://live.example.com/ws-netty",
   )
+})
+
+test("same-origin websocket base follows current page protocol", () => {
+  assert.equal(getSameOriginWebSocketBase({ protocol: "http:", host: "127.0.0.1:5173" }), "ws://127.0.0.1:5173/ws-netty")
+  assert.equal(getSameOriginWebSocketBase({ protocol: "https:", host: "demo.example.com" }), "wss://demo.example.com/ws-netty")
+  assert.equal(normalizeWebSocketToken("Bearer token-value"), "token-value")
 })
 
 test("normalize chat payload accepts system string, object and array", () => {

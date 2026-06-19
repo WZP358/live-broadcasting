@@ -36,7 +36,7 @@ export default defineConfig((mode) => {
       }
     },
     server: {
-      host: 'localhost',
+      host: '0.0.0.0',
       port: Number(env.VITE_APP_PORT),
       // 运行时自动打开浏览器
       // open: true,
@@ -44,6 +44,53 @@ export default defineConfig((mode) => {
         [env.VITE_APP_BASE_API]: {
           target: env.VITE_BACKEND_URL || 'http://localhost:9000',
           changeOrigin: true
+        },
+        '/uploads': {
+          target: env.VITE_BACKEND_URL || 'http://localhost:9000',
+          changeOrigin: true
+        },
+        '/ws-netty': {
+          target: 'ws://localhost:10022',
+          ws: true,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/ws-netty/, '/')
+        },
+        '/ws/browser-live': {
+          target: env.VITE_BACKEND_URL || 'http://localhost:9000',
+          ws: true,
+          changeOrigin: true
+        },
+        '/live-stream': {
+          target: 'http://localhost:8080',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/live-stream/, '')
+        }
+      }
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (!id.includes('node_modules')) {
+              return undefined
+            }
+            if (id.includes('ant-design-vue')) {
+              return 'vendor-antdv'
+            }
+            if (id.includes('@ant-design/icons-vue')) {
+              return 'vendor-icons'
+            }
+            if (id.includes('vue') || id.includes('vue-router') || id.includes('pinia')) {
+              return 'vendor-vue'
+            }
+            if (id.includes('hls.js') || id.includes('flv.js')) {
+              return 'vendor-player'
+            }
+            if (id.includes('svgaplayerweb')) {
+              return 'vendor-gift'
+            }
+            return 'vendor'
+          }
         }
       }
     }

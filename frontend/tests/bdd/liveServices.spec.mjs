@@ -11,7 +11,7 @@ const testGuard = async () => {
   const bytes = Uint8Array.from([255,216,255,224,0,16,74,70,73,70,0,1,1,1,0,1,0,1,0,0,255,219,0,67,0,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,192,0,11,8,0,1,0,1,1,1,17,0,255,196,0,20,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,218,0,8,1,1,0,0,63,0,127,255,217])
   const formData = new FormData()
   formData.append("file", new Blob([bytes], { type: "image/jpeg" }), "bdd-safe.jpg")
-  const response = await fetch("http://127.0.0.1:8000/check", { method: "POST", body: formData })
+  const response = await fetch("http://127.0.0.1:8300/check", { method: "POST", body: formData })
   assert(response.ok, `BDD: 视觉审核服务应返回 200，实际 ${response.status}`)
   const payload = await response.json()
   assert("status" in payload && "is_safe" in payload, "BDD: 视觉审核响应必须包含 status/is_safe")

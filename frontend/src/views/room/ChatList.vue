@@ -11,7 +11,7 @@
         <div class="rank-board">
           <div class="rank-item" :class="`rank-item-${item.rankNo}`" v-for="item in displayRanks" :key="item.key">
             <div class="rank-badge">NO.{{ item.rankNo }}</div>
-            <img class="avatar" :src="item.avatar || fallbackAvatar" @error="onImgError" />
+            <img class="avatar" :src="safeAvatar(item.avatar)" @error="onImgError" />
             <span class="name">{{ item.nickName }}</span>
             <span class="charm">{{ formatIntimacy(item.intimacyValue) }}</span>
           </div>
@@ -21,7 +21,7 @@
         <div class="rank-dropdown-item" v-for="item in rankList" :key="item.userId">
           <div class="rank-dropdown-left">
             <span class="rank-dropdown-no" :class="`rank-no-${item.rankNo}`">{{ item.rankNo }}</span>
-            <img class="rank-dropdown-avatar" :src="item.avatar || fallbackAvatar" @error="onImgError" />
+            <img class="rank-dropdown-avatar" :src="safeAvatar(item.avatar)" @error="onImgError" />
             <span class="rank-dropdown-name">{{ item.nickName || `观众${item.userId}` }}</span>
           </div>
           <span class="rank-dropdown-value">{{ formatIntimacy(item.intimacyValue) }}</span>
@@ -101,8 +101,9 @@ const isLogin = computed(() => store.user().isLogin)
 const popularity = ref(1)
 const rankList = ref([])
 const showRankDropdown = ref(false)
-import { FALLBACK_AVATAR, onImgError } from "@/utils/fallback";
+import { FALLBACK_AVATAR, onImgError, resolveSafeImageUrl } from "@/utils/fallback";
 const fallbackAvatar = FALLBACK_AVATAR
+const safeAvatar = (url) => resolveSafeImageUrl(url, FALLBACK_AVATAR)
 
 let websocket = null
 const reconnectTimer = ref()

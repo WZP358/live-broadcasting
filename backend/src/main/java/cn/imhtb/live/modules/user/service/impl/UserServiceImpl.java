@@ -38,9 +38,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public void updateStatusByIds(Integer[] ids, Integer status) {
-        //TODO 优化
-        User update = new User();
         for (Integer id : ids) {
+            User update = new User();
             update.setId(id);
             update.setDisabled(status);
             updateById(update);
@@ -64,8 +63,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         save(user);
         log.info("user register info, userId = {}", user.getId());
 
-        // 初始化部分数据
-        // TODO 后续推荐这部分数据用懒加载的方式进行初始化
+        // 注册后立即初始化个人直播间，保证开播准备页有稳定数据来源。
         initializeUserRegisterData(user.getId());
         return true;
     }
@@ -131,8 +129,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public boolean updateUserInfo(UserInfoUpdateReq request) {
         User user = new User();
-        BeanUtils.copyProperties(request, user);
         user.setId(UserHolder.getUserId());
+        user.setNickname(StringUtils.trim(request.getNickName()));
+        user.setSignature(StringUtils.trimToEmpty(request.getSignature()));
         if (StringUtils.isEmpty(user.getSignature())){
             user.setSignature("");
         }

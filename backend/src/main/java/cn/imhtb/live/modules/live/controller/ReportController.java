@@ -5,7 +5,6 @@ import cn.imhtb.live.common.PageData;
 import cn.imhtb.live.common.holder.UserHolder;
 import cn.imhtb.live.pojo.database.Report;
 import cn.imhtb.live.service.IReportService;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.Data;
@@ -24,6 +23,9 @@ public class ReportController {
     @ApiOperation("提交举报")
     @PostMapping("/submit")
     public ApiResponse<Boolean> submit(@RequestBody SubmitRequest req) {
+        if (req == null) {
+            return ApiResponse.ofError("举报信息不能为空");
+        }
         Report report = new Report();
         report.setReporterId(UserHolder.getUserId());
         report.setTargetUserId(req.getTargetUserId());
@@ -33,7 +35,7 @@ public class ReportController {
         report.setReason(req.getReason());
         report.setDescription(req.getDescription());
         report.setStatus(0);
-        return reportService.save(report)
+        return reportService.submitReport(report)
                 ? ApiResponse.ofSuccess(true)
                 : ApiResponse.ofError("提交失败");
     }

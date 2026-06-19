@@ -95,8 +95,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         userInfoVo.setEmail(DesensitizedUtil.email(antLiveUserBo.getEmail()));
         userInfoVo.setMobile(DesensitizedUtil.mobilePhone(antLiveUserBo.getMobile()));
         userInfoVo.setPassword(DesensitizedUtil.password(antLiveUserBo.getPassword()));
-        // TODO 获取实名认证
-        userInfoVo.setHasAuth(true);
         return userInfoVo;
     }
 

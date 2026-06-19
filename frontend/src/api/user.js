@@ -66,7 +66,7 @@ export default {
      */
     updateUserInfo(data) {
         return request({
-            url: '/api/v1/user/info/update',
+            url: '/api/v1/user/basic/update',
             method: 'post',
             data,
         })

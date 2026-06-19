@@ -15,15 +15,17 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  height: 64px;
-  padding: 0 16px;
+  min-height: 72px;
+  padding: 0 18px;
   color: var(--header-text-active);
-  border-bottom: 1px solid color-mix(in srgb, var(--header-text) 14%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--header-text) 12%, transparent);
+  background: color-mix(in srgb, var(--bg-header-soft) 58%, transparent);
 }
 
 .logo-badge {
-  width: 36px;
-  height: 36px;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
   border-radius: 8px;
   background: var(--accent-gradient);
   display: grid;
@@ -37,15 +39,19 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  gap: 2px;
 }
 
 .logo-copy strong {
-  font-size: 14px;
-  letter-spacing: 0.02em;
+  color: var(--header-text-active);
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0;
 }
 
 .logo-copy span {
   font-size: 12px;
   color: var(--header-text);
+  white-space: nowrap;
 }
 </style>

@@ -2,6 +2,7 @@ package cn.imhtb.live.modules.live.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.imhtb.live.common.PageData;
+import cn.imhtb.live.common.enums.LiveRoomStatusEnum;
 import cn.imhtb.live.common.enums.PresentRewardTypeEnum;
 import cn.imhtb.live.common.enums.StatusEnum;
 import cn.imhtb.live.common.exception.BusinessException;
@@ -33,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -58,14 +60,29 @@ public class LiveGiftServiceImpl implements ILiveGiftService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createReward(RewardReqVo req) {
+        if (req == null) {
+            throw new BusinessException("送礼参数不能为空");
+        }
         Integer userId = UserHolder.getUserId();
+        if (req.getPresentId() == null) {
+            throw new BusinessException("请选择礼物");
+        }
+        if (req.getRoomId() == null) {
+            throw new BusinessException("直播间不存在");
+        }
+        if (req.getNumber() == null || req.getNumber() <= 0 || req.getNumber() > 999) {
+            throw new BusinessException("礼物数量不正确");
+        }
         Present present = presentMapper.selectById(req.getPresentId());
-        if (present == null) {
+        if (present == null || !Objects.equals(present.getDisabled(), StatusEnum.YES.getCode())) {
             throw new BusinessException("礼物不存在或已下架");
+        }
+        if (present.getPrice() == null || present.getPrice().compareTo(BigDecimal.ZERO) < 0) {
+            throw new BusinessException("礼物价格配置异常");
         }
 
         Wallet wallet = walletService.getWallet(userId);
-        if (wallet == null || wallet.getId() == null || wallet.getId() <= 0) {
+        if (wallet == null || wallet.getId() == null || wallet.getId() <= 0 || wallet.getBalance() == null) {
             throw new BusinessException("当前环境未初始化钱包表，暂不支持送礼功能");
         }
 
@@ -78,6 +95,12 @@ public class LiveGiftServiceImpl implements ILiveGiftService {
         Room room = roomMapper.selectById(req.getRoomId());
         if (room == null) {
             throw new BusinessException("直播间不存在");
+        }
+        if (Objects.equals(room.getDisabled(), StatusEnum.NO.getCode())) {
+            throw new BusinessException("直播间已不可用，暂时无法送礼");
+        }
+        if (!Objects.equals(room.getStatus(), LiveRoomStatusEnum.LIVING.getCode())) {
+            throw new BusinessException("主播暂未开播，无法送礼");
         }
         if (room.getUserId().equals(userId)) {
             throw new BusinessException("不能给自己的直播间送礼");
@@ -101,8 +124,9 @@ public class LiveGiftServiceImpl implements ILiveGiftService {
         presentRewardMapper.insert(presentReward);
 
         roomIntimacyRankService.addGiftIntimacy(room.getId(), userId, totalPrice);
-        String text = String.format("%s 送出了 %s x %d", user.getNickname(), present.getName(), req.getNumber());
-        roomChatService.sendGiftMsg(text, room.getId(), userId, req.getPresentId());
+        String senderName = user == null || user.getNickname() == null ? "观众" : user.getNickname();
+        String text = String.format("%s 送出了 %s x %d", senderName, present.getName(), req.getNumber());
+        roomChatService.sendGiftMsg(text, room.getId(), userId, req.getPresentId(), present.getName(), req.getNumber(), senderName);
     }
 
     @Override

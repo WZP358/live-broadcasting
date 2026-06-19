@@ -13,6 +13,9 @@ public class RoomRespVo {
     @ApiModelProperty("room id")
     private Integer id;
 
+    @ApiModelProperty("anchor user id")
+    private Integer userId;
+
     @ApiModelProperty("room title")
     private String title;
 

@@ -5,6 +5,8 @@ import cn.imhtb.live.pojo.database.Category;
 import cn.imhtb.live.pojo.vo.response.CategoryResp;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * @author pinteh
  */
@@ -18,5 +20,7 @@ public interface ICategoryService extends IService<Category> {
      * @return 分页数据
      */
     PageData<CategoryResp> queryCategoryPage(Integer page, Integer limit);
+
+    List<CategoryResp> listEnabledCategories();
 
 }

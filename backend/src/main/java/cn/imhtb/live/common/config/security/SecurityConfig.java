@@ -52,7 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 禁用 CSRF
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/login").permitAll()
+                .antMatchers(HttpMethod.POST, "/login", "/api/login").permitAll()
                 // 指定路径下的资源需要验证了的用户才能访问
                 .antMatchers("/admin/**").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/admin/**").hasRole("ADMIN")

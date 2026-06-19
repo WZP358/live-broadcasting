@@ -69,13 +69,6 @@ public abstract class BaseServiceImpl<M extends BaseMapper<T>, T, L, Q, D, U> ex
         return super.removeByIds(ids);
     }
 
-    private void fill(Object object){
-        if (object == null){
-            return;
-        }
-        // TODO 对象填充
-    }
-
     private void sort(QueryWrapper<T> queryWrapper, SortQuery sortQuery) {
         if (sortQuery == null || sortQuery.getSort().isUnsorted()){
             return;

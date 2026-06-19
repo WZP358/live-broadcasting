@@ -54,18 +54,21 @@
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'title'">
               <div class="admin-avatar-cell">
-                <a-avatar shape="square" :src="record.cover">
+                <a-avatar shape="square" :src="safeCover(record.cover)">
                   {{ (record.title || "直播").slice(0, 1) }}
                 </a-avatar>
                 <div class="admin-avatar-meta">
                   <div class="admin-avatar-meta__title">{{ record.title || "-" }}</div>
-                  <div class="admin-avatar-meta__desc">{{ record.introduce || "暂无简介" }}</div>
+                  <div class="admin-avatar-meta__desc">
+                    <a-tag v-if="record.secret === 'PULSELIVE_DEMO_ROOM'" color="processing">演示录播</a-tag>
+                    <span>{{ record.introduce || "暂无简介" }}</span>
+                  </div>
                 </div>
               </div>
             </template>
             <template v-else-if="column.key === 'userInfo'">
               <div class="admin-avatar-cell">
-                <a-avatar :src="record.userAvatar">
+                <a-avatar :src="safeAvatar(record.userAvatar)">
                   {{ (record.userNickname || "播").slice(0, 1) }}
                 </a-avatar>
                 <div class="admin-avatar-meta">
@@ -122,6 +125,7 @@ import AdminPagination from "@/components/admin/AdminPagination.vue"
 import { createRoomColumns } from "./columns"
 import Detail from "./Detail.vue"
 import Edit from "./Edit.vue"
+import { FALLBACK_AVATAR, FALLBACK_COVER, resolveSafeImageUrl } from "@/utils/fallback"
 
 const formRef = ref()
 const formState = reactive({
@@ -144,6 +148,8 @@ const editData = ref({})
 const detailVisible = ref(false)
 const detailData = ref({})
 const { containerRef, tableScrollY } = useTableScroll()
+const safeAvatar = (url) => resolveSafeImageUrl(url, FALLBACK_AVATAR)
+const safeCover = (url) => resolveSafeImageUrl(url, FALLBACK_COVER)
 
 const getData = async () => {
   const res = await systemRoomApi.getPageRooms({

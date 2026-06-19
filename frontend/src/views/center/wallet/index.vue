@@ -6,13 +6,12 @@
         <div>
           <p>钱包余额</p>
           <h2>{{ balance }}</h2>
-          <span>用于礼物打赏、平台消费与收益结算</span>
+          <span>用于礼物打赏、充值记录和平台内资产核对</span>
         </div>
       </div>
 
       <div class="wallet-actions">
         <a-button type="primary" size="large" @click="gotoCharge">立即充值</a-button>
-        <a-button size="large">提现说明</a-button>
       </div>
     </section>
 
@@ -32,22 +31,22 @@
         <div class="wallet-card__header">
           <div>
             <h3>钱包说明</h3>
-            <p>了解开心果余额的用途、来源与提现规则。</p>
+            <p>了解开心果余额的用途、来源与流水核对方式。</p>
           </div>
         </div>
 
         <div class="wallet-notes">
           <article class="wallet-note">
             <strong>余额用途</strong>
-            <span>用于直播打赏、活动消费和平台内资产结算。</span>
+            <span>用于直播打赏、活动消费和平台内资产核对。</span>
           </article>
           <article class="wallet-note">
             <strong>收入来源</strong>
             <span>可来自充值、礼物收益或平台运营奖励。</span>
           </article>
           <article class="wallet-note">
-            <strong>提现说明</strong>
-            <span>主播收益结算后可按平台规则发起提现申请。</span>
+            <strong>流水核对</strong>
+            <span>礼物、充值和消费记录会进入账单，方便用户核对资产变化。</span>
           </article>
         </div>
       </section>

@@ -18,7 +18,6 @@ public class NettyBrowserLiveRegistry {
     private final Map<String, Channel> channels = new ConcurrentHashMap<>();
     private final Map<String, SessionMeta> sessionMetas = new ConcurrentHashMap<>();
     private final Map<Integer, String> broadcastersByRoom = new ConcurrentHashMap<>();
-    private final Map<Integer, Map<String, Object>> latestSubtitleByRoom = new ConcurrentHashMap<>();
 
     public void register(Channel channel, Integer roomId, String role, Integer userId) {
         String sessionId = channel.id().asLongText();
@@ -41,7 +40,6 @@ public class NettyBrowserLiveRegistry {
         SessionMeta meta = sessionMetas.remove(sessionId);
         if (meta != null && SessionRole.BROADCASTER.equals(meta.getRole()) && meta.getRoomId() != null) {
             broadcastersByRoom.remove(meta.getRoomId(), sessionId);
-            latestSubtitleByRoom.remove(meta.getRoomId());
         }
         return meta;
     }
@@ -63,7 +61,6 @@ public class NettyBrowserLiveRegistry {
             broadcastersByRoom.remove(roomId, sessionId);
             sessionMetas.remove(sessionId);
             channels.remove(sessionId);
-            latestSubtitleByRoom.remove(roomId);
             return null;
         }
         return sessionId;
@@ -89,21 +86,14 @@ public class NettyBrowserLiveRegistry {
         channel.writeAndFlush(new TextWebSocketFrame(JSON.toJSONString(payload)));
     }
 
-    public void saveSubtitle(Integer roomId, Map<String, Object> payload) {
-        if (roomId == null || payload == null) {
+    public void sendToRoom(Integer roomId, Object payload) {
+        if (roomId == null) {
             return;
         }
-        latestSubtitleByRoom.put(roomId, new ConcurrentHashMap<>(payload));
-    }
-
-    public Map<String, Object> getLatestSubtitle(Integer roomId) {
-        return roomId == null ? null : latestSubtitleByRoom.get(roomId);
-    }
-
-    public void clearSubtitle(Integer roomId) {
-        if (roomId != null) {
-            latestSubtitleByRoom.remove(roomId);
-        }
+        sessionMetas.values().stream()
+                .filter(meta -> roomId.equals(meta.getRoomId()))
+                .map(SessionMeta::getSessionId)
+                .forEach(sessionId -> send(sessionId, payload));
     }
 
     public interface SessionRole {

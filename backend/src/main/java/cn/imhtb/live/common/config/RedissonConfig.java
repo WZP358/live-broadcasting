@@ -30,7 +30,7 @@ public class RedissonConfig {
     }
 
     @Bean(destroyMethod = "shutdown")
-    @Profile("!local")
+    @Profile("!local & !test")
     public RedissonClient redissonClient(
             @Value("${spring.redis.host}") String host,
             @Value("${spring.redis.port}") int port,

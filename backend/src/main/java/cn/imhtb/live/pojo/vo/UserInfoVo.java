@@ -46,9 +46,6 @@ public class UserInfoVo {
     @ApiModelProperty("密码")
     private String password;
 
-    @ApiModelProperty("是否已实名认证")
-    private Boolean hasAuth;
-
     @ApiModelProperty("角色列表")
     private List<Integer> roleIds;
 

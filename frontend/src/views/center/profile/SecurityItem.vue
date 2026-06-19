@@ -14,7 +14,7 @@
         <span class="describe">{{ item.subtitle || "" }}</span>
       </div>
       <div class="btn-wrapper">
-        <a-button @click="handleClick(item)">{{ item.actionText }}</a-button>
+        <a-button :disabled="item.disabled" @click="handleClick(item)">{{ item.actionText }}</a-button>
       </div>
     </div>
     <EmailBindModal ref="emailBindModalRef" :bind="false" />
@@ -28,6 +28,7 @@ import { useStore } from "@/stores"
 import { CheckCircleFilled } from "@ant-design/icons-vue"
 import EmailBindModal from "./EmailBindModal.vue"
 import PhoneBindModal from "./PhoneBindModal.vue"
+import $modal from "@/utils/message"
 
 const userInfo = computed(() => useStore().user().userInfo)
 const emailBindModalRef = ref(null)
@@ -38,6 +39,8 @@ const handleClick = (item) => {
     emailBindModalRef.value.show()
   } else if (item.type === "phone") {
     phoneBindModalRef.value.show()
+  } else if (item.type === "password") {
+    $modal.msgWarning("密码修改需要验证原密码，当前课程演示版本暂未开放")
   }
 }
 
@@ -73,6 +76,7 @@ const itemList = computed(() => [
     status: !!userInfo.value.password,
     statusString: "已设置",
     actionText: userInfo.value.password ? "修改" : "设置",
+    disabled: true,
   },
 ])
 </script>

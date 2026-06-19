@@ -50,6 +50,7 @@ public class RoomController {
     }
 
     @ApiOperation("获取直播间关联额外信息")
+    @IgnoreToken
     @GetMapping("/extra/info")
     public ApiResponse<RoomExtraInfoResp> extraInfo(Integer roomId) {
         return ApiResponse.ofSuccess(roomService.getExtraInfo(UserHolder.getUserId(), roomId));

@@ -46,12 +46,6 @@ tencent:
     templateId: ${TENCENT_SMS_TEMPLATE_ID:}
     templateNoticeId: ${TENCENT_SMS_TEMPLATE_NOTICE_ID:}
     smsSign: ${TENCENT_SMS_SIGN:}
-  live:
-    liveDomain: ${TENCENT_LIVE_DOMAIN:live.imhtb.cn}
-    playDomain: ${TENCENT_PLAY_DOMAIN:play.imhtb.cn}
-    appName: ${TENCENT_LIVE_APP_NAME:live}
-    secretId: ${TENCENT_LIVE_SECRET_ID:}
-    secretKey: ${TENCENT_LIVE_SECRET_KEY:}
   cos:
     bucketName: ${TENCENT_COS_BUCKET_NAME:}
     path: ${TENCENT_COS_PATH:}

@@ -23,7 +23,7 @@ class FakeMediaStream {
 
 globalThis.MediaStream = FakeMediaStream;
 
-test("stopLatencyAlignment stops generated audio tracks without stopping source tracks", async () => {
+test("latency alignment keeps source tracks and cleanup does not stop capture", async () => {
   const stoppedTracks = [];
   const sourceVideoTrack = {
     kind: "video",
@@ -35,52 +35,6 @@ test("stopLatencyAlignment stops generated audio tracks without stopping source 
     id: "source-microphone",
     stop: () => stoppedTracks.push("source-audio"),
   };
-  const generatedAudioTrack = {
-    kind: "audio",
-    id: "generated-delayed-audio",
-    stop: () => stoppedTracks.push("generated-audio"),
-  };
-  const disconnectedNodes = [];
-
-  class FakeAudioContext {
-    constructor(options) {
-      this.options = options;
-      this.state = "running";
-    }
-
-    createMediaStreamSource(stream) {
-      assert.equal(stream.getAudioTracks()[0], sourceAudioTrack);
-      return {
-        connect: () => {},
-        disconnect: () => disconnectedNodes.push("source"),
-      };
-    }
-
-    createDelay(maxDelayTime) {
-      assert.equal(maxDelayTime, 1.25);
-      return {
-        delayTime: { value: 0 },
-        connect: () => {},
-        disconnect: () => disconnectedNodes.push("delay"),
-      };
-    }
-
-    createMediaStreamDestination() {
-      return {
-        stream: new MediaStream([generatedAudioTrack]),
-        disconnect: () => disconnectedNodes.push("destination"),
-      };
-    }
-
-    async close() {
-      disconnectedNodes.push("context");
-    }
-  }
-
-  globalThis.window = {
-    AudioContext: FakeAudioContext,
-    webkitAudioContext: null,
-  };
 
   const stream = await createAlignedLatencyStream(
     new MediaStream([sourceVideoTrack, sourceAudioTrack]),
@@ -88,10 +42,9 @@ test("stopLatencyAlignment stops generated audio tracks without stopping source 
   );
 
   assert.equal(stream.getVideoTracks()[0], sourceVideoTrack);
-  assert.equal(stream.getAudioTracks()[0], generatedAudioTrack);
+  assert.equal(stream.getAudioTracks()[0], sourceAudioTrack);
 
   await stream.stopLatencyAlignment();
 
-  assert.deepEqual(stoppedTracks, ["generated-audio"]);
-  assert.deepEqual(disconnectedNodes, ["source", "delay", "destination", "context"]);
+  assert.deepEqual(stoppedTracks, []);
 });

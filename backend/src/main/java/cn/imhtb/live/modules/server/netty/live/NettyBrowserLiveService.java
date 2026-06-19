@@ -26,10 +26,22 @@ public class NettyBrowserLiveService {
                 || "offer".equals(type)
                 || "answer".equals(type)
                 || "ice-candidate".equals(type)
+                || "cohost-request".equals(type)
+                || "cohost-accepted".equals(type)
+                || "cohost-rejected".equals(type)
+                || "cohost-offer".equals(type)
+                || "cohost-answer".equals(type)
+                || "cohost-ice-candidate".equals(type)
+                || "cohost-ended".equals(type)
+                || "pk-invite".equals(type)
+                || "pk-accepted".equals(type)
+                || "pk-rejected".equals(type)
+                || "pk-offer".equals(type)
+                || "pk-answer".equals(type)
+                || "pk-ice-candidate".equals(type)
+                || "pk-ended".equals(type)
                 || "leave".equals(type)
-                || "heartbeat".equals(type)
-                || "subtitle".equals(type)
-                || "subtitle-clear".equals(type);
+                || "heartbeat".equals(type);
     }
 
     public void handle(Channel channel, JSONObject body) {
@@ -49,17 +61,33 @@ public class NettyBrowserLiveService {
                 case "ice-candidate":
                     relay(channel, body, type);
                     break;
+                case "cohost-request":
+                    routeCohostRequest(channel, body);
+                    break;
+                case "cohost-accepted":
+                case "cohost-rejected":
+                case "cohost-offer":
+                case "cohost-answer":
+                case "cohost-ice-candidate":
+                case "cohost-ended":
+                    relayInteraction(channel, body, type);
+                    break;
+                case "pk-invite":
+                    routePkInvite(channel, body);
+                    break;
+                case "pk-accepted":
+                case "pk-rejected":
+                case "pk-offer":
+                case "pk-answer":
+                case "pk-ice-candidate":
+                case "pk-ended":
+                    relayInteraction(channel, body, type);
+                    break;
                 case "leave":
                     handleLeave(channel);
                     break;
                 case "heartbeat":
                     handleHeartbeat(channel);
-                    break;
-                case "subtitle":
-                    handleSubtitle(channel, body);
-                    break;
-                case "subtitle-clear":
-                    clearSubtitle(channel);
                     break;
                 default:
                     log.warn("未知 BrowserLive 消息类型: {}", type);
@@ -78,7 +106,6 @@ public class NettyBrowserLiveService {
         }
 
         if (NettyBrowserLiveRegistry.SessionRole.BROADCASTER.equals(meta.getRole())) {
-            clearSubtitle(meta);
             for (String viewerSessionId : registry.getViewerSessionIds(meta.getRoomId())) {
                 registry.send(viewerSessionId, message("broadcaster-offline", meta.getRoomId(), meta.getSessionId()));
             }
@@ -117,10 +144,6 @@ public class NettyBrowserLiveService {
             if (StringUtils.hasText(broadcasterSessionId)) {
                 registry.send(sessionId, message("broadcaster-online", roomId, broadcasterSessionId));
                 registry.send(broadcasterSessionId, message("viewer-joined", roomId, sessionId));
-                Map<String, Object> latestSubtitle = registry.getLatestSubtitle(roomId);
-                if (latestSubtitle != null) {
-                    registry.send(sessionId, latestSubtitle);
-                }
             } else {
                 registry.send(sessionId, message("broadcaster-offline", roomId, null));
             }
@@ -147,46 +170,6 @@ public class NettyBrowserLiveService {
         registry.send(channel.id().asLongText(), message("heartbeat-ack", roomId, channel.id().asLongText()));
     }
 
-    private void handleSubtitle(Channel channel, JSONObject body) {
-        NettyBrowserLiveRegistry.SessionMeta meta = registry.getMeta(channel.id().asLongText());
-        if (meta == null || !NettyBrowserLiveRegistry.SessionRole.BROADCASTER.equals(meta.getRole())) {
-            return;
-        }
-
-        String text = body.getString("text");
-        if (!StringUtils.hasText(text)) {
-            clearSubtitle(meta);
-            return;
-        }
-
-        Map<String, Object> payload = message("subtitle", meta.getRoomId(), channel.id().asLongText());
-        payload.put("text", text.trim());
-        registry.saveSubtitle(meta.getRoomId(), payload);
-        for (String viewerSessionId : registry.getViewerSessionIds(meta.getRoomId())) {
-            registry.send(viewerSessionId, payload);
-        }
-        registry.send(channel.id().asLongText(), payload);
-    }
-
-    private void clearSubtitle(Channel channel) {
-        NettyBrowserLiveRegistry.SessionMeta meta = registry.getMeta(channel.id().asLongText());
-        if (meta == null) {
-            return;
-        }
-        clearSubtitle(meta);
-    }
-
-    private void clearSubtitle(NettyBrowserLiveRegistry.SessionMeta meta) {
-        if (meta.getRoomId() == null) {
-            return;
-        }
-        registry.clearSubtitle(meta.getRoomId());
-        Map<String, Object> payload = message("subtitle-clear", meta.getRoomId(), meta.getSessionId());
-        for (String viewerSessionId : registry.getViewerSessionIds(meta.getRoomId())) {
-            registry.send(viewerSessionId, payload);
-        }
-    }
-
     private void relay(Channel channel, JSONObject body, String type) {
         NettyBrowserLiveRegistry.SessionMeta meta = registry.getMeta(channel.id().asLongText());
         if (meta == null) {
@@ -206,6 +189,99 @@ public class NettyBrowserLiveService {
         payload.put("sdp", body.get("sdp"));
         payload.put("candidate", body.get("candidate"));
         registry.send(targetSessionId, payload);
+    }
+
+    private void routeCohostRequest(Channel channel, JSONObject body) {
+        NettyBrowserLiveRegistry.SessionMeta meta = registry.getMeta(channel.id().asLongText());
+        if (meta == null || meta.getRoomId() == null) {
+            return;
+        }
+
+        String targetSessionId = body.getString("targetSessionId");
+        if (!StringUtils.hasText(targetSessionId)) {
+            targetSessionId = registry.getBroadcasterSessionId(meta.getRoomId());
+        }
+        if (!StringUtils.hasText(targetSessionId) || targetSessionId.equals(meta.getSessionId())) {
+            registry.send(meta.getSessionId(), errorMessage(meta.getRoomId(), "当前房间没有可接收连麦申请的主播"));
+            return;
+        }
+
+        Map<String, Object> payload = interactionPayload(channel, meta, body, "cohost-request");
+        registry.send(targetSessionId, payload);
+    }
+
+    private void routePkInvite(Channel channel, JSONObject body) {
+        NettyBrowserLiveRegistry.SessionMeta meta = registry.getMeta(channel.id().asLongText());
+        if (meta == null || meta.getRoomId() == null) {
+            return;
+        }
+
+        Integer targetRoomId = body.getInteger("targetRoomId");
+        if (targetRoomId == null || targetRoomId.equals(meta.getRoomId())) {
+            registry.send(meta.getSessionId(), pkUnavailable(meta.getRoomId(), targetRoomId, "请选择另一个正在开播的房间"));
+            return;
+        }
+
+        String targetSessionId = registry.getBroadcasterSessionId(targetRoomId);
+        if (!StringUtils.hasText(targetSessionId)) {
+            registry.send(meta.getSessionId(), pkUnavailable(meta.getRoomId(), targetRoomId, "目标主播未开播或未连接网页开播信令"));
+            return;
+        }
+
+        Map<String, Object> payload = interactionPayload(channel, meta, body, "pk-invite");
+        payload.put("roomId", targetRoomId);
+        payload.put("targetRoomId", targetRoomId);
+        registry.send(targetSessionId, payload);
+    }
+
+    private void relayInteraction(Channel channel, JSONObject body, String type) {
+        NettyBrowserLiveRegistry.SessionMeta meta = registry.getMeta(channel.id().asLongText());
+        if (meta == null) {
+            return;
+        }
+
+        String targetSessionId = body.getString("targetSessionId");
+        if (!StringUtils.hasText(targetSessionId)) {
+            registry.send(meta.getSessionId(), errorMessage(meta.getRoomId(), "互动信令缺少目标会话"));
+            return;
+        }
+
+        Map<String, Object> payload = interactionPayload(channel, meta, body, type);
+        registry.send(targetSessionId, payload);
+    }
+
+    private Map<String, Object> interactionPayload(Channel channel, NettyBrowserLiveRegistry.SessionMeta meta, JSONObject body, String type) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("type", type);
+        payload.put("roomId", meta.getRoomId());
+        payload.put("fromRoomId", meta.getRoomId());
+        payload.put("fromSessionId", channel.id().asLongText());
+        payload.put("fromUserId", meta.getUserId());
+        payload.put("targetRoomId", body.getInteger("targetRoomId"));
+        payload.put("targetSessionId", body.getString("targetSessionId"));
+        payload.put("sdp", body.get("sdp"));
+        payload.put("candidate", body.get("candidate"));
+        copyIfPresent(body, payload, "applicantName");
+        copyIfPresent(body, payload, "applicantAvatar");
+        copyIfPresent(body, payload, "inviterName");
+        copyIfPresent(body, payload, "inviterAvatar");
+        copyIfPresent(body, payload, "acceptorName");
+        copyIfPresent(body, payload, "reason");
+        return payload;
+    }
+
+    private void copyIfPresent(JSONObject body, Map<String, Object> payload, String key) {
+        Object value = body.get(key);
+        if (value != null) {
+            payload.put(key, value);
+        }
+    }
+
+    private Map<String, Object> pkUnavailable(Integer roomId, Integer targetRoomId, String message) {
+        Map<String, Object> payload = message("pk-unavailable", roomId, null);
+        payload.put("targetRoomId", targetRoomId);
+        payload.put("message", message);
+        return payload;
     }
 
     private Map<String, Object> joinedMessage(Integer roomId, String role, String sessionId) {

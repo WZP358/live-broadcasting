@@ -2,6 +2,18 @@ import request from '@/utils/request'
 
 export default {
     /**
+     * 获取关注/观看历史列表
+     * @param {*} params
+     * @returns
+     */
+    list(params) {
+        return request({
+            url: '/api/v1/watch/list',
+            method: 'get',
+            params,
+        })
+    },
+    /**
      * 保存历史记录
      * @param {*} params 
      * @returns 
@@ -11,6 +23,7 @@ export default {
             url: '/api/v1/watch/history/save',
             method: 'post',
             data,
+            silentError: true,
         })
     },
     /**

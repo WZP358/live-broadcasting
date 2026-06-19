@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/admin/report")
+@RequestMapping({"/api/v1/admin/report", "/admin/report"})
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class AdminReportController {
 
@@ -17,8 +17,14 @@ public class AdminReportController {
 
     @GetMapping("/list")
     public ApiResponse<?> list(@RequestParam(defaultValue = "1") Integer page,
-                                @RequestParam(defaultValue = "10") Integer limit) {
-        return ApiResponse.ofSuccess(reportService.listPending(page, limit));
+                                @RequestParam(defaultValue = "10") Integer limit,
+                                @RequestParam(required = false) Integer status,
+                                @RequestParam(required = false) String targetType) {
+        Integer queryStatus = status == null ? 0 : status;
+        if (queryStatus < 0) {
+            queryStatus = null;
+        }
+        return ApiResponse.ofSuccess(reportService.listForAdmin(page, limit, queryStatus, targetType));
     }
 
     @PostMapping("/handle")

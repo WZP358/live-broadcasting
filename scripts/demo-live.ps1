@@ -12,6 +12,8 @@ $envPath = Join-Path $root ".env"
 $demoTag = "PULSELIVE_DEMO"
 $userPrefix = "demo_anchor_"
 $viewerPrefix = "demo_viewer_"
+$adminUsername = "demo_admin"
+$script:DemoPasswordHash = '$2a$10$puULYxVheVu/sJZk7rUbvujNheV9v7afPWETHv47sjS2KAXNptTEe'
 
 function Read-DotEnv {
     param([string]$Path)
@@ -65,20 +67,23 @@ function Invoke-Mysql {
         "-e", $Sql
     )
 
-    if ($script:DbPassword) {
-        $mysqlArgs = @(
-            "--default-character-set=utf8mb4",
-            "-u$script:DbUser",
-            "-p$script:DbPassword",
-            "-D", $script:DbName,
-            "--batch",
-            "--raw",
-            "--skip-column-names",
-            "-e", $Sql
-        )
+    $previousMysqlPwd = [Environment]::GetEnvironmentVariable("MYSQL_PWD", "Process")
+    try {
+        if ($script:DbPassword) {
+            $env:MYSQL_PWD = $script:DbPassword
+        } else {
+            Remove-Item Env:MYSQL_PWD -ErrorAction SilentlyContinue
+        }
+
+        $output = & mysql @mysqlArgs
+    } finally {
+        if ($null -ne $previousMysqlPwd) {
+            $env:MYSQL_PWD = $previousMysqlPwd
+        } else {
+            Remove-Item Env:MYSQL_PWD -ErrorAction SilentlyContinue
+        }
     }
 
-    $output = & mysql @mysqlArgs
     if ($LASTEXITCODE -ne 0) {
         throw "mysql command failed"
     }
@@ -101,6 +106,207 @@ function Test-Table {
     param([string]$Table)
     $sql = "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = $(Escape-Sql $Table)"
     return [int](Invoke-Mysql -Sql $sql -Scalar) -gt 0
+}
+
+function Ensure-DemoSchema {
+    Invoke-Mysql -Sql @"
+CREATE TABLE IF NOT EXISTS report (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  reporter_id INT NOT NULL,
+  target_user_id INT DEFAULT NULL,
+  room_id INT DEFAULT NULL,
+  target_type VARCHAR(32) NOT NULL,
+  target_id VARCHAR(64) DEFAULT NULL,
+  reason VARCHAR(255) NOT NULL,
+  description TEXT NULL,
+  status TINYINT DEFAULT 0,
+  handle_result VARCHAR(500) DEFAULT '',
+  handler_id INT DEFAULT NULL,
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+  handle_time DATETIME DEFAULT NULL,
+  INDEX idx_reporter (reporter_id),
+  INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+"@ | Out-Null
+
+    Invoke-Mysql -Sql @"
+CREATE TABLE IF NOT EXISTS customer_service_ticket (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  category VARCHAR(32) NOT NULL DEFAULT 'general',
+  title VARCHAR(120) NOT NULL,
+  content VARCHAR(1000) NOT NULL,
+  status TINYINT NOT NULL DEFAULT 0,
+  handler_id INT DEFAULT NULL,
+  reply VARCHAR(1000) DEFAULT '',
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  reply_time DATETIME DEFAULT NULL,
+  INDEX idx_customer_ticket_user (user_id),
+  INDEX idx_customer_ticket_status (status),
+  INDEX idx_customer_ticket_update_time (update_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+"@ | Out-Null
+
+    Invoke-Mysql -Sql @"
+CREATE TABLE IF NOT EXISTS notification (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  type VARCHAR(32) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  content VARCHAR(500) DEFAULT '',
+  related_id INT DEFAULT NULL,
+  is_read TINYINT DEFAULT 0,
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_user_read (user_id, is_read),
+  INDEX idx_user_type (user_id, type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+"@ | Out-Null
+
+    Invoke-Mysql -Sql @"
+CREATE TABLE IF NOT EXISTS notification_pref (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  live_start_enabled TINYINT DEFAULT 1,
+  follow_enabled TINYINT DEFAULT 1,
+  dnd_start VARCHAR(5) DEFAULT NULL,
+  dnd_end VARCHAR(5) DEFAULT NULL,
+  UNIQUE KEY uk_user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+"@ | Out-Null
+
+    Invoke-Mysql -Sql @"
+CREATE TABLE IF NOT EXISTS guardian_subscription (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  target_user_id INT NOT NULL,
+  level TINYINT NOT NULL DEFAULT 1,
+  amount DECIMAL(10,2) NOT NULL,
+  expire_time DATETIME NOT NULL,
+  auto_renew TINYINT DEFAULT 0,
+  status TINYINT DEFAULT 1,
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_user_target (user_id, target_user_id),
+  INDEX idx_target (target_user_id, status),
+  INDEX idx_expire (expire_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+"@ | Out-Null
+
+    Invoke-Mysql -Sql @"
+CREATE TABLE IF NOT EXISTS private_message (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  from_user_id INT NOT NULL,
+  to_user_id INT NOT NULL,
+  content VARCHAR(500) NOT NULL,
+  is_read TINYINT DEFAULT 0,
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_conversation (from_user_id, to_user_id),
+  INDEX idx_to_user (to_user_id, is_read)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+"@ | Out-Null
+
+    Invoke-Mysql -Sql @"
+CREATE TABLE IF NOT EXISTS message (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  room_id INT NOT NULL,
+  from_uid INT NOT NULL,
+  content TEXT,
+  reply_msg_id INT DEFAULT NULL,
+  status TINYINT DEFAULT 0,
+  type TINYINT DEFAULT 1,
+  extra VARCHAR(1000) DEFAULT NULL,
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_room_id (room_id),
+  INDEX idx_from_uid (from_uid),
+  INDEX idx_status (status),
+  INDEX idx_create_time (create_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+"@ | Out-Null
+
+    Invoke-Mysql -Sql @"
+CREATE TABLE IF NOT EXISTS room_tag (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  room_id INT NOT NULL,
+  tag_name VARCHAR(32) NOT NULL,
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_room (room_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+"@ | Out-Null
+
+    Invoke-Mysql -Sql @"
+CREATE TABLE IF NOT EXISTS room_moderator (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  room_id INT NOT NULL,
+  user_id INT NOT NULL,
+  appointed_by INT NOT NULL,
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_room_user (room_id, user_id),
+  INDEX idx_room (room_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+"@ | Out-Null
+
+    Invoke-Mysql -Sql @"
+CREATE TABLE IF NOT EXISTS user_level (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  exp BIGINT DEFAULT 0,
+  level INT DEFAULT 1,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+"@ | Out-Null
+
+    Invoke-Mysql -Sql @"
+CREATE TABLE IF NOT EXISTS settlement (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  period VARCHAR(7) NOT NULL,
+  gift_income DECIMAL(12,2) DEFAULT 0,
+  platform_fee DECIMAL(12,2) DEFAULT 0,
+  net_income DECIMAL(12,2) DEFAULT 0,
+  withdrawable DECIMAL(12,2) DEFAULT 0,
+  withdrawn DECIMAL(12,2) DEFAULT 0,
+  status TINYINT DEFAULT 0,
+  settle_time DATETIME DEFAULT NULL,
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_user_period (user_id, period)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+"@ | Out-Null
+
+    Invoke-Mysql -Sql @"
+CREATE TABLE IF NOT EXISTS tb_wallet (
+  id INT NOT NULL AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  balance DECIMAL(16,2) NOT NULL DEFAULT 0.00,
+  version INT NOT NULL DEFAULT 0,
+  sign VARCHAR(255) DEFAULT NULL,
+  status INT NOT NULL DEFAULT 0,
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_tb_wallet_user_id (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+"@ | Out-Null
+
+    Invoke-Mysql -Sql @"
+CREATE TABLE IF NOT EXISTS tb_wallet_log (
+  id INT NOT NULL AUTO_INCREMENT,
+  wallet_id INT NOT NULL,
+  balance DECIMAL(16,2) NOT NULL,
+  fee DECIMAL(16,2) NOT NULL,
+  action_type INT NOT NULL,
+  source_uuid VARCHAR(64) DEFAULT NULL,
+  source_type VARCHAR(32) DEFAULT NULL,
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_tb_wallet_log_source_uuid (source_uuid),
+  KEY idx_tb_wallet_log_wallet_id (wallet_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+"@ | Out-Null
 }
 
 function Stop-DemoLive {
@@ -172,7 +378,7 @@ WHERE NOT EXISTS (SELECT 1 FROM present WHERE name = $(Escape-Sql $present.Name)
 
 function Ensure-DemoUsers {
     param([int]$Count)
-    $password = '$2a$10$puULYxVheVu/sJZk7rUbvujNheV9v7afPWETHv47sjS2KAXNptTEe'
+    $password = $script:DemoPasswordHash
 
     for ($i = 1; $i -le $Count; $i++) {
         $username = "{0}{1:D2}" -f $userPrefix, $i
@@ -215,6 +421,44 @@ SET nick_name = $(Escape-Sql $nickname),
     update_time = NOW()
 WHERE username = $(Escape-Sql $username);
 "@ | Out-Null
+    }
+}
+
+function Ensure-DemoAdmin {
+    $password = $script:DemoPasswordHash
+    $avatar = "https://api.dicebear.com/7.x/thumbs/svg?seed=demo-admin"
+
+    Invoke-Mysql -Sql @"
+INSERT INTO user (username, password, avatar, signature, sex, nick_name, create_time, update_time, email, is_validated, disabled, role_id)
+SELECT $(Escape-Sql $adminUsername), $(Escape-Sql $password), $(Escape-Sql $avatar), '演示管理员账号，用于处理举报和客服工单', '保密', '演示管理员', NOW(), NOW(), 'demo_admin@demo.local', 1, 0, 1
+WHERE NOT EXISTS (SELECT 1 FROM user WHERE username = $(Escape-Sql $adminUsername));
+"@ | Out-Null
+
+    Invoke-Mysql -Sql @"
+UPDATE user
+SET nick_name = '演示管理员',
+    avatar = $(Escape-Sql $avatar),
+    signature = '演示管理员账号，用于处理举报和客服工单',
+    is_validated = 1,
+    disabled = 0,
+    role_id = 1,
+    update_time = NOW()
+WHERE username = $(Escape-Sql $adminUsername);
+"@ | Out-Null
+
+    if (Test-Table "user_role") {
+        Invoke-OptionalSql @"
+INSERT INTO user_role (user_id, role_id, create_time, update_time)
+SELECT u.id, 1, NOW(), NOW()
+FROM user u
+WHERE u.username = $(Escape-Sql $adminUsername)
+  AND NOT EXISTS (
+      SELECT 1
+      FROM user_role ur
+      WHERE ur.user_id = u.id
+        AND ur.role_id = 1
+  );
+"@
     }
 }
 
@@ -411,6 +655,515 @@ ON DUPLICATE KEY UPDATE intimacy_value = VALUES(intimacy_value), update_time = N
     }
 }
 
+function Seed-RoomTags {
+    if (!(Test-Table "room_tag")) {
+        return
+    }
+
+    $tagSets = @(
+        @("高能互动", "排位复盘", "答辩演示"),
+        @("期末冲刺", "在线答疑", "沉浸学习"),
+        @("治愈音乐", "点歌台", "夜间陪伴"),
+        @("校园日常", "轻松聊天", "新人友好"),
+        @("代码实战", "Vue", "项目优化"),
+        @("摄影构图", "后期修图", "公开课"),
+        @("自习室", "番茄钟", "学习搭子"),
+        @("新游试玩", "版本体验", "弹幕互动")
+    )
+    $roomIds = @(Invoke-Mysql -Sql "SELECT r.id FROM room r JOIN user u ON u.id = r.user_id WHERE u.username LIKE '$userPrefix%' ORDER BY r.id" | ForEach-Object { [int]$_ })
+    for ($i = 0; $i -lt $roomIds.Count; $i++) {
+        $tags = $tagSets[$i % $tagSets.Count]
+        foreach ($tag in $tags) {
+            Invoke-OptionalSql @"
+INSERT INTO room_tag (room_id, tag_name, create_time)
+SELECT $($roomIds[$i]), $(Escape-Sql $tag), NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM room_tag
+    WHERE room_id = $($roomIds[$i])
+      AND tag_name = $(Escape-Sql $tag)
+);
+"@
+        }
+    }
+}
+
+function Seed-RoomModerators {
+    if (!(Test-Table "room_moderator")) {
+        return
+    }
+
+    $moderatorId = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT id FROM user WHERE username = 'demo_viewer_02' LIMIT 1), 0)" -Scalar)
+    if ($moderatorId -le 0) {
+        return
+    }
+    $roomRows = @(Invoke-Mysql -Sql "SELECT r.id, r.user_id FROM room r JOIN user u ON u.id = r.user_id WHERE u.username LIKE '$userPrefix%' ORDER BY r.id LIMIT 3")
+    foreach ($row in $roomRows) {
+        $parts = $row -split "`t"
+        if ($parts.Count -lt 2) {
+            continue
+        }
+        $roomId = [int]$parts[0]
+        $anchorId = [int]$parts[1]
+        Invoke-OptionalSql @"
+INSERT INTO room_moderator (room_id, user_id, appointed_by, create_time)
+VALUES ($roomId, $moderatorId, $anchorId, NOW())
+ON DUPLICATE KEY UPDATE appointed_by = VALUES(appointed_by);
+"@
+    }
+}
+
+function Seed-UserLevels {
+    if (!(Test-Table "user_level")) {
+        return
+    }
+
+    Invoke-OptionalSql @"
+INSERT INTO user_level (user_id, exp, level, update_time)
+SELECT id,
+       CASE
+           WHEN username LIKE '$viewerPrefix%' THEN 680 + MOD(id, 9) * 120
+           WHEN username LIKE '$userPrefix%' THEN 1320 + MOD(id, 12) * 180
+           ELSE 500
+       END,
+       CASE
+           WHEN username LIKE '$viewerPrefix%' THEN 3 + MOD(id, 5)
+           WHEN username LIKE '$userPrefix%' THEN 6 + MOD(id, 8)
+           ELSE 4
+       END,
+       NOW()
+FROM user
+WHERE username LIKE '$viewerPrefix%'
+   OR username LIKE '$userPrefix%'
+   OR username = $(Escape-Sql $adminUsername)
+ON DUPLICATE KEY UPDATE exp = VALUES(exp), level = VALUES(level), update_time = NOW();
+"@
+}
+
+function Seed-GuardianSubscriptions {
+    if (!(Test-Table "guardian_subscription")) {
+        return
+    }
+
+    $targetRows = @(Invoke-Mysql -Sql "SELECT id FROM user WHERE username LIKE '$userPrefix%' ORDER BY username LIMIT 4" | ForEach-Object { [int]$_ })
+    $viewerRows = @(Invoke-Mysql -Sql "SELECT id FROM user WHERE username LIKE '$viewerPrefix%' ORDER BY username LIMIT 8" | ForEach-Object { [int]$_ })
+    if ($targetRows.Count -eq 0 -or $viewerRows.Count -eq 0) {
+        return
+    }
+
+    for ($i = 0; $i -lt $targetRows.Count; $i++) {
+        for ($j = 0; $j -lt [Math]::Min(4, $viewerRows.Count); $j++) {
+            $viewerId = $viewerRows[($i + $j) % $viewerRows.Count]
+            $targetId = $targetRows[$i]
+            if ($viewerId -eq $targetId) {
+                continue
+            }
+            $level = 1 + (($i + $j) % 3)
+            $amount = @(0, 300, 600, 1200)[$level]
+            $autoRenew = if (($i + $j) % 2 -eq 0) { 1 } else { 0 }
+            Invoke-OptionalSql @"
+INSERT INTO guardian_subscription (user_id, target_user_id, level, amount, expire_time, auto_renew, status, create_time, update_time)
+VALUES ($viewerId, $targetId, $level, $amount, DATE_ADD(NOW(), INTERVAL 25 DAY), $autoRenew, 1, DATE_SUB(NOW(), INTERVAL $j DAY), NOW())
+ON DUPLICATE KEY UPDATE
+    level = VALUES(level),
+    amount = VALUES(amount),
+    expire_time = VALUES(expire_time),
+    auto_renew = VALUES(auto_renew),
+    status = 1,
+    update_time = NOW();
+"@
+        }
+    }
+}
+
+function Seed-DemoMessages {
+    if (!(Test-Table "message")) {
+        return
+    }
+
+    $viewerIds = @(Invoke-Mysql -Sql "SELECT id FROM user WHERE username LIKE '$viewerPrefix%' ORDER BY username" | ForEach-Object { [int]$_ })
+    $roomIds = @(Invoke-Mysql -Sql "SELECT r.id FROM room r JOIN user u ON u.id = r.user_id WHERE u.username LIKE '$userPrefix%' ORDER BY r.id" | ForEach-Object { [int]$_ })
+    if ($viewerIds.Count -eq 0 -or $roomIds.Count -eq 0) {
+        return
+    }
+
+    $messages = @(
+        "这场讲得很清楚，已经关注了",
+        "主播能再演示一下礼物和亲密榜吗",
+        "弹幕测试：管理员可以在后台看到记录",
+        "小脉助手能根据当前直播内容给建议吗",
+        "这个直播间标签和推荐数据很适合答辩展示",
+        "收到开播通知后点进来的，页面联动正常"
+    )
+
+    for ($i = 0; $i -lt [Math]::Min($roomIds.Count, 10); $i++) {
+        for ($j = 0; $j -lt 4; $j++) {
+            $viewerId = $viewerIds[($i + $j) % $viewerIds.Count]
+            $text = $messages[($i + $j) % $messages.Count]
+            Invoke-OptionalSql @"
+INSERT INTO message (room_id, from_uid, content, reply_msg_id, status, type, extra, create_time, update_time)
+SELECT $($roomIds[$i]), $viewerId, $(Escape-Sql $text), NULL, 0, 1, $(Escape-Sql '{"demoSeed":true}'), DATE_SUB(NOW(), INTERVAL ($i + $j) MINUTE), NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM message
+    WHERE room_id = $($roomIds[$i])
+      AND from_uid = $viewerId
+      AND content = $(Escape-Sql $text)
+      AND extra = $(Escape-Sql '{"demoSeed":true}')
+);
+"@
+        }
+    }
+}
+
+function Seed-Reports {
+    if (!(Test-Table "report")) {
+        return
+    }
+
+    $viewer1 = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT id FROM user WHERE username = 'demo_viewer_01' LIMIT 1), 0)" -Scalar)
+    $viewer2 = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT id FROM user WHERE username = 'demo_viewer_02' LIMIT 1), 0)" -Scalar)
+    $roomRows = @(Invoke-Mysql -Sql "SELECT r.id, r.user_id, r.title FROM room r JOIN user u ON u.id = r.user_id WHERE u.username LIKE '$userPrefix%' ORDER BY r.id LIMIT 4")
+    if ($viewer1 -le 0 -or $roomRows.Count -eq 0) {
+        return
+    }
+
+    Invoke-OptionalSql @"
+UPDATE report
+SET status = 0,
+    handle_result = '',
+    handler_id = NULL,
+    handle_time = NULL
+WHERE description LIKE '%"demoSeed":true%';
+"@
+
+    $first = $roomRows[0] -split "`t"
+    $roomId1 = [int]$first[0]
+    $anchorId1 = [int]$first[1]
+    $roomTitle1 = $first[2]
+
+    Invoke-OptionalSql @"
+INSERT INTO report (reporter_id, target_user_id, room_id, target_type, target_id, reason, description, status, create_time)
+SELECT 0, $anchorId1, $roomId1, 'live_guard', $(Escape-Sql "demo-live-guard-$roomId1"), '疑似暴力行为', $(Escape-Sql '{"demoSeed":true,"source":"live_guard","status":"REVIEW","reason":"AI视觉审核命中风险，等待管理员裁决","violationType":"VIOLENCE","violationLabel":"暴力行为","evidenceImageUrl":"/demo-covers/game-arena.jpg","screenshotUrl":"/demo-covers/game-arena.jpg","evidence":{"frame":"demo-frame-001","confidence":0.87}}'), 0, DATE_SUB(NOW(), INTERVAL 8 MINUTE)
+WHERE NOT EXISTS (
+    SELECT 1 FROM report
+    WHERE target_type = 'live_guard'
+      AND target_id = $(Escape-Sql "demo-live-guard-$roomId1")
+      AND description LIKE '%"demoSeed":true%'
+);
+"@
+
+    Invoke-OptionalSql @"
+INSERT INTO report (reporter_id, target_user_id, room_id, target_type, target_id, reason, description, status, create_time)
+SELECT $viewer1, $anchorId1, $roomId1, 'room', $(Escape-Sql "demo-room-$roomId1"), '违规内容', $(Escape-Sql "{`"demoSeed`":true,`"summary`":`"$roomTitle1`",`"description`":`"观众认为直播间标题与实际内容不一致，提交给管理员复核。`"}"), 0, DATE_SUB(NOW(), INTERVAL 6 MINUTE)
+WHERE NOT EXISTS (
+    SELECT 1 FROM report
+    WHERE reporter_id = $viewer1
+      AND target_type = 'room'
+      AND target_id = $(Escape-Sql "demo-room-$roomId1")
+      AND description LIKE '%"demoSeed":true%'
+);
+"@
+
+    if ($viewer2 -gt 0 -and $roomRows.Count -gt 1) {
+        $second = $roomRows[1] -split "`t"
+        $roomId2 = [int]$second[0]
+        $anchorId2 = [int]$second[1]
+        $messageId = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT id FROM message WHERE room_id = $roomId2 AND extra = $(Escape-Sql '{"demoSeed":true}') ORDER BY id DESC LIMIT 1), 0)" -Scalar)
+        $targetId = if ($messageId -gt 0) { "message-$messageId" } else { "demo-message-$roomId2" }
+        Invoke-OptionalSql @"
+INSERT INTO report (reporter_id, target_user_id, room_id, target_type, target_id, reason, description, status, create_time)
+SELECT $viewer2, $anchorId2, $roomId2, 'message', $(Escape-Sql $targetId), '刷屏骚扰', $(Escape-Sql '{"demoSeed":true,"type":"message","summary":"弹幕内容被举报，等待管理员处理","description":"用于展示弹幕举报进入审核队列。"}'), 0, DATE_SUB(NOW(), INTERVAL 4 MINUTE)
+WHERE NOT EXISTS (
+    SELECT 1 FROM report
+    WHERE reporter_id = $viewer2
+      AND target_type = 'message'
+      AND target_id = $(Escape-Sql $targetId)
+      AND description LIKE '%"demoSeed":true%'
+);
+"@
+    }
+}
+
+function Seed-CustomerServiceTickets {
+    if (!(Test-Table "customer_service_ticket")) {
+        return
+    }
+
+    $viewer1 = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT id FROM user WHERE username = 'demo_viewer_01' LIMIT 1), 0)" -Scalar)
+    $viewer2 = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT id FROM user WHERE username = 'demo_viewer_02' LIMIT 1), 0)" -Scalar)
+    $viewer3 = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT id FROM user WHERE username = 'demo_viewer_03' LIMIT 1), 0)" -Scalar)
+    $anchor1 = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT id FROM user WHERE username = 'demo_anchor_01' LIMIT 1), 0)" -Scalar)
+    $adminId = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT id FROM user WHERE username = $(Escape-Sql $adminUsername) LIMIT 1), 0)" -Scalar)
+
+    if ($viewer1 -gt 0) {
+        Invoke-OptionalSql @"
+INSERT INTO customer_service_ticket (user_id, category, title, content, status, create_time, update_time)
+SELECT $viewer1, 'live', '演示-开播提示房间信息未初始化', '点击开播时看到房间信息未初始化，希望客服协助确认直播间资料是否完整。', 0, DATE_SUB(NOW(), INTERVAL 22 MINUTE), DATE_SUB(NOW(), INTERVAL 22 MINUTE)
+WHERE NOT EXISTS (
+    SELECT 1 FROM customer_service_ticket
+    WHERE user_id = $viewer1
+      AND title = '演示-开播提示房间信息未初始化'
+);
+"@
+        Invoke-OptionalSql @"
+UPDATE customer_service_ticket
+SET status = 0,
+    handler_id = NULL,
+    reply = '',
+    reply_time = NULL,
+    update_time = NOW()
+WHERE user_id = $viewer1
+  AND title = '演示-开播提示房间信息未初始化';
+"@
+    }
+
+    if ($viewer2 -gt 0) {
+        Invoke-OptionalSql @"
+INSERT INTO customer_service_ticket (user_id, category, title, content, status, handler_id, reply, create_time, update_time, reply_time)
+SELECT $viewer2, 'wallet', '演示-充值后余额未刷新', '完成沙箱支付后页面余额没有立刻变化，刷新后恢复正常。', 1, NULLIF($adminId, 0), '已核对支付流水，余额同步正常。如页面未刷新，请重新进入钱包页。', DATE_SUB(NOW(), INTERVAL 2 HOUR), DATE_SUB(NOW(), INTERVAL 80 MINUTE), DATE_SUB(NOW(), INTERVAL 80 MINUTE)
+WHERE NOT EXISTS (
+    SELECT 1 FROM customer_service_ticket
+    WHERE user_id = $viewer2
+      AND title = '演示-充值后余额未刷新'
+);
+"@
+    }
+
+    if ($anchor1 -gt 0) {
+        Invoke-OptionalSql @"
+INSERT INTO customer_service_ticket (user_id, category, title, content, status, create_time, update_time)
+SELECT $anchor1, 'appeal', '演示-直播内容误触风控申诉', '正常讲解项目时出现风险提示，希望管理员结合上下文进行复核。', 0, DATE_SUB(NOW(), INTERVAL 48 MINUTE), DATE_SUB(NOW(), INTERVAL 48 MINUTE)
+WHERE NOT EXISTS (
+    SELECT 1 FROM customer_service_ticket
+    WHERE user_id = $anchor1
+      AND title = '演示-直播内容误触风控申诉'
+);
+"@
+    }
+
+    if ($viewer3 -gt 0) {
+        Invoke-OptionalSql @"
+INSERT INTO customer_service_ticket (user_id, category, title, content, status, handler_id, reply, create_time, update_time, reply_time)
+SELECT $viewer3, 'feedback', '演示-建议增加直播小助手', '希望直播间支持根据弹幕生成欢迎语和互动建议。', 2, NULLIF($adminId, 0), '建议已记录，当前版本已提供小脉 AI 助手和互动助手入口。', DATE_SUB(NOW(), INTERVAL 1 DAY), DATE_SUB(NOW(), INTERVAL 23 HOUR), DATE_SUB(NOW(), INTERVAL 23 HOUR)
+WHERE NOT EXISTS (
+    SELECT 1 FROM customer_service_ticket
+    WHERE user_id = $viewer3
+      AND title = '演示-建议增加直播小助手'
+);
+"@
+    }
+}
+
+function Seed-Notifications {
+    if (!(Test-Table "notification")) {
+        return
+    }
+
+    $viewer1 = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT id FROM user WHERE username = 'demo_viewer_01' LIMIT 1), 0)" -Scalar)
+    $anchor1 = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT id FROM user WHERE username = 'demo_anchor_01' LIMIT 1), 0)" -Scalar)
+    $roomId = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT r.id FROM room r JOIN user u ON u.id = r.user_id WHERE u.username = 'demo_anchor_01' LIMIT 1), 0)" -Scalar)
+    if ($viewer1 -le 0) {
+        return
+    }
+
+    $notifications = @(
+        @{ UserId = $viewer1; Type = "system"; Title = "演示数据已准备完成"; Content = "首页、直播间、客服、举报和消息中心均已补充演示数据。"; RelatedId = 0; IsRead = 0 },
+        @{ UserId = $viewer1; Type = "live_started"; Title = "你关注的主播正在直播"; Content = "星河电竞正在进行演示直播，点击可进入直播间。"; RelatedId = $roomId; IsRead = 0 },
+        @{ UserId = $viewer1; Type = "followed"; Title = "关注提醒"; Content = "你关注的主播更新了直播间公告。"; RelatedId = $roomId; IsRead = 1 },
+        @{ UserId = $viewer1; Type = "system"; Title = "客服工单已受理"; Content = "你的开播问题已进入客服处理队列。"; RelatedId = 0; IsRead = 0 }
+    )
+
+    if ($anchor1 -gt 0) {
+        $notifications += @(
+            @{ UserId = $anchor1; Type = "system"; Title = "收益结算已生成"; Content = "本月礼物收益结算记录已生成，可在个人中心查看。"; RelatedId = 0; IsRead = 0 },
+            @{ UserId = $anchor1; Type = "followed"; Title = "新增粉丝守护"; Content = "晚风同学开通了你的黄金守护。"; RelatedId = $roomId; IsRead = 0 }
+        )
+    }
+
+    foreach ($item in $notifications) {
+        Invoke-OptionalSql @"
+INSERT INTO notification (user_id, type, title, content, related_id, is_read, create_time, update_time)
+SELECT $($item.UserId), $(Escape-Sql $item.Type), $(Escape-Sql $item.Title), $(Escape-Sql $item.Content), $($item.RelatedId), $($item.IsRead), DATE_SUB(NOW(), INTERVAL MOD($($item.UserId) + $($item.RelatedId), 50) MINUTE), NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM notification
+    WHERE user_id = $($item.UserId)
+      AND type = $(Escape-Sql $item.Type)
+      AND title = $(Escape-Sql $item.Title)
+);
+"@
+    }
+
+    if (Test-Table "notification_pref") {
+        Invoke-OptionalSql @"
+INSERT INTO notification_pref (user_id, live_start_enabled, follow_enabled, dnd_start, dnd_end)
+SELECT id, 1, 1, '23:30', '07:30'
+FROM user
+WHERE username IN ('demo_viewer_01', 'demo_anchor_01')
+ON DUPLICATE KEY UPDATE live_start_enabled = 1, follow_enabled = 1;
+"@
+    }
+}
+
+function Seed-PrivateMessages {
+    if (!(Test-Table "private_message")) {
+        return
+    }
+
+    $viewer1 = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT id FROM user WHERE username = 'demo_viewer_01' LIMIT 1), 0)" -Scalar)
+    $anchor1 = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT id FROM user WHERE username = 'demo_anchor_01' LIMIT 1), 0)" -Scalar)
+    $adminId = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT id FROM user WHERE username = $(Escape-Sql $adminUsername) LIMIT 1), 0)" -Scalar)
+    if ($viewer1 -le 0 -or $anchor1 -le 0) {
+        return
+    }
+
+    $messages = @(
+        @{ From = $anchor1; To = $viewer1; Text = "欢迎来到演示直播间，有问题可以发弹幕或者找客服。"; Read = 0 },
+        @{ From = $viewer1; To = $anchor1; Text = "我会在答辩时演示关注、送礼和举报流程。"; Read = 1 }
+    )
+    if ($adminId -gt 0) {
+        $messages += @{ From = $adminId; To = $viewer1; Text = "你的演示客服工单已经进入处理队列。"; Read = 0 }
+    }
+
+    foreach ($item in $messages) {
+        Invoke-OptionalSql @"
+INSERT INTO private_message (from_user_id, to_user_id, content, is_read, create_time)
+SELECT $($item.From), $($item.To), $(Escape-Sql $item.Text), $($item.Read), DATE_SUB(NOW(), INTERVAL MOD($($item.From) + $($item.To), 30) MINUTE)
+WHERE NOT EXISTS (
+    SELECT 1 FROM private_message
+    WHERE from_user_id = $($item.From)
+      AND to_user_id = $($item.To)
+      AND content = $(Escape-Sql $item.Text)
+);
+"@
+    }
+}
+
+function Seed-Wallets {
+    if (!(Test-Table "tb_wallet")) {
+        return
+    }
+
+    Invoke-OptionalSql @"
+INSERT INTO tb_wallet (user_id, balance, version, status, create_time, update_time)
+SELECT id,
+       CASE
+           WHEN username LIKE '$viewerPrefix%' THEN 1888.00
+           WHEN username LIKE '$userPrefix%' THEN 888.00
+           ELSE 0.00
+       END,
+       0,
+       0,
+       NOW(),
+       NOW()
+FROM user
+WHERE username LIKE '$viewerPrefix%'
+   OR username LIKE '$userPrefix%'
+   OR username = $(Escape-Sql $adminUsername)
+ON DUPLICATE KEY UPDATE
+    balance = VALUES(balance),
+    status = 0,
+    update_time = NOW();
+"@
+
+    if (Test-Table "tb_wallet_log") {
+        $walletRows = @(Invoke-Mysql -Sql "SELECT w.id, u.username FROM tb_wallet w JOIN user u ON u.id = w.user_id WHERE u.username IN ('demo_viewer_01', 'demo_anchor_01', 'demo_viewer_02') ORDER BY u.username")
+        foreach ($row in $walletRows) {
+            $parts = $row -split "`t"
+            if ($parts.Count -lt 2) {
+                continue
+            }
+            $walletId = [int]$parts[0]
+            $username = $parts[1]
+            $entries = @()
+            if ($username -eq "demo_viewer_01") {
+                $entries = @(
+                    @{ Fee = 200.00; Balance = 1888.00; Type = 1; Source = "demo-wallet-recharge-01"; SourceType = "demo_recharge" },
+                    @{ Fee = -88.00; Balance = 1688.00; Type = 2; Source = "demo-wallet-gift-spend-01"; SourceType = "gift_spend" }
+                )
+            } elseif ($username -eq "demo_anchor_01") {
+                $entries = @(
+                    @{ Fee = 88.00; Balance = 888.00; Type = 3; Source = "demo-wallet-gift-income-01"; SourceType = "gift_income" }
+                )
+            } else {
+                $entries = @(
+                    @{ Fee = 100.00; Balance = 1888.00; Type = 1; Source = "demo-wallet-recharge-02"; SourceType = "demo_recharge" }
+                )
+            }
+
+            foreach ($entry in $entries) {
+                Invoke-OptionalSql @"
+INSERT INTO tb_wallet_log (wallet_id, balance, fee, action_type, source_uuid, source_type, create_time, update_time)
+SELECT $walletId, $($entry.Balance), $($entry.Fee), $($entry.Type), $(Escape-Sql $entry.Source), $(Escape-Sql $entry.SourceType), DATE_SUB(NOW(), INTERVAL MOD($walletId, 9) HOUR), NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM tb_wallet_log
+    WHERE source_uuid = $(Escape-Sql $entry.Source)
+);
+"@
+            }
+        }
+    }
+}
+
+function Seed-Bills {
+    if (!(Test-Table "bill")) {
+        return
+    }
+
+    $viewer1 = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT id FROM user WHERE username = 'demo_viewer_01' LIMIT 1), 0)" -Scalar)
+    $anchor1 = [int](Invoke-Mysql -Sql "SELECT COALESCE((SELECT id FROM user WHERE username = 'demo_anchor_01' LIMIT 1), 0)" -Scalar)
+    if ($viewer1 -le 0) {
+        return
+    }
+
+    $rows = @(
+        @{ User = $viewer1; Change = 200.00; Type = 0; Balance = 1888.00; Mark = "演示充值"; Order = "DEMO-BILL-RECHARGE-01" },
+        @{ User = $viewer1; Change = -88.00; Type = 1; Balance = 1800.00; Mark = "演示送礼"; Order = "DEMO-BILL-GIFT-SPEND-01" }
+    )
+    if ($anchor1 -gt 0) {
+        $rows += @{ User = $anchor1; Change = 88.00; Type = 0; Balance = 888.00; Mark = "演示礼物收入"; Order = "DEMO-BILL-GIFT-INCOME-01" }
+    }
+
+    foreach ($row in $rows) {
+        Invoke-OptionalSql @"
+INSERT INTO bill (user_id, bill_change, type, balance, ip, mark, create_time, update_time, order_no)
+SELECT $($row.User), $($row.Change), $($row.Type), $($row.Balance), '127.0.0.1', $(Escape-Sql $row.Mark), DATE_SUB(NOW(), INTERVAL MOD($($row.User), 6) HOUR), NOW(), $(Escape-Sql $row.Order)
+WHERE NOT EXISTS (
+    SELECT 1 FROM bill
+    WHERE order_no = $(Escape-Sql $row.Order)
+);
+"@
+    }
+}
+
+function Seed-Settlements {
+    if (!(Test-Table "settlement")) {
+        return
+    }
+
+    $anchorRows = @(Invoke-Mysql -Sql "SELECT id FROM user WHERE username LIKE '$userPrefix%' ORDER BY username LIMIT 5" | ForEach-Object { [int]$_ })
+    foreach ($anchorId in $anchorRows) {
+        for ($i = 0; $i -lt 3; $i++) {
+            $income = 680 + (($anchorId + $i) % 9) * 120
+            $fee = [Math]::Round($income * 0.2, 2)
+            $net = [Math]::Round($income - $fee, 2)
+            $withdrawn = if ($i -eq 2) { [Math]::Round($net * 0.4, 2) } else { 0 }
+            $withdrawable = [Math]::Round($net - $withdrawn, 2)
+            $status = if ($i -eq 0) { 0 } elseif ($i -eq 1) { 1 } else { 2 }
+            Invoke-OptionalSql @"
+INSERT INTO settlement (user_id, period, gift_income, platform_fee, net_income, withdrawable, withdrawn, status, settle_time, create_time)
+VALUES ($anchorId, DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL $i MONTH), '%Y-%m'), $income, $fee, $net, $withdrawable, $withdrawn, $status, IF($status = 0, NULL, DATE_SUB(NOW(), INTERVAL $i MONTH)), NOW())
+ON DUPLICATE KEY UPDATE
+    gift_income = VALUES(gift_income),
+    platform_fee = VALUES(platform_fee),
+    net_income = VALUES(net_income),
+    withdrawable = VALUES(withdrawable),
+    withdrawn = VALUES(withdrawn),
+    status = VALUES(status),
+    settle_time = VALUES(settle_time);
+"@
+        }
+    }
+}
+
 function Refresh-DemoPulse {
     $now = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     Invoke-Mysql -Sql @"
@@ -513,15 +1266,29 @@ if ($StopOnly) {
     return
 }
 
+Ensure-DemoSchema
 Ensure-Categories
 Ensure-DemoPresents
 Ensure-DemoUsers -Count $Rooms
+Ensure-DemoAdmin
 Ensure-DemoRooms -Count $Rooms
 Ensure-LiveInfo
 Seed-Rewards
 Seed-Watches
 Seed-Statistics
 Seed-Intimacy
+Seed-RoomTags
+Seed-RoomModerators
+Seed-UserLevels
+Seed-GuardianSubscriptions
+Seed-DemoMessages
+Seed-Reports
+Seed-CustomerServiceTickets
+Seed-Notifications
+Seed-PrivateMessages
+Seed-Wallets
+Seed-Bills
+Seed-Settlements
 Refresh-DemoPulse
 
 Write-Host "[demo] demo live rooms are online. Open http://localhost:5173/#/home" -ForegroundColor Green

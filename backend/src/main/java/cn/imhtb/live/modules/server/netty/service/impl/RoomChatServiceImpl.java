@@ -1,6 +1,8 @@
 package cn.imhtb.live.modules.server.netty.service.impl;
 
 import cn.imhtb.live.common.enums.LiveRoomStatusEnum;
+import cn.imhtb.live.common.enums.StatusEnum;
+import cn.imhtb.live.common.exception.BusinessException;
 import cn.imhtb.live.common.utils.RedisUtil;
 import cn.imhtb.live.mappers.MessageMapper;
 import cn.imhtb.live.modules.live.service.IRoomIntimacyRankService;
@@ -26,6 +28,7 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -83,7 +86,12 @@ public class RoomChatServiceImpl implements IRoomChatService {
         if (channels == null){
             return 0L;
         }
-        return channels.size();
+        return channels.stream()
+                .filter(channel -> {
+                    WsChannelExtraInfoDTO extra = ONLINE_ALL.get(channel);
+                    return Objects.isNull(extra) || !extra.isAnchorMonitor(roomId);
+                })
+                .count();
     }
 
     @Override
@@ -94,9 +102,18 @@ public class RoomChatServiceImpl implements IRoomChatService {
         if (Objects.isNull(roomId)) {
             return;
         }
+        Room room = roomService.getById(roomId);
+        if (!isRoomAvailable(room)) {
+            ChatMsgRespDTO chatMsgRespDTO = new ChatMsgRespDTO();
+            chatMsgRespDTO.setNickname("系统消息");
+            chatMsgRespDTO.setText("直播间不存在或已不可用");
+            this.sendMessage(channel, WsMsgAssembly.buildChat(chatMsgRespDTO));
+            return;
+        }
 
         // 游客登录处理
         WsChannelExtraInfoDTO channelExtraInfoDto = getChannelExtraInfo(channel).addRoomId(roomId);
+        channelExtraInfoDto.markAnchorMonitor(roomId, Boolean.TRUE.equals(wsEnterReqDTO.getAnchorMonitor()));
         ONLINE_ROOM.putIfAbsent(roomId, new CopyOnWriteArraySet<>());
         ONLINE_ROOM.get(roomId).add(channel);
 
@@ -109,8 +126,9 @@ public class RoomChatServiceImpl implements IRoomChatService {
 //            AttrUtil.setAttr(channel, AttrUtil.USER_ID, userId);
         }
 
-        Room room = roomService.getById(roomId);
-        if (Objects.nonNull(room) && Objects.equals(room.getStatus(), LiveRoomStatusEnum.LIVING.getCode())) {
+        if (!Boolean.TRUE.equals(wsEnterReqDTO.getAnchorMonitor())
+                && Objects.nonNull(room)
+                && Objects.equals(room.getStatus(), LiveRoomStatusEnum.LIVING.getCode())) {
             String viewerKey = Objects.nonNull(userId) ? "u:" + userId : "c:" + channel.id().asLongText();
             redisUtil.add(String.format(RedisPrefix.LIVE_VIEWER_SET_KEY, roomId), viewerKey);
         }
@@ -141,6 +159,11 @@ public class RoomChatServiceImpl implements IRoomChatService {
                 if (channels != null) {
                     channels.remove(channel);
                 }
+                if (!channelExtraInfoDto.isAnchorMonitor(roomId)) {
+                    Integer userIdForViewer = channelExtraInfoDto.getUserId();
+                    String viewerKey = Objects.nonNull(userIdForViewer) ? "u:" + userIdForViewer : "c:" + channel.id().asLongText();
+                    redisUtil.removeSetMember(String.format(RedisPrefix.LIVE_VIEWER_SET_KEY, roomId), viewerKey);
+                }
             }
             Integer userId = channelExtraInfoDto.getUserId();
             if (Objects.nonNull(userId)) {
@@ -169,9 +192,20 @@ public class RoomChatServiceImpl implements IRoomChatService {
 
     @Override
     public void sendChatMsg(ChatMsgReq chatMsgReq) {
+        if (chatMsgReq == null || chatMsgReq.getRoomId() == null || StringUtils.isBlank(chatMsgReq.getText())) {
+            throw new BusinessException("弹幕内容不能为空");
+        }
         User userInfo = userService.getUserInfo();
+        if (userInfo == null || userInfo.getId() == null) {
+            throw new BusinessException("请先登录后再发送弹幕");
+        }
         Integer userId = userInfo.getId();
         Integer roomId = chatMsgReq.getRoomId();
+        Room room = roomService.getById(roomId);
+        if (!isRoomAvailable(room)) {
+            throw new BusinessException("直播间不存在或已不可用");
+        }
+        String text = chatMsgReq.getText().trim();
 
         // 检查是否被禁言
         String muteKey = roomId + ":" + userId;
@@ -179,7 +213,7 @@ public class RoomChatServiceImpl implements IRoomChatService {
         if (muteExpiry != null) {
             if (System.currentTimeMillis() < muteExpiry) {
                 long remaining = (muteExpiry - System.currentTimeMillis()) / 1000;
-                sendToUser(userId, WsMsgAssembly.buildMuteNotify("你已被禁言，剩余 " + remaining + " 秒"));
+                sendToUserInRoom(roomId, userId, WsMsgAssembly.buildMuteNotify("你已被禁言，剩余 " + remaining + " 秒"));
                 return;
             } else {
                 MUTED_USERS.remove(muteKey);
@@ -192,7 +226,7 @@ public class RoomChatServiceImpl implements IRoomChatService {
                 ChatMsgRespDTO chatMsgRespDTO = new ChatMsgRespDTO();
                 chatMsgRespDTO.setFromUserId(userId);
                 chatMsgRespDTO.setNickname(userInfo.getNickname());
-                chatMsgRespDTO.setText(chatMsgReq.getText());
+                chatMsgRespDTO.setText(text);
                 sendMessage(channel, WsMsgAssembly.buildChat(chatMsgRespDTO));
             }
         }
@@ -201,7 +235,7 @@ public class RoomChatServiceImpl implements IRoomChatService {
             Message message = new Message();
             message.setRoomId(roomId);
             message.setFromUid(userId);
-            message.setContent(chatMsgReq.getText());
+            message.setContent(text);
             message.setStatus(0);
             message.setType(1);
             messageMapper.insert(message);
@@ -213,7 +247,7 @@ public class RoomChatServiceImpl implements IRoomChatService {
     }
 
     @Override
-    public void sendGiftMsg(String msg, Integer roomId, Integer userId, Integer giftId) {
+    public void sendGiftMsg(String msg, Integer roomId, Integer userId, Integer giftId, String giftName, Integer number, String senderName) {
         CopyOnWriteArraySet<Channel> channels = ONLINE_ROOM.get(roomId);
         if (Objects.nonNull(channels)) {
             for (Channel channel : channels) {
@@ -228,8 +262,11 @@ public class RoomChatServiceImpl implements IRoomChatService {
 //                    continue;
 //                }
                 sendMessage(channel, WsMsgAssembly.buildGift(GiftMsgRespDTO.builder()
-                                .giftName("")
+                                .giftName(giftName)
                                 .giftId(giftId)
+                                .number(number)
+                                .senderId(userId)
+                                .senderName(senderName)
                                 .text(msg)
                                 .build()));
             }
@@ -280,7 +317,7 @@ public class RoomChatServiceImpl implements IRoomChatService {
         String muteKey = roomId + ":" + targetUserId;
         long expiry = System.currentTimeMillis() + (long) durationSeconds * 1000;
         MUTED_USERS.put(muteKey, expiry);
-        sendToUser(targetUserId, WsMsgAssembly.buildMuteNotify("你已被房管禁言 " + durationSeconds + " 秒"));
+        sendToUserInRoom(roomId, targetUserId, WsMsgAssembly.buildMuteNotify("你已被房管禁言 " + durationSeconds + " 秒"));
 
         // 广播禁言消息到房间
         CopyOnWriteArraySet<Channel> channels = ONLINE_ROOM.get(roomId);
@@ -304,7 +341,7 @@ public class RoomChatServiceImpl implements IRoomChatService {
                 // 检查这个 channel 是否在目标房间中
                 WsChannelExtraInfoDTO extra = ONLINE_ALL.get(ch);
                 if (extra != null && extra.getRoomIds().contains(roomId)) {
-                    sendToUser(targetUserId, WsMsgAssembly.buildKickNotify("你已被房管踢出直播间"));
+                    sendMessage(ch, WsMsgAssembly.buildKickNotify("你已被房管踢出直播间"));
                     // 从房间中移除但不关闭连接
                     CopyOnWriteArraySet<Channel> roomChannels = ONLINE_ROOM.get(roomId);
                     if (roomChannels != null) {
@@ -335,6 +372,23 @@ public class RoomChatServiceImpl implements IRoomChatService {
                 "message"
         );
         return count != null && count > 0;
+    }
+
+    private boolean isRoomAvailable(Room room) {
+        return room != null && !Objects.equals(room.getDisabled(), StatusEnum.NO.getCode());
+    }
+
+    private void sendToUserInRoom(Integer roomId, Integer userId, WsMsgRespDTO<?> message) {
+        CopyOnWriteArraySet<Channel> channels = ONLINE_USER.get(userId);
+        if (Objects.isNull(channels)) {
+            return;
+        }
+        for (Channel channel : channels) {
+            WsChannelExtraInfoDTO extra = ONLINE_ALL.get(channel);
+            if (extra != null && extra.getRoomIds().contains(roomId)) {
+                sendMessage(channel, message);
+            }
+        }
     }
 
 }

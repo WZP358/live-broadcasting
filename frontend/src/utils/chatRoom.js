@@ -1,15 +1,27 @@
 export const CHAT_MESSAGE_LIMIT = 40
 
-export const createChatWebSocketUrl = ({
+export const getSameOriginWebSocketBase = ({
   protocol = globalThis.location?.protocol || "http:",
-  hostname = globalThis.location?.hostname || "localhost",
-  port = 10022,
-  token = "",
+  host = globalThis.location?.host || "localhost:5173",
+  path = "/ws-netty",
 } = {}) => {
   const wsProtocol = protocol === "https:" ? "wss" : "ws"
-  const url = new URL(`${wsProtocol}://${hostname}:${port}/`)
-  if (token) {
-    url.searchParams.set("token", token)
+  return `${wsProtocol}://${host}${path}`
+}
+
+export const normalizeWebSocketToken = (token = "") =>
+  String(token || "").replace(/^Bearer\s+/i, "")
+
+export const createChatWebSocketUrl = ({
+  protocol = globalThis.location?.protocol || "http:",
+  host = globalThis.location?.host || "localhost:5173",
+  path = "/ws-netty",
+  token = "",
+} = {}) => {
+  const url = new URL(getSameOriginWebSocketBase({ protocol, host, path }))
+  const normalizedToken = normalizeWebSocketToken(token)
+  if (normalizedToken) {
+    url.searchParams.set("token", normalizedToken)
   }
   return url.toString()
 }

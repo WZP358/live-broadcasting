@@ -13,7 +13,7 @@
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'fromUserNickname'">
             <a-flex align="center">
-              <a-avatar v-if="record.fromUserAvatar" :size="28" :src="record.fromUserAvatar" alt="U" />
+              <a-avatar v-if="record.fromUserAvatar" :size="28" :src="safeAvatar(record.fromUserAvatar)" alt="U" />
               <a-avatar v-else :size="28" style="color: var(--accent); background-color: var(--accent-light)">
                 {{ (record.fromUserNickname || "用户").substring(0, 2) }}
               </a-avatar>
@@ -23,7 +23,7 @@
           </template>
           <template v-else-if="column.key === 'presentName'">
             <a-flex align="center">
-              <a-avatar :size="28" :src="record.presentIcon" alt="U" />
+              <a-avatar :size="28" :src="safeGiftIcon(record.presentIcon)" alt="U" />
               <section style="width: 10px"></section>
               <span>{{ `${record.presentName} x ${record.number}` }}</span>
             </a-flex>
@@ -37,12 +37,15 @@
 <script setup>
 import giftApi from "@/api/gift"
 import { computed, onMounted, reactive, ref } from "vue"
+import { FALLBACK_AVATAR, FALLBACK_GIFT_ICON, resolveSafeImageUrl } from "@/utils/fallback"
 
 const loading = ref(false)
 const total = ref(0)
 const current = ref(1)
 const pageSize = ref(10)
 const dataSource = ref([])
+const safeAvatar = (url) => resolveSafeImageUrl(url, FALLBACK_AVATAR)
+const safeGiftIcon = (url) => resolveSafeImageUrl(url, FALLBACK_GIFT_ICON)
 
 const pagination = computed(() => ({
   total: total.value,

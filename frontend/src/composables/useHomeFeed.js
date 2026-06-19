@@ -9,6 +9,7 @@ import {
   normalizeLivingRooms,
   sortRoomsByMode,
 } from "@/utils/liveRoomPresenter";
+import { normalizeCategories, normalizeSearchRooms } from "@/utils/categoryPresenter";
 
 export function useHomeFeed() {
   const store = useStore();
@@ -27,7 +28,10 @@ export function useHomeFeed() {
   const loadCategories = async () => {
     try {
       const res = await liveApi.listCategories({});
-      categories.value = res?.data?.list || [];
+      categories.value = normalizeCategories(res?.data?.list || []);
+      if (currentSelectCategory.value && !categories.value.some((item) => item.id === currentSelectCategory.value.id)) {
+        store.web().selectCategory(null);
+      }
     } catch (error) {
       categories.value = [];
     }
@@ -73,7 +77,7 @@ export function useHomeFeed() {
     hasSearched.value = true;
     try {
       const res = await searchApi.searchRooms({ keyword: kw, page: 1, limit: 24 });
-      searchResults.value = normalizeLivingRooms(res?.data?.list || []);
+      searchResults.value = normalizeLivingRooms(normalizeSearchRooms(res?.data?.list || []));
     } catch (error) {
       searchResults.value = [];
     } finally {

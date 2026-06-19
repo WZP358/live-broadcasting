@@ -33,17 +33,18 @@
         type="primary"
         block
         :loading="sentimentLoading"
+        :disabled="!analyzableMessages.length"
         @click="analyzeSentiment"
         style="margin-top: 12px"
       >
-        分析当前弹幕
+        {{ sentimentButtonText }}
       </a-button>
 
       <div v-if="sentiment.flags?.length" class="flag-list">
         <h4>需要留意的消息 ({{ sentiment.flags.length }})</h4>
-        <div v-for="idx in sentiment.flags" :key="idx" class="flag-item">
-          <a-tag color="warning">{{ chatMessages[idx]?.username || '未知' }}</a-tag>
-          <span>{{ chatMessages[idx]?.content?.slice(0, 30) || '...' }}</span>
+        <div v-for="item in flaggedMessages" :key="item.index" class="flag-item">
+          <a-tag color="warning">{{ item.message?.username || '未知' }}</a-tag>
+          <span>{{ item.message?.content?.slice(0, 30) || '...' }}</span>
         </div>
       </div>
     </div>
@@ -139,6 +140,7 @@ const tabs = [
 
 const sentiment = ref({ overall: null, score: null, flags: [], summary: "" })
 const sentimentLoading = ref(false)
+const lastAnalyzedMessages = ref([])
 
 const sentimentLabel = computed(() => {
   const map = { positive: "积极活跃", neutral: "平静正常", negative: "需要留意" }
@@ -158,21 +160,68 @@ const scoreColor = computed(() => {
   return "var(--warning)"
 })
 
+const normalizeChatForSentiment = (message = {}) => ({
+  username: message.username || message.nickname || message.name || "匿名",
+  content: String(message.content ?? message.text ?? "").trim(),
+  isSystem: Boolean(message.isSystem || message.isEnter || message.nickname === "系统消息"),
+})
+
+const analyzableMessages = computed(() =>
+  props.chatMessages
+    .map(normalizeChatForSentiment)
+    .filter((message) => message.content && !message.isSystem)
+)
+
+const sentimentButtonText = computed(() => (analyzableMessages.value.length ? "分析当前弹幕" : "暂无弹幕可分析"))
+const getSentimentErrorText = (error) => {
+  const message = String(error?.message || "")
+  if (/消息列表不能为空/.test(message)) {
+    return "还没有可分析的观众弹幕，先等观众发言。"
+  }
+  if (/invalid JSON|schema|empty response|AI model/i.test(message)) {
+    return "AI 模型返回格式不稳定，已收到弹幕但暂时无法生成分析。"
+  }
+  if (/unavailable|timeout|暂不可用|服务/.test(message)) {
+    return "AI Agent 或本地大模型暂不可用，请检查服务状态。"
+  }
+  return "暂时无法生成弹幕分析，请稍后重试。"
+}
+
+const flaggedMessages = computed(() =>
+  (sentiment.value.flags || [])
+    .map((idx) => ({
+      index: idx,
+      message: lastAnalyzedMessages.value[idx],
+    }))
+    .filter((item) => item.message)
+)
+
 const analyzeSentiment = async () => {
-  if (!props.chatMessages.length) return
+  const messages = analyzableMessages.value.slice(-20)
+  if (!messages.length) {
+    sentiment.value = {
+      overall: null,
+      score: null,
+      flags: [],
+      summary: "还没有可分析的观众弹幕，先等观众发言。",
+    }
+    return
+  }
+
   sentimentLoading.value = true
+  lastAnalyzedMessages.value = messages
   try {
-    const res = await agentApi.analyzeSentiment(
-      props.chatMessages.slice(-20).map(m => ({
-        username: m.username || "匿名",
-        content: m.content || "",
-      }))
-    )
+    const res = await agentApi.analyzeSentiment(messages.map(({ username, content }) => ({ username, content })))
     if (res?.data) {
       sentiment.value = res.data
     }
   } catch (e) {
-    sentiment.value = { overall: null, score: null, flags: [], summary: "暂时无法生成弹幕分析" }
+    sentiment.value = {
+      overall: null,
+      score: null,
+      flags: [],
+      summary: getSentimentErrorText(e),
+    }
   } finally {
     sentimentLoading.value = false
   }

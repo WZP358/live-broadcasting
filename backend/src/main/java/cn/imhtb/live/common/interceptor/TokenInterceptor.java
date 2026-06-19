@@ -60,7 +60,11 @@ public class TokenInterceptor implements HandlerInterceptor {
     }
 
     private boolean isPublicResource(String uri){
-        return uri.contains("/public") || uri.startsWith("/ws/");
+        return "/api/login".equals(uri)
+                || "/login".equals(uri)
+                || uri.contains("/public")
+                || uri.startsWith("/uploads/")
+                || uri.startsWith("/ws/");
     }
 
     @Override

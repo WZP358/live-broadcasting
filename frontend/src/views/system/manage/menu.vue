@@ -13,7 +13,7 @@
         <h3>统一维护后台基础能力</h3>
         <p>
           当前系统管理页作为后台基础设施入口，负责承接菜单、角色、字典、系统配置等能力，
-          后续可以继续扩展审计日志、参数管理、租户隔离等企业化功能。
+          让管理员能在同一处完成后台导航、权限和运行参数维护。
         </p>
       </div>
       <div class="manage-hero__stats">
@@ -33,13 +33,11 @@
               <h4>{{ entry.title }}</h4>
               <p>{{ entry.description }}</p>
             </div>
-            <a-tag :color="entry.available ? 'success' : 'default'">
-              {{ entry.available ? "可用" : "规划中" }}
-            </a-tag>
+            <a-tag color="success">可用</a-tag>
           </div>
           <div class="entry-card__foot">
             <span>{{ entry.meta }}</span>
-            <a-button :type="entry.available ? 'primary' : 'default'" :disabled="!entry.available" @click="go(entry.path)">
+            <a-button type="primary" @click="go(entry.path)">
               进入
             </a-button>
           </div>
@@ -52,11 +50,11 @@
         <ul class="manage-list">
           <li>先完善菜单、角色与权限映射，确保后台导航和页面权限一致。</li>
           <li>完善配置保存与复查流程，避免运营设置在切换设备后不一致。</li>
-          <li>字典能力收口后，可继续扩展到礼物状态、直播审核状态等公共枚举。</li>
+          <li>通过字典统一维护礼物状态、直播审核状态等公共枚举。</li>
         </ul>
       </AdminCard>
 
-      <AdminCard title="当前状态" subtitle="用于说明哪些模块已经可用，哪些仍在规划。">
+      <AdminCard title="当前状态" subtitle="用于说明系统管理模块的当前可用范围。">
         <div class="admin-summary-list">
           <div class="admin-summary-item">
             <span class="admin-summary-item__label">菜单管理</span>
@@ -95,28 +93,24 @@ const entries = [
     description: "维护后台导航结构、图标、排序和可见状态。",
     meta: "用于后台信息架构治理",
     path: "/system/system-manage/system-manage-menu",
-    available: true,
   },
   {
     title: "角色管理",
-    description: "维护角色名称、状态和后续权限分配入口。",
+    description: "维护角色名称、状态和菜单授权入口。",
     meta: "用于账号角色治理",
     path: "/system/system-manage/user-role-manage",
-    available: true,
   },
   {
     title: "字典管理",
     description: "维护公共枚举和值映射，供各业务模块复用。",
     meta: "用于公共基础配置",
     path: "/system/system-manage/dictionary-manage",
-    available: true,
   },
   {
     title: "系统配置",
     description: "集中管理站点、安全、登录和直播参数。",
     meta: "用于运行参数维护",
     path: "/system/system-manage/system-config",
-    available: true,
   },
 ]
 

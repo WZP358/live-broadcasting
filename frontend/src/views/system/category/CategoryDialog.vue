@@ -2,7 +2,7 @@
   <a-modal :title="title" :open="visible" :confirm-loading="confirmLoading" width="720px" @ok="handleOk" @cancel="handleCancel">
     <div class="admin-modal-intro">
       <h4>分类配置</h4>
-      <p>维护直播分类名称、图标和排序值，保证前台分类导航与后台运营配置一致。</p>
+      <p>维护直播分类名称、排序值和启用状态，保证前台分类导航与后台运营配置一致。</p>
     </div>
 
     <a-form ref="formRef" class="admin-dialog-form" :model="formState" :rules="formRules" layout="vertical">
@@ -10,11 +10,6 @@
         <a-col :span="12">
           <a-form-item label="分类名称" name="name">
             <a-input v-model:value="formState.name" placeholder="请输入分类名称" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="图标地址" name="icon">
-            <a-input v-model:value="formState.icon" placeholder="请输入分类图标 URL" />
           </a-form-item>
         </a-col>
         <a-col :span="12">
@@ -53,7 +48,6 @@ const confirmLoading = ref(false)
 const formState = reactive({
   id: null,
   name: "",
-  icon: "",
   sort: 0,
   status: 0,
 })
@@ -68,7 +62,6 @@ watch(
     Object.assign(formState, {
       id: value?.id || null,
       name: value?.name || "",
-      icon: value?.icon || "",
       sort: value?.sort ?? 0,
       status: value?.status ?? 0,
     })
@@ -81,7 +74,6 @@ const resetForm = () => {
   Object.assign(formState, {
     id: null,
     name: "",
-    icon: "",
     sort: 0,
     status: 0,
   })

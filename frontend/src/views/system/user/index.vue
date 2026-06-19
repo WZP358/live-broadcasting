@@ -42,7 +42,7 @@
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'nickname'">
               <div class="admin-avatar-cell">
-                <a-avatar :src="record.avatar">
+                <a-avatar :src="safeAvatar(record.avatar)">
                   {{ (record.nickname || "用户").slice(0, 1) }}
                 </a-avatar>
                 <div class="admin-avatar-meta">
@@ -93,6 +93,7 @@ import systemUserApi from "@/api/systemUser"
 import { createUserColumns } from "./columns"
 import Detail from "./Detail.vue"
 import Edit from "./Edit.vue"
+import { FALLBACK_AVATAR, resolveSafeImageUrl } from "@/utils/fallback"
 
 const formRef = ref()
 const formState = reactive({
@@ -112,6 +113,7 @@ const editData = ref({})
 const detailVisible = ref(false)
 const detailData = ref({})
 const { containerRef, tableScrollY } = useTableScroll()
+const safeAvatar = (url) => resolveSafeImageUrl(url, FALLBACK_AVATAR)
 
 const getData = async () => {
   const res = await systemUserApi.getPageUsers({

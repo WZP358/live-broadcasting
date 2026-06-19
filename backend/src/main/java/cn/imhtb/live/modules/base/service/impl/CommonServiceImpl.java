@@ -2,6 +2,7 @@ package cn.imhtb.live.modules.base.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.imhtb.live.common.constants.AntLiveConstant;
+import cn.imhtb.live.common.enums.StatusEnum;
 import cn.imhtb.live.common.exception.BusinessException;
 import cn.imhtb.live.common.utils.AliyunSmsService;
 import cn.imhtb.live.common.utils.CommonUtil;
@@ -40,7 +41,10 @@ public class CommonServiceImpl implements ICommonService {
 
     @Override
     public List<CategoryResp> getCategories() {
-        LambdaQueryWrapper<Category> wrapper = new LambdaQueryWrapper<Category>().orderByDesc(Category::getSort);
+        LambdaQueryWrapper<Category> wrapper = new LambdaQueryWrapper<Category>()
+                .eq(Category::getStatus, StatusEnum.YES.getCode())
+                .orderByDesc(Category::getSort)
+                .orderByAsc(Category::getId);
         List<Category> categories = categoryMapper.selectList(wrapper);
         return BeanUtil.copyToList(categories, CategoryResp.class);
     }

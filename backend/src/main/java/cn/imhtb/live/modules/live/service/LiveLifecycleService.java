@@ -2,6 +2,7 @@ package cn.imhtb.live.modules.live.service;
 
 import cn.imhtb.live.common.enums.LiveInfoStatusEnum;
 import cn.imhtb.live.common.enums.LiveRoomStatusEnum;
+import cn.imhtb.live.modules.live.event.LiveEvent;
 import cn.imhtb.live.mappers.RoomMapper;
 import cn.imhtb.live.modules.live.event.LiveEventBus;
 import cn.imhtb.live.modules.live.event.LiveStartedEvent;
@@ -13,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDateTime;
 
@@ -61,7 +64,7 @@ public class LiveLifecycleService {
             log.error("开始录制回放失败: roomId={}", roomId, e);
         }
 
-        eventBus.publish(new LiveStartedEvent(roomId, newLiveInfo.getUserId()));
+        publishAfterCommit(new LiveStartedEvent(roomId, newLiveInfo.getUserId()));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -89,7 +92,7 @@ public class LiveLifecycleService {
         updateRoom.setStatus(LiveRoomStatusEnum.STOP.getCode());
         roomMapper.updateById(updateRoom);
 
-        eventBus.publish(new LiveStoppedEvent(roomId));
+        publishAfterCommit(new LiveStoppedEvent(roomId));
     }
 
     private LiveInfo getLivingInfo(Integer roomId) {
@@ -99,5 +102,18 @@ public class LiveLifecycleService {
                         .orderByDesc(LiveInfo::getCreateTime)
                         .last("limit 1"),
                 false);
+    }
+
+    private void publishAfterCommit(LiveEvent event) {
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    eventBus.publish(event);
+                }
+            });
+            return;
+        }
+        eventBus.publish(event);
     }
 }

@@ -27,6 +27,7 @@ export default {
             url: '/api/v1/moderator/check',
             method: 'get',
             params,
+            silentError: true,
         })
     },
     mute(data) {

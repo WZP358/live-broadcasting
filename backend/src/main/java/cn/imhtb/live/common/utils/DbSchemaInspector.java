@@ -1,6 +1,7 @@
 package cn.imhtb.live.common.utils;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -27,5 +28,13 @@ public class DbSchemaInspector {
                 columnName
         );
         return count != null && count > 0;
+    }
+
+    public void executeQuietly(String sql) {
+        try {
+            jdbcTemplate.execute(sql);
+        } catch (DataAccessException e) {
+            // Schema helpers are best-effort so optional business modules can still start.
+        }
     }
 }

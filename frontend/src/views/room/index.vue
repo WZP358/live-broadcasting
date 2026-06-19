@@ -4,7 +4,7 @@
       <main class="player-column">
         <div class="room-head">
           <div class="anchor-avatar-wrap">
-            <img class="anchor-avatar" :src="roomInfo.userInfo?.avatar || fallbackAvatar" alt="" @error="onImgError" />
+            <img class="anchor-avatar" :src="safeAnchorAvatar" alt="" @error="onImgError" />
             <span class="anchor-live-dot"></span>
           </div>
           <div class="head-copy">
@@ -21,6 +21,10 @@
           </div>
           <div class="head-stats">
             <div>
+              <strong>{{ formatCount(roomExtraInfo.followCount || 0) }}</strong>
+              <span>关注</span>
+            </div>
+            <div>
               <strong>{{ formatCount(roomInfo.popularity || 0) }}</strong>
               <span>热度</span>
             </div>
@@ -31,15 +35,17 @@
           </div>
           <div class="head-actions">
             <a-button
+              v-if="!isOwnRoom"
               type="primary"
               :ghost="roomExtraInfo.follow"
+              :loading="followLoading"
               @click="handleFollowBtnClick"
             >
               {{ roomExtraInfo.follow ? "已关注" : "关注" }}
             </a-button>
-            <a-button v-if="isLogin && roomInfo.userId !== myUserId" @click="showGuardianModal = true">开通守护</a-button>
+            <a-button v-if="isLogin && !isOwnRoom" @click="showGuardianModal = true">开通守护</a-button>
             <a-button @click="copyRoomLink">分享</a-button>
-            <a-button v-if="isLogin && roomInfo.userId !== myUserId" type="text" danger @click="handleReportRoom">举报</a-button>
+            <a-button v-if="isLogin && !isOwnRoom" type="text" danger @click="handleReportRoom">举报</a-button>
           </div>
         </div>
 
@@ -51,11 +57,15 @@
               :room-id="roomId"
               :pull-url="roomInfo.pullUrl"
               :browser-live="Boolean(roomInfo.browserLive)"
+              :cohost-enabled="isLogin && !isOwnRoom && hasEnteredRoom"
+              :applicant-name="viewerName"
+              :applicant-avatar="viewerAvatar"
+              @require-login="goLogin"
             />
             <div
               v-else-if="roomInfo.status === 1"
               class="room-entry-preview"
-              :style="{ backgroundImage: `url(${roomInfo.cover || fallbackCover})` }"
+              :style="{ backgroundImage: `url(${safeRoomCover})` }"
             >
               <div class="preview-scoreboard">
                 <div class="preview-team">
@@ -86,7 +96,7 @@
               </button>
 
               <div class="preview-mini-card">
-                <img :src="roomInfo.userInfo?.avatar || fallbackAvatar" alt="" @error="onImgError" />
+                <img :src="safeAnchorAvatar" alt="" @error="onImgError" />
                 <div>
                   <strong>{{ anchorName }}</strong>
                   <span>{{ roomInfo.title || "精彩直播" }}</span>
@@ -110,15 +120,18 @@
               <strong>{{ roomInfo.status === 1 ? "直播画面准备中" : "主播暂未开播" }}</strong>
               <span>{{ roomInfo.status === 1 ? "稍等片刻，直播画面马上出现。" : "可以先关注主播，开播后再回来观看。" }}</span>
             </div>
+            <DanmakuOverlay ref="danmakuOverlayRef" :enabled="danmakuEnabled" />
             <div id="svga-wrap"></div>
           </div>
 
           <PlayerToolbar
             :is-live="roomInfo.status === 1"
             :viewer-count="roomInfo.popularity || 0"
+            :danmaku-enabled="danmakuEnabled"
             @line-change="onLineChange"
             @quality-change="onQualityChange"
             @volume-change="onVolumeChange"
+            @danmaku-toggle="onDanmakuToggle"
             @fullscreen="onFullscreen"
           />
 
@@ -136,7 +149,13 @@
             <h2>礼物与互动</h2>
             <span>{{ isLogin ? "送礼会扣除开心果并进入亲密榜" : "登录后可送礼" }}</span>
           </div>
-          <GiftList :room-id="roomId" @require-login="goLogin" />
+          <GiftList
+            :room-id="roomId"
+            :disabled="roomInfo.status !== 1 || isOwnRoom"
+            :disabled-reason="isOwnRoom ? '不能给自己的直播间送礼' : roomInfo.status === 1 ? '' : '主播暂未开播，无法送礼'"
+            @require-login="goLogin"
+            @gift-sent="handleLocalGiftSent"
+          />
         </section>
 
         <section class="detail-section">
@@ -181,39 +200,6 @@
         <LiveRoom v-for="item in recommendRooms" :key="item.id" :room="item" />
       </div>
     </section>
-
-    <button
-      class="floating-agent-btn"
-      type="button"
-      aria-label="打开 AI 小助手"
-      @click="showFloatingAgent = true"
-    >
-      <span class="floating-agent-btn__mark">AI</span>
-      <span class="floating-agent-btn__label">小脉</span>
-    </button>
-
-    <a-drawer
-      v-model:open="showFloatingAgent"
-      class="floating-agent-drawer"
-      width="392"
-      placement="right"
-      destroy-on-close
-    >
-      <template #title>
-        <div class="agent-drawer-title">
-          <span>AI 小助手</span>
-          <small>直播答疑 · 内容建议 · 互动分析</small>
-        </div>
-      </template>
-      <AgentPanel
-        default-tab="helper"
-        :chat-messages="chatMessages"
-        :room-title="roomInfo.title"
-        :category-name="roomInfo.categoryInfo?.name"
-        :anchor-name="anchorName"
-        @send-welcome="handleSendWelcome"
-      />
-    </a-drawer>
 
     <!-- 开通守护弹窗 -->
     <a-modal v-model:open="showGuardianModal" title="开通守护" :footer="null" width="420px">
@@ -270,18 +256,17 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue"
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { useStore } from "@/stores"
 import $modal from "@/utils/message"
-import SVGA from "svgaplayerweb"
 import Player from "./Player.vue"
+import DanmakuOverlay from "./DanmakuOverlay.vue"
 import PlayerToolbar from "@/components/live/PlayerToolbar.vue"
 import ChatList from "./ChatList.vue"
 import GiftList from "./GiftList.vue"
 import LiveRoom from "@/components/LiveRoom.vue"
 import AgentPanel from "@/components/live/AgentPanel.vue"
-import GiftEffects from "@/components/live/GiftEffects.vue"
 import roomApi from "@/api/room"
 import watchApi from "@/api/watch"
 import liveApi from "@/api/live"
@@ -290,6 +275,9 @@ import guardianApi from "@/api/guardian"
 import recommendApi from "@/api/recommend"
 import reportApi from "@/api/report"
 import moderatorApi from "@/api/moderator"
+
+const GiftEffects = defineAsyncComponent(() => import("@/components/live/GiftEffects.vue"))
+let svgaModulePromise = null
 
 const router = useRouter()
 const store = useStore()
@@ -301,7 +289,9 @@ const roomInfo = ref({})
 const roomExtraInfo = ref({})
 const roomTags = ref([])
 const recommendRooms = ref([])
-const myUserId = ref(store.user().userId || 0)
+const myUserId = computed(() => store.user().userInfo?.userId || 0)
+const isOwnRoom = computed(() => Boolean(myUserId.value && roomInfo.value?.userId === myUserId.value))
+const followLoading = ref(false)
 
 // 守护相关
 const showGuardianModal = ref(false)
@@ -328,19 +318,29 @@ const checkModerator = async () => {
 }
 const svgaPlayer = ref(null)
 const svgaParser = ref(null)
-import { FALLBACK_AVATAR, FALLBACK_COVER, onImgError } from "@/utils/fallback"
+import { FALLBACK_AVATAR, FALLBACK_COVER, onImgError, resolveSafeImageUrl } from "@/utils/fallback"
 const fallbackAvatar = FALLBACK_AVATAR
 const fallbackCover = FALLBACK_COVER
 
 const chatMode = ref("chat")
 const hasEnteredRoom = ref(false)
-const showFloatingAgent = ref(false)
 const chatMessages = ref([])
+const danmakuEnabled = ref(true)
+const danmakuOverlayRef = ref(null)
 
 const anchorName = computed(() => roomInfo.value?.userInfo?.name || roomInfo.value?.userInfo?.nickName || "主播")
+const safeAnchorAvatar = computed(() => resolveSafeImageUrl(roomInfo.value?.userInfo?.avatar, FALLBACK_AVATAR))
+const safeRoomCover = computed(() => resolveSafeImageUrl(roomInfo.value?.cover, FALLBACK_COVER))
+const viewerName = computed(() => {
+  const info = store.user().userInfo || {}
+  return info.nickName || info.nickname || info.name || info.username || "观众"
+})
+const viewerAvatar = computed(() => resolveSafeImageUrl(store.user().userInfo?.avatar, ""))
 const reportDialogTitle = computed(() => (reportTargetType.value === "message" ? "举报弹幕" : "举报直播间"))
 
 const giftEffectsRef = ref(null)
+const recentGiftEffects = new Map()
+let danmakuSeenMessages = new WeakSet()
 
 const formatCount = (value) => {
   const count = Number(value || 0)
@@ -351,7 +351,6 @@ const formatCount = (value) => {
 }
 
 onMounted(async () => {
-  initSvga()
   await refreshRoom()
 })
 
@@ -362,6 +361,8 @@ onBeforeUnmount(() => {
 watch(roomId, async () => {
   hasEnteredRoom.value = false
   chatMessages.value = []
+  danmakuSeenMessages = new WeakSet()
+  danmakuOverlayRef.value?.clear?.()
   await refreshRoom()
 })
 
@@ -378,7 +379,7 @@ const refreshRoom = async () => {
   if (isLogin.value) {
     await Promise.all([getRoomExtraInfo(), saveHistory()])
   } else {
-    roomExtraInfo.value = {}
+    await getRoomExtraInfo()
   }
 }
 
@@ -455,17 +456,31 @@ const handleFollowBtnClick = async () => {
     goLogin()
     return
   }
+  if (isOwnRoom.value || followLoading.value) {
+    return
+  }
+  followLoading.value = true
   try {
     if (roomExtraInfo.value.follow) {
-      await watchApi.unFollow({ roomId: roomId.value })
-      $modal.msgSuccess("已取消关注")
+      const res = await watchApi.unFollow({ roomId: roomId.value })
+      if (res?.data) {
+        $modal.msgSuccess("已取消关注")
+      } else {
+        $modal.msgWarning("当前没有关注该直播间")
+      }
     } else {
-      await watchApi.follow({ roomId: roomId.value })
-      $modal.msgSuccess("关注成功")
+      const res = await watchApi.follow({ roomId: roomId.value })
+      if (res?.data) {
+        $modal.msgSuccess("关注成功")
+      } else {
+        $modal.msgWarning("暂时无法关注该直播间")
+      }
     }
     await getRoomExtraInfo()
   } catch (error) {
-    $modal.msgError("操作失败，请稍后重试")
+    $modal.msgError(error?.message || "操作失败，请稍后重试")
+  } finally {
+    followLoading.value = false
   }
 }
 
@@ -484,6 +499,13 @@ const onVolumeChange = (vol) => {
   playChild.value?.setVolume?.(vol)
 }
 
+const onDanmakuToggle = (enabled) => {
+  danmakuEnabled.value = enabled
+  if (!enabled) {
+    danmakuOverlayRef.value?.clear?.()
+  }
+}
+
 const onFullscreen = () => {
   const playerEl = document.querySelector(".player-box")
   if (playerEl) {
@@ -495,13 +517,30 @@ const onFullscreen = () => {
   }
 }
 
-const initSvga = () => {
-  svgaPlayer.value = new SVGA.Player("#svga-wrap")
-  svgaParser.value = new SVGA.Parser("#svga-wrap")
+const loadSvga = () => {
+  if (!svgaModulePromise) {
+    svgaModulePromise = import("svgaplayerweb").then((module) => module.default || module)
+  }
+  return svgaModulePromise
 }
 
-const playSvga = (url) => {
-  if (!svgaPlayer.value || !svgaParser.value) return
+const initSvga = async () => {
+  if (svgaPlayer.value && svgaParser.value) {
+    return true
+  }
+  const wrap = document.querySelector("#svga-wrap")
+  if (!wrap) {
+    return false
+  }
+  const SVGA = await loadSvga()
+  svgaPlayer.value = new SVGA.Player("#svga-wrap")
+  svgaParser.value = new SVGA.Parser("#svga-wrap")
+  return true
+}
+
+const playSvga = async (url) => {
+  const ready = await initSvga()
+  if (!ready || !svgaPlayer.value || !svgaParser.value) return
   svgaPlayer.value.clearAfterStop = true
   svgaPlayer.value.stopAnimation(true)
   svgaParser.value.load(url, (videoItem) => {
@@ -517,6 +556,7 @@ const getRoomInfo = async () => {
     roomInfo.value = res.data || {}
   } catch (error) {
     roomInfo.value = {}
+    $modal.msgError(error?.message || "直播间加载失败，请稍后重试")
   }
 }
 
@@ -560,6 +600,13 @@ const extractGiftName = (text = "") => {
   return rewardMatch?.[1]?.trim() || ""
 }
 
+const extractGiftCount = (text = "") => {
+  const normalized = String(text || "").trim()
+  const sentMatch = normalized.match(/(?:送出了?|赠送了)\s*.+?(?:\s*x\s*(\d+)|\s*\*\s*(\d+)|\s+(\d+)\s*个?|$)/)
+  const matched = sentMatch?.slice(1).find(Boolean)
+  return Number.parseInt(matched || "1", 10) || 1
+}
+
 const extractSenderName = (text = "") => {
   const normalized = String(text || "").trim()
   const match = normalized.match(/^(.+?)(?:\s*送出了?|\s*赠送了)/)
@@ -572,22 +619,92 @@ const resolveGiftPayload = (payload, fallbackSender = "") => {
     return {
       giftName: payload.giftName || extractGiftName(text) || "小心心",
       senderName: payload.senderName || payload.nickname || extractSenderName(text) || fallbackSender || "",
+      count: Number(payload.count || payload.number || extractGiftCount(text) || 1),
+      giftId: payload.giftId || payload.presentId || payload.id || 0,
+      senderId: payload.senderId || payload.fromUserId || 0,
+      text,
+      source: payload.source || "ws",
     }
   }
   return {
     giftName: payload || "小心心",
     senderName: fallbackSender || "",
+    count: 1,
+    giftId: 0,
+    senderId: 0,
+    text: "",
+    source: "ws",
   }
 }
 
-const handleSendGift = (payload, senderName) => {
-  const gift = resolveGiftPayload(payload, senderName)
-  giftEffectsRef.value?.playGiftEffect(gift.giftName, gift.senderName)
-  playSvga("svga/angel.svga")
+const getGiftEffectSignature = (gift) => {
+  return [
+    gift.giftId || gift.giftName || "",
+    gift.giftName || "",
+    gift.senderId || gift.senderName || "",
+    gift.count || 1,
+  ].join("|")
+}
+
+const rememberGiftEffect = (gift, ttl = 2600) => {
+  const signature = getGiftEffectSignature(gift)
+  recentGiftEffects.set(signature, Date.now() + ttl)
+  return signature
+}
+
+const consumeGiftEffect = (gift) => {
+  const signature = getGiftEffectSignature(gift)
+  const expiry = recentGiftEffects.get(signature)
+  if (!expiry) return false
+  if (Date.now() > expiry) {
+    recentGiftEffects.delete(signature)
+    return false
+  }
+  recentGiftEffects.delete(signature)
+  return true
+}
+
+const handleSendGift = (payload, senderName, source = "ws") => {
+  const gift = resolveGiftPayload(
+    typeof payload === "object" ? { ...payload, senderName: payload.senderName || senderName, source } : payload,
+    senderName
+  )
+
+  if (source !== "local" && consumeGiftEffect(gift)) {
+    return
+  }
+
+  if (source === "local") {
+    rememberGiftEffect(gift)
+  }
+
+  giftEffectsRef.value?.playGiftEffect(gift.giftName, gift.senderName, {
+    count: gift.count,
+    giftId: gift.giftId,
+    text: gift.text,
+  })
+  void playSvga("svga/angel.svga")
+}
+
+const handleLocalGiftSent = (payload) => {
+  handleSendGift(payload, payload?.senderName, "local")
 }
 
 const handleChatMessagesChange = (messages) => {
-  chatMessages.value = messages || []
+  const nextMessages = messages || []
+  const incomingMessages = nextMessages.filter((item) => {
+    if (!item || item.isSystem || item.isGift || item.isEnter) return false
+    if (danmakuSeenMessages.has(item)) return false
+    danmakuSeenMessages.add(item)
+    return true
+  })
+  chatMessages.value = nextMessages
+  incomingMessages.forEach((message) => {
+    danmakuOverlayRef.value?.push?.({
+      ...message,
+      isSelf: Boolean(message.isSelf || (message.fromUserId && message.fromUserId === myUserId.value)),
+    })
+  })
 }
 
 const copyRoomLink = async () => {
@@ -791,6 +908,24 @@ const goLogin = () => {
   border-radius: 0;
   background: #050609;
   box-shadow: none;
+}
+
+.player-box:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  background: #050609;
+}
+
+.player-box:fullscreen :deep(.player-shell),
+.player-box:fullscreen :deep(#videoElement) {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.player-box:fullscreen :deep(#videoElement) {
+  object-fit: contain;
 }
 
 .player-empty {
@@ -1201,80 +1336,6 @@ const goLogin = () => {
   gap: 12px;
 }
 
-.floating-agent-btn {
-  position: fixed;
-  right: 22px;
-  bottom: 92px;
-  z-index: 90;
-  display: grid;
-  place-items: center;
-  width: 66px;
-  height: 66px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  color: #fff;
-  background:
-    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 22%),
-    linear-gradient(145deg, #ff8d5c 0%, #ff5aa6 54%, #8f62ff 100%);
-  box-shadow:
-    0 14px 30px rgba(255, 90, 166, 0.28),
-    0 8px 18px rgba(14, 20, 36, 0.22);
-  cursor: pointer;
-}
-
-.floating-agent-btn::before {
-  position: absolute;
-  inset: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 50%;
-  content: "";
-}
-
-.floating-agent-btn__mark {
-  font-size: 17px;
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: 0;
-}
-
-.floating-agent-btn__label {
-  position: absolute;
-  right: -6px;
-  bottom: -6px;
-  min-width: 34px;
-  height: 18px;
-  padding: 0 6px;
-  border-radius: 9px;
-  color: #fff;
-  background: rgba(17, 20, 27, 0.9);
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 18px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
-}
-
-.floating-agent-drawer :deep(.ant-drawer-body) {
-  padding: 0;
-}
-
-.agent-drawer-title {
-  display: grid;
-  gap: 2px;
-}
-
-.agent-drawer-title span {
-  color: var(--text-primary);
-  font-size: 15px;
-  font-weight: 900;
-}
-
-.agent-drawer-title small {
-  color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 500;
-}
-
 @media (max-width: 1180px) {
   .room-shell {
     grid-template-columns: 1fr;
@@ -1339,15 +1400,5 @@ const goLogin = () => {
     grid-template-columns: 1fr;
   }
 
-  .floating-agent-btn {
-    right: 14px;
-    bottom: 82px;
-    width: 58px;
-    height: 58px;
-  }
-
-  .floating-agent-btn__label {
-    display: none;
-  }
 }
 </style>

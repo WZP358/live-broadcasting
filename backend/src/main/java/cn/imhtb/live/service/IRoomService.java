@@ -36,6 +36,13 @@ public interface IRoomService extends IService<Room> {
     boolean saveInfo(RoomInfoSaveRequest request);
 
     /**
+     * 校验直播间是否具备开播条件。
+     *
+     * @param userId 用户ID
+     */
+    void validateReadyForLive(Integer userId);
+
+    /**
      * 获取正在直播的房间
      *
      * @param cid      直播分类

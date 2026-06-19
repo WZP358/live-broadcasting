@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
  * <h3>特征向量设计</h3>
  * <p>每个直播间被编码为一个稠密特征向量，维度构成如下：</p>
  * <pre>
- *   V_room = [category_onehot | tfidf_keywords | popularity_norm | browser_flag]
- *            ↑                 ↑                 ↑                ↑
- *           分类独热编码      标题TF-IDF词向量    归一化人气值      浏览器直播标记
+ *   V_room = [category_onehot | tfidf_keywords]
+ *            ↑                 ↑
+ *           分类独热编码      标题/简介TF-IDF词向量
  * </pre>
  *
  * @author PulseLive Recommendation Team

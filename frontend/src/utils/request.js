@@ -47,6 +47,10 @@ service.interceptors.response.use((response) => {
         return Promise.reject(new Error(msg || 'Unauthorized'))
     }
 
+    if (error?.config?.silentError) {
+        return Promise.reject(new Error(msg || error.message || '网络异常'))
+    }
+
     const errMsg = msg || error.message || ''
     if (errMsg === 'Network Error') {
         $modal.msgError('网络连接异常，请稍后重试')

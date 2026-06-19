@@ -24,13 +24,33 @@ const server = await createServer({
     },
   },
   server: {
-    host: 'localhost',
+    host: '0.0.0.0',
     port: 5174,
     proxy: {
       '/api': {
         target: process.env.VITE_BACKEND_URL || 'http://localhost:9000',
         changeOrigin: true,
         rewrite: p => p.replace(/^\/api/, ''),
+      },
+      '/uploads': {
+        target: process.env.VITE_BACKEND_URL || 'http://localhost:9000',
+        changeOrigin: true,
+      },
+      '/ws-netty': {
+        target: 'ws://localhost:10022',
+        ws: true,
+        changeOrigin: true,
+        rewrite: p => p.replace(/^\/ws-netty/, '/'),
+      },
+      '/ws/browser-live': {
+        target: process.env.VITE_BACKEND_URL || 'http://localhost:9000',
+        ws: true,
+        changeOrigin: true,
+      },
+      '/live-stream': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        rewrite: p => p.replace(/^\/live-stream/, ''),
       },
     },
   },

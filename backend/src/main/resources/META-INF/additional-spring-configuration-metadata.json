@@ -46,29 +46,9 @@
       "description": "Description for tencent.sms.smsSign."
     },
     {
-      "name": "tencent.live.domain",
-      "type": "java.lang.String",
-      "description": "Description for tencent.live.domain."
-    },
-    {
-      "name": "tencent.live.appName",
-      "type": "java.lang.String",
-      "description": "Description for tencent.live.appName."
-    },
-    {
       "name": "alipay.path",
       "type": "java.lang.String",
       "description": "Description for alipay.path."
-    },
-    {
-      "name": "tencent.live.iii",
-      "type": "java.lang.String",
-      "description": "Description for tencent.live.iii."
-    },
-    {
-      "name": "tencent.live.kkk",
-      "type": "java.lang.String",
-      "description": "Description for tencent.live.kkk."
     },
     {
       "name": "tencent.cos.bucketName",

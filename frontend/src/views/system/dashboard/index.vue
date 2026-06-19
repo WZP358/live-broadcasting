@@ -9,6 +9,9 @@
 
     <AdminStatGrid :items="metricCards" />
 
+    <DemoModePanel @changed="loadSummary" />
+    <DemoHealthPanel />
+
     <div class="dashboard-grid">
       <AdminCard title="运营总览" subtitle="把关键指标拆成摘要卡，方便管理员快速判断平台健康状态。">
         <div class="admin-summary-list">
@@ -49,7 +52,7 @@
         <ul class="dashboard-notes">
           <li>保持登录入口清晰，根据账号角色进入对应的观看、开播或管理页面。</li>
           <li>高频管理动作优先放在列表页和工作台，减少运营人员来回跳转。</li>
-          <li>开播、观看、降噪和字幕能力要保持稳定，并持续优化主播侧提示。</li>
+          <li>开播、观看、降噪和互动能力要保持稳定，并持续优化主播侧提示。</li>
         </ul>
       </AdminCard>
     </div>
@@ -62,6 +65,8 @@ import { useRouter } from "vue-router"
 import AdminPageLayout from "@/components/admin/AdminPageLayout.vue"
 import AdminStatGrid from "@/components/admin/AdminStatGrid.vue"
 import AdminCard from "@/components/admin/AdminCard.vue"
+import DemoModePanel from "@/components/admin/DemoModePanel.vue"
+import DemoHealthPanel from "@/components/admin/DemoHealthPanel.vue"
 import dashboardApi from "@/api/system/dashboard"
 import { quickLinks } from "./quickLinks"
 
@@ -92,7 +97,7 @@ const focusItems = [
   },
   {
     title: "直播能力增强",
-    description: "持续完善实时字幕、降噪等主播辅助能力，让开播更省心。",
+    description: "持续完善实时降噪、礼物动效和互动等主播辅助能力，让开播更省心。",
     status: "已接入",
     color: "success",
   },

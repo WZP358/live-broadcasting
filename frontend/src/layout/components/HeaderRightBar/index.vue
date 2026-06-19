@@ -2,7 +2,7 @@
   <div class="header-right-bar">
     <a-dropdown v-if="userStore.isLogin" placement="bottomRight" :trigger="['hover']">
       <div class="user-info">
-        <a-avatar :size="34" :src="userStore.userInfo.avatar" :style="{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }">
+        <a-avatar :size="34" :src="safeAvatar" :style="{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }">
           {{ userStore.userInfo.username?.charAt(0)?.toUpperCase() }}
         </a-avatar>
         <div class="user-meta">
@@ -39,11 +39,14 @@
 <script setup>
 import { DownOutlined, LogoutOutlined, MessageOutlined, UserOutlined } from "@ant-design/icons-vue"
 import { Modal } from "ant-design-vue"
+import { computed } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "@/stores/modules/user"
+import { FALLBACK_AVATAR, resolveSafeImageUrl } from "@/utils/fallback"
 
 const userStore = useUserStore()
 const router = useRouter()
+const safeAvatar = computed(() => resolveSafeImageUrl(userStore.userInfo.avatar, FALLBACK_AVATAR))
 
 const goToProfile = () => router.push("/center")
 const goToMessages = () => router.push("/center/messages")

@@ -159,6 +159,14 @@ public class RedisUtil {
     }
 
     /**
+     * 集合移除成员
+     */
+    public void removeSetMember(String key, Object value) {
+        SetOperations<String, Object> set = redisTemplate.opsForSet();
+        set.remove(key, value);
+    }
+
+    /**
      * 集合获取
      */
     public Set<Object> setMembers(String key) {

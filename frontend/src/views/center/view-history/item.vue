@@ -5,11 +5,11 @@
         <PlayCircleOutlined />
         直播中
       </span>
-      <img class="history-item__cover" :src="cover" alt="" />
+      <img class="history-item__cover" :src="safeCover" alt="" />
     </div>
 
     <div class="history-item__info">
-      <img class="history-item__avatar" :src="cover" alt="" />
+      <img class="history-item__avatar" :src="safeCover" alt="" />
       <div class="history-item__meta">
         <strong>{{ name || "未知主播" }}</strong>
         <span>点击进入直播间查看详情</span>
@@ -20,7 +20,9 @@
 
 <script setup>
 import { PlayCircleOutlined } from "@ant-design/icons-vue"
+import { computed } from "vue"
 import { useRouter } from "vue-router"
+import { FALLBACK_COVER, resolveSafeImageUrl } from "@/utils/fallback"
 
 const router = useRouter()
 
@@ -30,6 +32,8 @@ const propsObj = defineProps({
   roomId: Number,
   liveStatus: Number,
 })
+
+const safeCover = computed(() => resolveSafeImageUrl(propsObj.cover, FALLBACK_COVER))
 
 const itemClick = () => {
   router.push("/room/" + propsObj.roomId)

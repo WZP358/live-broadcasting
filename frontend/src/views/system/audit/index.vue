@@ -7,6 +7,12 @@
         <template #left>
           <a-space>
             <a-button type="primary" @click="getData">刷新</a-button>
+            <a-select v-model:value="filterStatus" class="status-filter" @change="handleSearch">
+              <a-select-option :value="0">待处理</a-select-option>
+              <a-select-option :value="1">已处理</a-select-option>
+              <a-select-option :value="2">已驳回</a-select-option>
+              <a-select-option :value="-1">全部记录</a-select-option>
+            </a-select>
             <a-select v-model:value="filterType" class="type-filter" @change="handleSearch">
               <a-select-option value="">全部来源</a-select-option>
               <a-select-option value="live_guard">直播风控</a-select-option>
@@ -27,6 +33,7 @@
           :data-source="displayRows"
           :loading="loading"
           :pagination="false"
+          :locale="{ emptyText: '暂无审核数据。提交直播间举报或触发风控后，会出现在这里。' }"
           :scroll="{ x: 1280, y: tableScrollY }"
           row-key="id"
           size="middle"
@@ -44,6 +51,9 @@
             <template v-else-if="column.key === 'reason'">
               <a-tag color="red">{{ record.reason || '-' }}</a-tag>
             </template>
+            <template v-else-if="column.key === 'status'">
+              <a-tag :color="statusColor(record.status)">{{ statusText(record.status) }}</a-tag>
+            </template>
             <template v-else-if="column.key === 'description'">
               <a-typography-paragraph :ellipsis="{ rows: 2, expandable: false }" class="desc">
                 {{ record.description || '-' }}
@@ -52,9 +62,11 @@
             <template v-else-if="column.key === 'action'">
               <a-space>
                 <a @click="openDetail(record)">详情</a>
-                <a v-if="record.targetType === 'live_guard'" class="danger-link" @click="confirmViolation(record)">确认违规</a>
-                <a v-else @click="handleReport(record, 1)">通过</a>
-                <a @click="handleReport(record, 2)">驳回</a>
+                <template v-if="Number(record.status || 0) === 0">
+                  <a v-if="record.targetType === 'live_guard'" class="danger-link" @click="confirmViolation(record)">确认违规</a>
+                  <a v-else @click="handleReport(record, 1)">通过</a>
+                  <a @click="handleReport(record, 2)">驳回</a>
+                </template>
               </a-space>
             </template>
           </template>
@@ -71,8 +83,22 @@
         <a-descriptions-item label="房间">{{ detailData.roomId || '-' }}</a-descriptions-item>
         <a-descriptions-item label="目标用户">{{ detailData.targetUserId || '-' }}</a-descriptions-item>
         <a-descriptions-item label="原因">{{ detailData.reason || '-' }}</a-descriptions-item>
+        <a-descriptions-item label="状态">{{ statusText(detailData.status) }}</a-descriptions-item>
         <a-descriptions-item label="提交时间">{{ detailData.createTime || '-' }}</a-descriptions-item>
-        <a-descriptions-item label="证据">
+        <a-descriptions-item label="处理结果">{{ detailData.handleResult || '-' }}</a-descriptions-item>
+        <a-descriptions-item label="处理时间">{{ detailData.handleTime || '-' }}</a-descriptions-item>
+        <a-descriptions-item label="证据截图">
+          <div v-if="detailEvidenceImage" class="evidence-image-wrap">
+            <a-image
+              :src="detailEvidenceImage"
+              :fallback="FALLBACK_COVER"
+              class="evidence-image"
+            />
+            <a :href="detailEvidenceImage" target="_blank" rel="noreferrer">打开原图</a>
+          </div>
+          <span v-else class="evidence-empty">暂无截图证据</span>
+        </a-descriptions-item>
+        <a-descriptions-item label="证据明细">
           <pre class="evidence">{{ formatEvidence(detailData.description) }}</pre>
         </a-descriptions-item>
       </a-descriptions>
@@ -91,18 +117,20 @@ import AdminCard from "@/components/admin/AdminCard.vue"
 import AdminToolbar from "@/components/admin/AdminToolbar.vue"
 import AdminPagination from "@/components/admin/AdminPagination.vue"
 import AdminStatGrid from "@/components/admin/AdminStatGrid.vue"
+import { FALLBACK_COVER, resolveSafeImageUrl } from "@/utils/fallback"
 
 const loading = ref(false)
 const rows = ref([])
 const total = ref(0)
 const current = ref(1)
 const pageSize = ref(10)
+const filterStatus = ref(0)
 const filterType = ref("")
 const detailVisible = ref(false)
 const detailData = reactive({})
 const { containerRef, tableScrollY } = useTableScroll()
 const statCards = computed(() => [
-  { key: "pending", label: "待处理", value: total.value, extra: "当前审核队列" },
+  { key: "pending", label: statusText(filterStatus.value), value: total.value, extra: filterStatus.value === -1 ? "全部审核记录" : "当前筛选结果" },
   { key: "guard", label: "风控单", value: rows.value.filter((item) => item.targetType === "live_guard").length, extra: "系统自动命中" },
   { key: "report", label: "举报单", value: rows.value.filter((item) => item.targetType !== "live_guard").length, extra: "用户提交举报" },
   { key: "room", label: "直播间", value: new Set(rows.value.map((item) => item.roomId).filter(Boolean)).size, extra: "涉及房间数" },
@@ -113,15 +141,16 @@ const columns = [
   { title: "来源", dataIndex: "targetType", key: "source", width: 130 },
   { title: "对象", key: "target", width: 170 },
   { title: "原因", dataIndex: "reason", key: "reason", width: 180 },
+  { title: "状态", dataIndex: "status", key: "status", width: 110 },
   { title: "说明 / 证据", dataIndex: "description", key: "description", width: 420 },
   { title: "提交时间", dataIndex: "createTime", key: "createTime", width: 180 },
   { title: "操作", key: "action", width: 220, fixed: "right", align: "center" },
 ]
 
 const displayRows = computed(() => {
-  if (!filterType.value) return rows.value
-  return rows.value.filter((item) => item.targetType === filterType.value)
+  return rows.value
 })
+const detailEvidenceImage = computed(() => resolveEvidenceImage(detailData.description))
 
 onMounted(() => {
   getData()
@@ -130,7 +159,12 @@ onMounted(() => {
 const getData = async () => {
   loading.value = true
   try {
-    const res = await adminReportApi.list({ page: current.value, limit: pageSize.value })
+    const res = await adminReportApi.list({
+      page: current.value,
+      limit: pageSize.value,
+      status: filterStatus.value,
+      targetType: filterType.value || undefined,
+    })
     const data = res?.data || {}
     rows.value = data.list || data.records || []
     total.value = Number(data.total || rows.value.length || 0)
@@ -185,6 +219,20 @@ const sourceText = (type) => {
   return type || "未知"
 }
 
+const statusText = (status) => {
+  if (Number(status) === 0) return "待处理"
+  if (Number(status) === 1) return "已处理"
+  if (Number(status) === 2) return "已驳回"
+  return "未知"
+}
+
+const statusColor = (status) => {
+  if (Number(status) === 0) return "processing"
+  if (Number(status) === 1) return "success"
+  if (Number(status) === 2) return "default"
+  return "default"
+}
+
 const formatEvidence = (value) => {
   if (!value) return "-"
   try {
@@ -193,10 +241,33 @@ const formatEvidence = (value) => {
     return value
   }
 }
+
+const parseEvidence = (value) => {
+  if (!value) return null
+  if (typeof value === "object") return value
+  try {
+    return JSON.parse(value)
+  } catch (error) {
+    return null
+  }
+}
+
+const resolveEvidenceImage = (value) => {
+  const payload = parseEvidence(value)
+  if (!payload) return ""
+  const url = payload.evidenceImageUrl
+    || payload.screenshotUrl
+    || payload.imageUrl
+    || payload.screenshot
+    || payload.evidence?.imageUrl
+    || payload.evidence?.screenshotUrl
+  return url ? resolveSafeImageUrl(url, "") : ""
+}
 </script>
 
 <style scoped lang="scss">
-.type-filter {
+.type-filter,
+.status-filter {
   width: 150px;
 }
 
@@ -233,5 +304,29 @@ const formatEvidence = (value) => {
   overflow: auto;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.evidence-image-wrap {
+  display: grid;
+  gap: 8px;
+}
+
+.evidence-image-wrap :deep(.ant-image) {
+  overflow: hidden;
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+}
+
+.evidence-image {
+  display: block;
+  max-width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+}
+
+.evidence-empty {
+  color: var(--text-muted);
 }
 </style>

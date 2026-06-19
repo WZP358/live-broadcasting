@@ -45,11 +45,11 @@ export default {
    * 平台小助手问答
    * @param {string} question
    */
-  askHelper(question) {
+  askHelper(question, context = {}) {
     return request({
       url: `${AGENT_BASE}/helper`,
       method: 'post',
-      data: { question },
+      data: { question, context },
     })
   },
 

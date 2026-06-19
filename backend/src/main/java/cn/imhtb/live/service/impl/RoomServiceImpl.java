@@ -7,11 +7,13 @@ import cn.imhtb.live.common.enums.StatusEnum;
 import cn.imhtb.live.common.enums.LiveRoomStatusEnum;
 import cn.imhtb.live.common.enums.WatchTypeEnum;
 import cn.imhtb.live.common.holder.UserHolder;
+import cn.imhtb.live.common.exception.BusinessException;
 import cn.imhtb.live.mappers.RoomMapper;
 import cn.imhtb.live.mappers.UserMapper;
 import cn.imhtb.live.modules.live.service.ICategoryService;
 import cn.imhtb.live.modules.live.service.ILiveInfoService;
 import cn.imhtb.live.modules.live.vo.RoomRespVo;
+import cn.imhtb.live.modules.system.service.impl.SystemDemoServiceImpl;
 import cn.imhtb.live.modules.live.webrtc.BrowserLiveRegistry;
 import cn.imhtb.live.modules.server.netty.live.NettyBrowserLiveService;
 import cn.imhtb.live.pojo.database.LiveInfo;
@@ -90,8 +92,14 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements IR
 
     @Override
     public boolean saveInfo(RoomInfoSaveRequest request) {
+        if (request == null) {
+            return false;
+        }
         Room room = getOrInitRoomByUserId(tokenService.getUserId());
         if (room == null) {
+            return false;
+        }
+        if (request.getCid() != null && !isEnabledCategory(request.getCid())) {
             return false;
         }
         Room updateRoom = new Room();
@@ -109,11 +117,20 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements IR
         int currentPage = pageNo == null || pageNo < 1 ? 1 : pageNo;
         int size = pageSize == null || pageSize < 1 ? 10 : pageSize;
 
+        if (cid != null && !isEnabledCategory(cid)) {
+            PageData<RoomRespVo> emptyPage = new PageData<>();
+            emptyPage.setList(List.of());
+            emptyPage.setTotal(0L);
+            return emptyPage;
+        }
+
         List<Room> livingRooms = list(new LambdaQueryWrapper<Room>()
                 .eq(cid != null, Room::getCategoryId, cid)
+                .isNotNull(Room::getCategoryId)
                 .eq(Room::getStatus, LiveRoomStatusEnum.LIVING.getCode())
                 .eq(Room::getDisabled, StatusEnum.YES.getCode()))
                 .stream()
+                .filter(room -> isEnabledCategory(room.getCategoryId()))
                 .filter(this::isRoomReallyLiving)
                 .collect(Collectors.toList());
 
@@ -130,6 +147,23 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements IR
     }
 
     @Override
+    public void validateReadyForLive(Integer userId) {
+        Room room = getOrInitRoomByUserId(userId);
+        if (room == null) {
+            throw new BusinessException("房间信息未初始化完成，暂时无法开播");
+        }
+        if (room.getDisabled() != null && room.getDisabled() == StatusEnum.NO.getCode()) {
+            throw new BusinessException("直播间已被封禁，请联系管理员处理");
+        }
+        if (!StringUtils.hasText(room.getTitle())) {
+            throw new BusinessException("请先填写直播标题");
+        }
+        if (room.getCategoryId() == null || !isEnabledCategory(room.getCategoryId())) {
+            throw new BusinessException("请先选择可用的直播分类");
+        }
+    }
+
+    @Override
     public RoomRespVo getRoomInfo(Integer roomId) {
         Room room = getById(roomId);
         if (room == null){
@@ -141,20 +175,29 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements IR
     @Override
     public RoomExtraInfoResp getExtraInfo(Integer userId, Integer rid) {
         RoomExtraInfoResp resp = new RoomExtraInfoResp();
-        long count = watchService.count(new LambdaQueryWrapper<Watch>()
+        if (rid == null) {
+            resp.setFollow(false);
+            resp.setFollowCount(0L);
+            return resp;
+        }
+        long followCount = watchService.count(new LambdaQueryWrapper<Watch>()
+                .eq(Watch::getRoomId, rid)
+                .eq(Watch::getWatchType, WatchTypeEnum.FOLLOW.getCode()));
+        long currentUserFollowCount = userId == null ? 0L : watchService.count(new LambdaQueryWrapper<Watch>()
                 .eq(Watch::getRoomId, rid)
                 .eq(Watch::getUserId, userId)
                 .eq(Watch::getWatchType, WatchTypeEnum.FOLLOW.getCode()));
-        resp.setFollow(count > 0);
+        resp.setFollow(currentUserFollowCount > 0);
+        resp.setFollowCount(followCount);
         return resp;
     }
 
     private RoomRespVo packageRoomResponse(Room room) {
-        //TODO
         User user = userMapper.selectById(room.getUserId());
         Category category = categoryService.getById(room.getCategoryId());
         RoomRespVo response = new RoomRespVo();
         response.setId(room.getId());
+        response.setUserId(room.getUserId());
         response.setTitle(room.getTitle());
         response.setPullUrl(resolvePullUrl(room));
         response.setBrowserLive(browserLiveRegistry.isBrowserLive(room.getId()) || nettyBrowserLiveService.isBrowserLive(room.getId()));
@@ -193,6 +236,9 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements IR
         if (StringUtils.hasText(room.getPullUrl())) {
             return room.getPullUrl();
         }
+        if (SystemDemoServiceImpl.isDemoRoom(room) && StringUtils.hasText(room.getRtmpUrl())) {
+            return room.getRtmpUrl();
+        }
         if (room.getId() == null) {
             return null;
         }
@@ -212,6 +258,9 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements IR
         if (browserLiveRegistry.isBrowserLive(room.getId()) || nettyBrowserLiveService.isBrowserLive(room.getId())) {
             return true;
         }
+        if (SystemDemoServiceImpl.isDemoRoom(room) && StringUtils.hasText(room.getRtmpUrl())) {
+            return true;
+        }
 
         LiveInfo liveInfo = liveInfoService.getOne(new LambdaQueryWrapper<LiveInfo>()
                         .eq(LiveInfo::getRoomId, room.getId())
@@ -223,6 +272,14 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements IR
             return false;
         }
         return liveInfo.getStartTime().isAfter(LocalDateTime.now().minusHours(12));
+    }
+
+    private boolean isEnabledCategory(Integer categoryId) {
+        if (categoryId == null) {
+            return false;
+        }
+        Category category = categoryService.getById(categoryId);
+        return category != null && category.getStatus() != null && category.getStatus() == StatusEnum.YES.getCode();
     }
 
 }

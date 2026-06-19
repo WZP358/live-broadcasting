@@ -22,7 +22,7 @@ public class GuardConfig {
     /**
      * Guard 服务检测接口地址
      */
-    private String endpoint = "http://localhost:8000/check";
+    private String endpoint = "http://localhost:8300/check";
 
     /**
      * 前端帧上报间隔（秒），也用于后端限流

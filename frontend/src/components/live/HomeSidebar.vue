@@ -23,8 +23,7 @@
       <div v-for="item in giftRank" :key="item.userId" class="rank-row">
         <span class="rank-no" :class="{ top: item.rank <= 3 }">{{ item.rank }}</span>
         <span class="gift-user">
-          <img v-if="item.avatar" :src="item.avatar" class="gift-avatar" @error="onImgError" />
-          <span v-else class="gift-avatar gift-avatar--placeholder">{{ (item.nickname || '?')[0] }}</span>
+          <img :src="safeAvatar(item.avatar)" class="gift-avatar" @error="onImgError" />
           <strong>{{ item.nickname || '未知用户' }}</strong>
         </span>
         <span class="rank-heat">¥{{ formatAmount(item.amount) }}</span>
@@ -37,7 +36,7 @@
         <span>继续观看</span>
       </div>
       <button v-for="item in historyRooms" :key="item.roomId || item.id" class="history-row" type="button" @click="$emit('enter', item.roomId || item.id)">
-        <img :src="item.cover || fallbackCover" alt="" @error="(e) => onImgError(e, fallbackCover)" />
+        <img :src="safeCover(item.cover)" alt="" @error="(e) => onImgError(e, fallbackCover)" />
         <span>
           <strong>{{ item.title || '直播间' }}</strong>
           <em>{{ item.userNickname || item.userInfo?.nickName || '继续观看' }}</em>
@@ -49,7 +48,7 @@
 
 <script setup>
 import { formatHeat, getAnchorName, getRoomHeat } from '@/utils/liveRoomPresenter';
-import { onImgError } from '@/utils/fallback';
+import { FALLBACK_AVATAR, onImgError, resolveSafeImageUrl } from '@/utils/fallback';
 
 const formatAmount = (n) => {
   if (n >= 10000) return (n / 10000).toFixed(1) + '万';
@@ -57,7 +56,10 @@ const formatAmount = (n) => {
   return String(n);
 };
 
-defineProps({
+const safeAvatar = (url) => resolveSafeImageUrl(url, FALLBACK_AVATAR);
+const safeCover = (url) => resolveSafeImageUrl(url, props.fallbackCover);
+
+const props = defineProps({
   fallbackCover: { type: String, required: true },
   historyRooms: { type: Array, default: () => [] },
   hotRanking: { type: Array, default: () => [] },

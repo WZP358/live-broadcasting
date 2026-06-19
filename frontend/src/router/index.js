@@ -51,14 +51,14 @@ const routes = [
         meta: { title: "客服处理", requiresAuth: true, adminOnly: true },
       },
       {
-        path: "/system/user-auth",
-        component: () => import("@/views/system/auth/index.vue"),
-        meta: { title: "认证管理", requiresAuth: true, adminOnly: true },
-      },
-      {
         path: "/system/present-manage",
         component: () => import("@/views/system/gift/index.vue"),
         meta: { title: "礼物管理", requiresAuth: true, adminOnly: true },
+      },
+      {
+        path: "/system/gift-flow",
+        component: () => import("@/views/system/gift-flow/index.vue"),
+        meta: { title: "礼物流水", requiresAuth: true, adminOnly: true },
       },
       {
         path: "/system/system-manage/system-manage-menu",
@@ -175,11 +175,6 @@ const routes = [
             meta: { title: "开播设置", requiresAuth: true },
           },
           {
-            path: "identify",
-            component: () => import("@/views/center/identify/index.vue"),
-            meta: { title: "实名认证", requiresAuth: true },
-          },
-          {
             path: "statistic/gift-list",
             component: () => import("@/views/center/gift-list/index.vue"),
             meta: { title: "礼物记录", requiresAuth: true },
@@ -204,11 +199,6 @@ const routes = [
             redirect: "/center/messages",
           },
           {
-            path: "messages/pm",
-            component: () => import("@/views/center/messages/pm.vue"),
-            meta: { title: "私信", requiresAuth: true },
-          },
-          {
             path: "messages/customer-service",
             component: () => import("@/views/center/customer-service/index.vue"),
             meta: { title: "联系客服", requiresAuth: true },
@@ -222,11 +212,6 @@ const routes = [
             path: "live/dashboard",
             component: () => import("@/views/center/live/dashboard.vue"),
             meta: { title: "数据看板", requiresAuth: true },
-          },
-          {
-            path: "dollar/settlement",
-            component: () => import("@/views/center/dollar/settlement.vue"),
-            meta: { title: "收益结算", requiresAuth: true },
           },
         ],
       },

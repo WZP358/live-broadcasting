@@ -7,14 +7,18 @@ import cn.imhtb.live.mappers.ReportMapper;
 import cn.imhtb.live.modules.live.service.IBanRecordService;
 import cn.imhtb.live.modules.live.service.ILiveInfoService;
 import cn.imhtb.live.modules.live.webrtc.BrowserLiveRegistry;
+import cn.imhtb.live.modules.server.netty.live.NettyBrowserLiveRegistry;
 import cn.imhtb.live.modules.server.netty.domain.resp.GuardViolationRespDTO;
 import cn.imhtb.live.modules.server.netty.service.IRoomChatService;
+import cn.imhtb.live.modules.system.service.SystemAdminNotificationService;
 import cn.imhtb.live.pojo.database.BanRecord;
 import cn.imhtb.live.pojo.database.LiveInfo;
 import cn.imhtb.live.pojo.database.Report;
 import cn.imhtb.live.pojo.database.Room;
+import cn.imhtb.live.service.IFileUploadService;
 import cn.imhtb.live.service.IRoomService;
 import cn.imhtb.live.service.ITokenService;
+import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -57,8 +61,11 @@ public class LiveGuardService {
     private final ReportMapper reportMapper;
     private final IRoomChatService roomChatService;
     private final BrowserLiveRegistry browserLiveRegistry;
+    private final NettyBrowserLiveRegistry nettyBrowserLiveRegistry;
+    private final SystemAdminNotificationService adminNotificationService;
     private final ITokenService tokenService;
     private final DbSchemaInspector dbSchemaInspector;
+    private final IFileUploadService fileUploadService;
     private final RestTemplate restTemplate;
     private final Map<Integer, Long> lastCheckAt = new ConcurrentHashMap<>();
     private volatile long lastUnavailableLogAt = 0L;
@@ -70,8 +77,11 @@ public class LiveGuardService {
                             ReportMapper reportMapper,
                             IRoomChatService roomChatService,
                             BrowserLiveRegistry browserLiveRegistry,
+                            NettyBrowserLiveRegistry nettyBrowserLiveRegistry,
+                            SystemAdminNotificationService adminNotificationService,
                             ITokenService tokenService,
-                            DbSchemaInspector dbSchemaInspector) {
+                            DbSchemaInspector dbSchemaInspector,
+                            IFileUploadService fileUploadService) {
         this.guardConfig = guardConfig;
         this.roomService = roomService;
         this.liveInfoService = liveInfoService;
@@ -79,8 +89,11 @@ public class LiveGuardService {
         this.reportMapper = reportMapper;
         this.roomChatService = roomChatService;
         this.browserLiveRegistry = browserLiveRegistry;
+        this.nettyBrowserLiveRegistry = nettyBrowserLiveRegistry;
+        this.adminNotificationService = adminNotificationService;
         this.tokenService = tokenService;
         this.dbSchemaInspector = dbSchemaInspector;
+        this.fileUploadService = fileUploadService;
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(2000);
         factory.setReadTimeout(15000);
@@ -112,7 +125,8 @@ public class LiveGuardService {
         String reason = StringUtils.hasText(result.getReason())
                 ? result.getReason()
                 : "Live content triggered risk detection";
-        submitGuardReport(room, result, reason);
+        String evidenceImageUrl = saveEvidenceScreenshot(room.getId(), file);
+        submitGuardReport(room, result, reason, evidenceImageUrl);
         result.setStatus(STATUS_REVIEW);
         result.setBanned(false);
         result.setReason(reason + ", submitted for admin review");
@@ -176,7 +190,20 @@ public class LiveGuardService {
         }
     }
 
-    private void submitGuardReport(Room room, GuardCheckResult result, String reason) {
+    private String saveEvidenceScreenshot(Integer roomId, MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return "";
+        }
+        try {
+            String filename = "guard-room-" + roomId + "-" + System.currentTimeMillis() + "-" + IdUtil.simpleUUID() + ".jpg";
+            return fileUploadService.uploadFileToMinio(file.getInputStream(), filename);
+        } catch (Exception e) {
+            log.warn("save live guard evidence screenshot failed, roomId={}", roomId, e);
+            return "";
+        }
+    }
+
+    private void submitGuardReport(Room room, GuardCheckResult result, String reason, String evidenceImageUrl) {
         if (!dbSchemaInspector.tableExists("report")) {
             log.warn("live guard report skipped, report table not found, roomId={}", room.getId());
             return;
@@ -212,9 +239,10 @@ public class LiveGuardService {
         report.setTargetType(TARGET_TYPE_LIVE_GUARD);
         report.setTargetId(targetId);
         report.setReason(reportReason);
-        report.setDescription(limitText(buildGuardReportDescription(result, reason, violationType, violationLabel), 500));
+        report.setDescription(buildGuardReportDescription(result, reason, violationType, violationLabel, evidenceImageUrl));
         report.setStatus(0);
         reportMapper.insert(report);
+        adminNotificationService.notifyLiveGuardReview(room.getId(), room.getTitle(), reportReason);
         log.warn("live guard report submitted, roomId={}, reason={}", room.getId(), reportReason);
     }
 
@@ -264,9 +292,15 @@ public class LiveGuardService {
                 .evidence(evidence)
                 .build();
         roomChatService.sendGuardViolation(room.getId(), data);
-        browserLiveRegistry.sendToRoom(room.getId(), signalPayload(room.getId(), data));
+        broadcastGuardViolation(room.getId(), data);
         lastCheckAt.remove(room.getId());
         log.warn("live room banned after admin review, roomId={}, reason={}", room.getId(), reason);
+    }
+
+    public void broadcastGuardViolation(Integer roomId, GuardViolationRespDTO data) {
+        Map<String, Object> payload = signalPayload(roomId, data);
+        browserLiveRegistry.sendToRoom(roomId, payload);
+        nettyBrowserLiveRegistry.sendToRoom(roomId, payload);
     }
 
     private void finishLivingInfo(Integer roomId) {
@@ -402,7 +436,8 @@ public class LiveGuardService {
     private String buildGuardReportDescription(GuardCheckResult result,
                                                String reason,
                                                String violationType,
-                                               String violationLabel) {
+                                               String violationLabel,
+                                               String evidenceImageUrl) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("source", "live_guard");
         payload.put("status", result.getStatus());
@@ -410,14 +445,11 @@ public class LiveGuardService {
         payload.put("violationType", violationType);
         payload.put("violationLabel", violationLabel);
         payload.put("evidence", result.getEvidence());
-        return JSON.toJSONString(payload);
-    }
-
-    private String limitText(String text, int maxLength) {
-        if (text == null || text.length() <= maxLength) {
-            return text;
+        if (StringUtils.hasText(evidenceImageUrl)) {
+            payload.put("evidenceImageUrl", evidenceImageUrl);
+            payload.put("screenshotUrl", evidenceImageUrl);
         }
-        return text.substring(0, Math.max(0, maxLength - 3)) + "...";
+        return JSON.toJSONString(payload);
     }
 
     private static class MultipartFileResource extends ByteArrayResource {

@@ -1,6 +1,6 @@
 <template>
   <div class="room-head">
-    <img class="anchor-avatar" :src="roomInfo.userInfo?.avatar || fallbackAvatar" alt="" @error="onImgError" />
+    <img class="anchor-avatar" :src="safeAvatar" alt="" @error="onImgError" />
     <div class="head-copy">
       <div class="head-meta">
         <span>{{ roomInfo.categoryInfo?.name || "推荐" }}</span>
@@ -20,8 +20,9 @@
 </template>
 
 <script setup>
-import { onImgError } from "@/utils/fallback"
-defineProps({
+import { computed } from "vue"
+import { onImgError, resolveSafeImageUrl } from "@/utils/fallback"
+const props = defineProps({
   fallbackAvatar: {
     type: String,
     required: true,
@@ -35,6 +36,8 @@ defineProps({
     default: () => ({}),
   },
 });
+
+const safeAvatar = computed(() => resolveSafeImageUrl(props.roomInfo?.userInfo?.avatar, props.fallbackAvatar))
 
 defineEmits(["copy", "toggle-follow"]);
 </script>

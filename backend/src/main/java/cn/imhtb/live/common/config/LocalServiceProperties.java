@@ -29,8 +29,7 @@ public class LocalServiceProperties {
             1935,
             8080,
             18765,
-            8000,
-            8100,
-            8200
+            8300,
+            8100
     ));
 }

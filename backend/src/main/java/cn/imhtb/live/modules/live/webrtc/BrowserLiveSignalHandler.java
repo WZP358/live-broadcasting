@@ -49,6 +49,28 @@ public class BrowserLiveSignalHandler extends TextWebSocketHandler {
                 case "ice-candidate":
                     relay(session, body, type);
                     break;
+                case "cohost-request":
+                    routeCohostRequest(session, body);
+                    break;
+                case "cohost-accepted":
+                case "cohost-rejected":
+                case "cohost-offer":
+                case "cohost-answer":
+                case "cohost-ice-candidate":
+                case "cohost-ended":
+                    relayInteraction(session, body, type);
+                    break;
+                case "pk-invite":
+                    routePkInvite(session, body);
+                    break;
+                case "pk-accepted":
+                case "pk-rejected":
+                case "pk-offer":
+                case "pk-answer":
+                case "pk-ice-candidate":
+                case "pk-ended":
+                    relayInteraction(session, body, type);
+                    break;
                 case "leave":
                     handleLeave(session);
                     break;
@@ -118,6 +140,97 @@ public class BrowserLiveSignalHandler extends TextWebSocketHandler {
         payload.put("sdp", body.get("sdp"));
         payload.put("candidate", body.get("candidate"));
         registry.send(targetSessionId, payload);
+    }
+
+    private void routeCohostRequest(WebSocketSession session, JSONObject body) {
+        BrowserLiveRegistry.SessionMeta meta = registry.getMeta(session.getId());
+        if (meta == null || meta.getRoomId() == null) {
+            return;
+        }
+
+        String targetSessionId = body.getString("targetSessionId");
+        if (!StringUtils.hasText(targetSessionId)) {
+            targetSessionId = registry.getBroadcasterSessionId(meta.getRoomId());
+        }
+        if (!StringUtils.hasText(targetSessionId) || targetSessionId.equals(meta.getSessionId())) {
+            registry.send(meta.getSessionId(), errorMessage(meta.getRoomId(), "当前房间没有可接收连麦申请的主播"));
+            return;
+        }
+
+        registry.send(targetSessionId, interactionPayload(session, meta, body, "cohost-request"));
+    }
+
+    private void routePkInvite(WebSocketSession session, JSONObject body) {
+        BrowserLiveRegistry.SessionMeta meta = registry.getMeta(session.getId());
+        if (meta == null || meta.getRoomId() == null) {
+            return;
+        }
+
+        Integer targetRoomId = body.getInteger("targetRoomId");
+        if (targetRoomId == null || targetRoomId.equals(meta.getRoomId())) {
+            registry.send(meta.getSessionId(), pkUnavailable(meta.getRoomId(), targetRoomId, "请选择另一个正在开播的房间"));
+            return;
+        }
+
+        String targetSessionId = registry.getBroadcasterSessionId(targetRoomId);
+        if (!StringUtils.hasText(targetSessionId)) {
+            registry.send(meta.getSessionId(), pkUnavailable(meta.getRoomId(), targetRoomId, "目标主播未开播或未连接网页开播信令"));
+            return;
+        }
+
+        Map<String, Object> payload = interactionPayload(session, meta, body, "pk-invite");
+        payload.put("roomId", targetRoomId);
+        payload.put("targetRoomId", targetRoomId);
+        registry.send(targetSessionId, payload);
+    }
+
+    private void relayInteraction(WebSocketSession session, JSONObject body, String type) {
+        BrowserLiveRegistry.SessionMeta meta = registry.getMeta(session.getId());
+        if (meta == null) {
+            return;
+        }
+
+        String targetSessionId = body.getString("targetSessionId");
+        if (!StringUtils.hasText(targetSessionId)) {
+            registry.send(meta.getSessionId(), errorMessage(meta.getRoomId(), "互动信令缺少目标会话"));
+            return;
+        }
+
+        registry.send(targetSessionId, interactionPayload(session, meta, body, type));
+    }
+
+    private Map<String, Object> interactionPayload(WebSocketSession session, BrowserLiveRegistry.SessionMeta meta, JSONObject body, String type) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("type", type);
+        payload.put("roomId", meta.getRoomId());
+        payload.put("fromRoomId", meta.getRoomId());
+        payload.put("fromSessionId", session.getId());
+        payload.put("fromUserId", meta.getUserId());
+        payload.put("targetRoomId", body.getInteger("targetRoomId"));
+        payload.put("targetSessionId", body.getString("targetSessionId"));
+        payload.put("sdp", body.get("sdp"));
+        payload.put("candidate", body.get("candidate"));
+        copyIfPresent(body, payload, "applicantName");
+        copyIfPresent(body, payload, "applicantAvatar");
+        copyIfPresent(body, payload, "inviterName");
+        copyIfPresent(body, payload, "inviterAvatar");
+        copyIfPresent(body, payload, "acceptorName");
+        copyIfPresent(body, payload, "reason");
+        return payload;
+    }
+
+    private void copyIfPresent(JSONObject body, Map<String, Object> payload, String key) {
+        Object value = body.get(key);
+        if (value != null) {
+            payload.put(key, value);
+        }
+    }
+
+    private Map<String, Object> pkUnavailable(Integer roomId, Integer targetRoomId, String message) {
+        Map<String, Object> payload = message("pk-unavailable", roomId, null);
+        payload.put("targetRoomId", targetRoomId);
+        payload.put("message", message);
+        return payload;
     }
 
     private void handleLeave(WebSocketSession session) {

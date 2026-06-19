@@ -1,5 +1,6 @@
 package cn.imhtb.live.pojo.vo.request;
 
+import cn.imhtb.live.modules.live.vo.RewardReqVo;
 import lombok.Data;
 
 /**
@@ -16,4 +17,13 @@ public class SendPresentRequest {
     private Integer rid;
 
     private Integer vid;
+
+    public RewardReqVo toRewardReqVo() {
+        RewardReqVo req = new RewardReqVo();
+        req.setPresentId(pid);
+        req.setNumber(number);
+        req.setRoomId(rid);
+        req.setVid(vid);
+        return req;
+    }
 }

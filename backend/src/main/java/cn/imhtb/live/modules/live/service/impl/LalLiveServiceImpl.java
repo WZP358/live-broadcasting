@@ -64,6 +64,7 @@ public class LalLiveServiceImpl implements ILiveService {
     @Override
     public StartOpenLiveVo applySecret() {
         Integer userId = tokenService.getUserId();
+        roomService.validateReadyForLive(userId);
         Room room = roomService.getOrInitRoomByUserId(userId);
         if (Objects.isNull(room)) {
             throw new RuntimeException("未获取到直播间信息");

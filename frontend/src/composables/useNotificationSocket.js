@@ -1,5 +1,6 @@
 import { useNotificationStore } from "@/stores/modules/notification"
 import { useUserStore } from "@/stores/modules/user"
+import { createChatWebSocketUrl } from "@/utils/chatRoom"
 import { storeToRefs } from "pinia"
 
 let socket = null
@@ -23,7 +24,7 @@ export function useNotificationSocket() {
             return
         }
 
-        const wsUrl = "ws://" + location.hostname + ":10022?token=" + encodeURIComponent(userToken.value)
+        const wsUrl = createChatWebSocketUrl({ token: userToken.value })
         socket = new WebSocket(wsUrl)
 
         socket.onopen = () => {

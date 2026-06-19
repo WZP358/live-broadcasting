@@ -13,8 +13,10 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,11 +25,15 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -258,7 +264,7 @@ public class WalletServiceImpl extends ServiceImpl<WalletMapper, Wallet> impleme
 
     private boolean walletTableExists() {
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?",
+                "SELECT COUNT(*) FROM information_schema.TABLES WHERE UPPER(TABLE_NAME) = UPPER(?)",
                 Integer.class,
                 WALLET_TABLE
         );
@@ -308,7 +314,7 @@ public class WalletServiceImpl extends ServiceImpl<WalletMapper, Wallet> impleme
 
     private void ensureColumn(String tableName, String columnName, String ddl) {
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?",
+                "SELECT COUNT(*) FROM information_schema.COLUMNS WHERE UPPER(TABLE_NAME) = UPPER(?) AND UPPER(COLUMN_NAME) = UPPER(?)",
                 Integer.class,
                 tableName,
                 columnName
@@ -319,15 +325,57 @@ public class WalletServiceImpl extends ServiceImpl<WalletMapper, Wallet> impleme
     }
 
     private void ensureIndex(String tableName, String indexName, String ddl) {
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND INDEX_NAME = ?",
-                Integer.class,
-                tableName,
-                indexName
-        );
-        if (count == null || count == 0) {
-            jdbcTemplate.execute(ddl);
+        Boolean exists = jdbcTemplate.execute((ConnectionCallback<Boolean>) connection -> {
+            DatabaseMetaData metaData = connection.getMetaData();
+            return indexExists(metaData, connection.getCatalog(), tableName, indexName)
+                    || indexExists(metaData, null, tableName, indexName);
+        });
+        if (!Boolean.TRUE.equals(exists)) {
+            try {
+                jdbcTemplate.execute(ddl);
+            } catch (DataAccessException e) {
+                if (!isDuplicateIndexException(e, indexName)) {
+                    throw e;
+                }
+                log.info("wallet schema index already exists, table={}, index={}", tableName, indexName);
+            }
         }
+    }
+
+    private boolean indexExists(DatabaseMetaData metaData, String catalog, String tableName, String indexName) throws SQLException {
+        String[] tableCandidates = {
+                tableName,
+                tableName.toUpperCase(Locale.ROOT),
+                tableName.toLowerCase(Locale.ROOT)
+        };
+        for (String tableCandidate : tableCandidates) {
+            try (ResultSet indexes = metaData.getIndexInfo(catalog, null, tableCandidate, false, false)) {
+                while (indexes.next()) {
+                    String foundIndexName = indexes.getString("INDEX_NAME");
+                    if (foundIndexName != null && foundIndexName.equalsIgnoreCase(indexName)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isDuplicateIndexException(DataAccessException e, String indexName) {
+        String expectedIndex = indexName.toUpperCase(Locale.ROOT);
+        Throwable current = e;
+        while (current != null) {
+            String message = current.getMessage();
+            if (message != null) {
+                String normalized = message.toUpperCase(Locale.ROOT);
+                boolean duplicate = normalized.contains("DUPLICATE") || normalized.contains("ALREADY EXISTS");
+                if (duplicate && normalized.contains(expectedIndex)) {
+                    return true;
+                }
+            }
+            current = current.getCause();
+        }
+        return false;
     }
 
     @Override

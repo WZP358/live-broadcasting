@@ -65,9 +65,7 @@ const formRef = ref()
 const { expand, showExpand } = useSearchExpand(formRef)
 const formState = reactive({})
 const { containerRef, tableScrollY } = useTableScroll()
-const onFinish = (values) => {
-  console.log("Received values of form: ", values)
-  console.log("formState: ", formState)
+const onFinish = () => {
   getData()
 }
 

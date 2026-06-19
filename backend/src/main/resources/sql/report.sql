@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `report` (
   `target_type` VARCHAR(32) NOT NULL COMMENT '举报类型: room/user/message',
   `target_id` VARCHAR(64) DEFAULT NULL COMMENT '被举报对象ID',
   `reason` VARCHAR(255) NOT NULL COMMENT '举报原因',
-  `description` VARCHAR(500) DEFAULT '' COMMENT '补充说明',
+  `description` TEXT NULL COMMENT '补充说明/证据JSON',
   `status` TINYINT DEFAULT 0 COMMENT '0=待处理 1=已处理 2=已驳回',
   `handle_result` VARCHAR(500) DEFAULT '',
   `handler_id` INT DEFAULT NULL,

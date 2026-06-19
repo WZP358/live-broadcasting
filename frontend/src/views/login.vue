@@ -22,6 +22,16 @@ const rules = {
 
 const redirect = computed(() => (route.query.redirect ? decodeURIComponent(route.query.redirect) : ""))
 
+const resolveLoginTarget = (isAdmin) => {
+  const target = redirect.value
+
+  if (isAdmin) {
+    return target.startsWith("/system") ? target : "/system/dashboard"
+  }
+
+  return target && !target.startsWith("/system") ? target : "/"
+}
+
 const submitForm = async () => {
   try {
     await formRef.value.validateFields()
@@ -33,7 +43,7 @@ const submitForm = async () => {
     }
 
     const userStore = store.user()
-    const target = userStore.isAdmin ? redirect.value || "/system/dashboard" : redirect.value || "/"
+    const target = resolveLoginTarget(userStore.isAdmin)
     $modal.msgSuccess(userStore.isAdmin ? "管理员登录成功" : "登录成功")
     router.push(target)
   } catch (error) {

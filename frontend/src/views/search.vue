@@ -100,6 +100,7 @@ import searchApi from "@/api/search";
 import liveApi from "@/api/live";
 import request from "@/utils/request";
 import { normalizeLivingRooms, sortRoomsByMode } from "@/utils/liveRoomPresenter";
+import { normalizeCategories, normalizeSearchRooms } from "@/utils/categoryPresenter";
 
 const route = useRoute();
 const keyword = ref("");
@@ -169,7 +170,7 @@ const doSearch = async () => {
     const params = { keyword: kw, page: 1, limit: 24 };
     if (activeCategoryId.value) params.categoryId = activeCategoryId.value;
     const res = await searchApi.searchRooms(params);
-    results.value = normalizeLivingRooms(res?.data?.list || []);
+    results.value = normalizeLivingRooms(normalizeSearchRooms(res?.data?.list || []));
     totalResults.value = res?.data?.total || 0;
   } catch (e) {
     results.value = [];
@@ -186,7 +187,7 @@ const loadMore = async () => {
     const params = { keyword: keyword.value.trim(), page: page.value, limit: 24 };
     if (activeCategoryId.value) params.categoryId = activeCategoryId.value;
     const res = await searchApi.searchRooms(params);
-    const more = normalizeLivingRooms(res?.data?.list || []);
+    const more = normalizeLivingRooms(normalizeSearchRooms(res?.data?.list || []));
     results.value = [...results.value, ...more];
     totalResults.value = res?.data?.total || totalResults.value;
   } catch (e) {
@@ -207,7 +208,10 @@ onMounted(async () => {
   loadHotKeywords();
   try {
     const res = await liveApi.listCategories({});
-    categories.value = res?.data?.list || [];
+    categories.value = normalizeCategories(res?.data?.list || []);
+    if (activeCategoryId.value && !categories.value.some((item) => item.id === activeCategoryId.value)) {
+      activeCategoryId.value = null;
+    }
   } catch (e) {
     categories.value = [];
   }
@@ -225,6 +229,7 @@ watch(() => route.query.keyword, (val) => {
     doSearch();
   }
 });
+
 </script>
 
 <style lang="scss" scoped>

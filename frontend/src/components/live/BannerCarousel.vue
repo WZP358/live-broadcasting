@@ -2,7 +2,7 @@
   <section v-if="slides.length" class="banner-carousel">
     <a-carousel autoplay :autoplay-speed="5200" effect="fade" dots-position="bottom">
       <div v-for="slide in slides" :key="slide.id || slide.title" class="banner-slide" @click="handleClick(slide)">
-        <img class="banner-cover" :src="slide.cover || fallbackCover" alt="" @error="(e) => onImgError(e, fallbackCover)" />
+        <img class="banner-cover" :src="safeCover(slide.cover)" alt="" @error="(e) => onImgError(e, fallbackCover)" />
         <div class="banner-shade"></div>
         <div class="banner-copy">
           <span class="banner-kicker">{{ slide.tag }}</span>
@@ -22,7 +22,7 @@
 
 <script setup>
 import { computed } from 'vue';
-import { FALLBACK_COVER, onImgError } from '@/utils/fallback';
+import { FALLBACK_COVER, onImgError, resolveSafeImageUrl } from '@/utils/fallback';
 import { formatHeat, getAnchorName, getRoomHeat } from '@/utils/liveRoomPresenter';
 
 const props = defineProps({
@@ -31,6 +31,7 @@ const props = defineProps({
 
 const emit = defineEmits(['enter']);
 const fallbackCover = FALLBACK_COVER;
+const safeCover = (url) => resolveSafeImageUrl(url, FALLBACK_COVER);
 
 const tags = ['热门推荐', '正在上升', '本场精选'];
 

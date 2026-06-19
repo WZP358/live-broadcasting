@@ -52,12 +52,15 @@ public interface IRoomChatService {
     /**
      * 送礼物
      *
-     * @param msg    味精
-     * @param roomId 房间id
-     * @param userId 当前用户id
-     * @param giftId 礼物id
+     * @param msg        消息
+     * @param roomId     房间id
+     * @param userId     当前用户id
+     * @param giftId     礼物id
+     * @param giftName   礼物名称
+     * @param number     礼物数量
+     * @param senderName 送礼用户昵称
      */
-    void sendGiftMsg(String msg, Integer roomId, Integer userId, Integer giftId);
+    void sendGiftMsg(String msg, Integer roomId, Integer userId, Integer giftId, String giftName, Integer number, String senderName);
 
     /**
      * 广播直播间亲密榜

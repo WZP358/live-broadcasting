@@ -3,14 +3,14 @@ import request from '@/utils/request'
 export default {
   list(params) {
     return request({
-      url: '/admin/report/list',
+      url: '/api/v1/admin/report/list',
       method: 'get',
       params,
     })
   },
   handle(data) {
     return request({
-      url: '/admin/report/handle',
+      url: '/api/v1/admin/report/handle',
       method: 'post',
       data,
     })

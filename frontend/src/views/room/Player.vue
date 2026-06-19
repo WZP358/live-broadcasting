@@ -3,9 +3,25 @@
     <video ref="videoElementRef" id="videoElement" :class="{ 'is-unmute-blocked': playbackBlocked }" autoplay playsinline></video>
     <div class="player-topbar">
       <div v-if="statusText" class="status-chip">{{ statusText }}</div>
-      <a-button size="small" class="caption-btn" @click="subtitleVisible = !subtitleVisible">
-        {{ subtitleVisible ? "隐藏字幕" : "字幕" }}
-      </a-button>
+      <div class="player-actions">
+        <a-button
+          v-if="cohostEnabled"
+          size="small"
+          class="cohost-btn"
+          :loading="cohostState === 'requesting'"
+          :danger="cohostActive"
+          @click="toggleCohost"
+        >
+          {{ cohostButtonText }}
+        </a-button>
+      </div>
+    </div>
+    <div v-if="cohostActive || cohostState === 'connecting'" class="cohost-self-card">
+      <div class="cohost-self-card__head">
+        <span>{{ cohostStatusText }}</span>
+        <button type="button" @click="endCohost">挂断</button>
+      </div>
+      <video ref="cohostPreviewRef" autoplay muted playsinline></video>
     </div>
     <div
       v-if="playbackBlocked"
@@ -26,22 +42,22 @@
         点击开启声音
       </button>
     </div>
-    <div v-if="subtitleVisible && subtitleText" class="subtitle-overlay">{{ subtitleText }}</div>
   </div>
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref, watch } from "vue"
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import $modal from "@/utils/message"
-import Hls from "hls.js"
-import flvjs from "flv.js"
 import { createBrowserLiveFallbackUrls, createPeerConnection } from "@/utils/browserLive"
+import { toPublicLiveUrl } from "@/utils/publicLiveUrl"
 
 const HEARTBEAT_INTERVAL = 15000
 const LIVE_SYNC_LATENCY_SECONDS = 1
 const LIVE_SYNC_DRIFT_TOLERANCE_SECONDS = 0.25
 const STALL_CHECK_INTERVAL = 2000
 const STALL_RECONNECT_THRESHOLD = 3
+const RECORDING_EXTENSIONS = [".mp4", ".webm", ".mov", ".ogg"]
+const PRIVATE_PAGE_HOST_RE = /^(localhost|127\.0\.0\.1|::1|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+|192\.168\.\d+\.\d+)$/
 
 const props = defineProps({
   roomId: {
@@ -56,22 +72,39 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  cohostEnabled: {
+    type: Boolean,
+    default: false,
+  },
+  applicantName: {
+    type: String,
+    default: "观众",
+  },
+  applicantAvatar: {
+    type: String,
+    default: "",
+  },
 })
+
+const emit = defineEmits(["cohost-state-change", "require-login"])
 
 const flvPlayer = ref(null)
 const hlsPlayer = ref(null)
 const videoElementRef = ref(null)
+const cohostPreviewRef = ref(null)
 const statusText = ref("")
-const subtitleText = ref("")
-const subtitleVisible = ref(true)
 const volumeValue = ref(100)
 const volumeMuted = ref(false)
 const playbackBlocked = ref(false)
+const cohostState = ref("idle")
+const cohostMessage = ref("")
 
 let browserLiveFallbackTimer = null
 let signalSocket = null
 let peer = null
+let cohostPeer = null
 let remoteStream = null
+let cohostLocalStream = null
 let broadcasterSessionId = null
 let signalUrlIndex = 0
 let heartbeatTimer = null
@@ -80,6 +113,47 @@ let playbackWatchTimer = null
 let lastVideoTime = 0
 let stalledTicks = 0
 let resumePlaybackPromise = null
+let hlsModulePromise = null
+let flvModulePromise = null
+let pullPlaybackFailed = false
+
+const cohostActive = computed(() => ["connecting", "active"].includes(cohostState.value))
+const playablePullUrl = computed(() => toPublicLiveUrl(props.pullUrl))
+const playablePullPath = computed(() => String(playablePullUrl.value || "").split("?")[0].toLowerCase())
+const isRecordingUrl = computed(() => {
+  return RECORDING_EXTENSIONS.some((extension) => playablePullPath.value.endsWith(extension))
+})
+const isHlsUrl = computed(() => playablePullPath.value.endsWith(".m3u8"))
+const isFlvUrl = computed(() => playablePullPath.value.endsWith(".flv"))
+const isPrivatePageHost = computed(() => PRIVATE_PAGE_HOST_RE.test(String(globalThis.location?.hostname || "")))
+const shouldPreferPullStream = computed(() => Boolean(playablePullUrl.value) && (!props.browserLive || !isPrivatePageHost.value))
+const cohostButtonText = computed(() => {
+  if (cohostState.value === "requesting") return "申请中"
+  if (cohostState.value === "connecting") return "连接中"
+  if (cohostState.value === "active") return "结束连麦"
+  return "申请连麦"
+})
+const cohostStatusText = computed(() => cohostMessage.value || cohostButtonText.value)
+
+const updateCohostState = (state, message = "") => {
+  cohostState.value = state
+  cohostMessage.value = message
+  emit("cohost-state-change", { state, message })
+}
+
+const loadHls = () => {
+  if (!hlsModulePromise) {
+    hlsModulePromise = import("hls.js").then((module) => module.default || module)
+  }
+  return hlsModulePromise
+}
+
+const loadFlv = () => {
+  if (!flvModulePromise) {
+    flvModulePromise = import("flv.js").then((module) => module.default || module)
+  }
+  return flvModulePromise
+}
 
 const getLiveLatency = (video) => {
   const ranges = video?.buffered
@@ -110,6 +184,9 @@ const syncPlaybackToOneSecondLatency = () => {
 }
 
 const startLatencySync = () => {
+  if (isRecordingUrl.value) {
+    return
+  }
   stopLatencySync()
   latencySyncTimer = window.setInterval(syncPlaybackToOneSecondLatency, 500)
 }
@@ -167,8 +244,13 @@ const ensureVideoPlayback = async (hintText = "正在播放直播") => {
   try {
     await video.play()
     startLatencySync()
-    playbackBlocked.value = false
-    statusText.value = hintText
+    if (video.muted || video.volume === 0) {
+      playbackBlocked.value = true
+      statusText.value = "正在播放直播，点击开启声音"
+    } else {
+      playbackBlocked.value = false
+      statusText.value = hintText
+    }
   } catch (error) {
     video.muted = true
     try {
@@ -182,6 +264,19 @@ const ensureVideoPlayback = async (hintText = "正在播放直播") => {
     }
   }
 }
+
+const prepareAudiblePlayback = () => {
+  const video = videoElementRef.value
+  if (!video || playbackBlocked.value) {
+    return
+  }
+  video.muted = false
+  if (video.volume === 0) {
+    video.volume = 1
+  }
+  syncVolumeState()
+}
+
 const syncVolumeState = () => {
   const video = videoElementRef.value
   if (!video) {
@@ -220,6 +315,136 @@ const toggleMute = () => {
     video.muted = true
   }
   syncVolumeState()
+}
+
+const sendSignal = (payload) => {
+  if (signalSocket?.readyState === WebSocket.OPEN) {
+    signalSocket.send(JSON.stringify(payload))
+  }
+}
+
+const ensureCohostMediaAvailable = () => {
+  if (navigator.mediaDevices?.getUserMedia) {
+    return true
+  }
+  const message = "连麦需要摄像头和麦克风权限。外网演示请使用 HTTPS 访问，HTTP 域名只能观看、聊天和送礼。"
+  $modal.msgWarning(message)
+  updateCohostState("idle", message)
+  return false
+}
+
+const createCohostStream = async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { width: { ideal: 640 }, height: { ideal: 360 } },
+    audio: {
+      channelCount: 1,
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true,
+    },
+  })
+  cohostLocalStream = stream
+  await nextTick()
+  if (cohostPreviewRef.value) {
+    cohostPreviewRef.value.srcObject = stream
+    cohostPreviewRef.value.muted = true
+    cohostPreviewRef.value.play?.().catch(() => {})
+  }
+  return stream
+}
+
+const releaseCohostStream = () => {
+  cohostLocalStream?.getTracks?.().forEach((track) => track.stop())
+  cohostLocalStream = null
+  if (cohostPreviewRef.value) {
+    cohostPreviewRef.value.srcObject = null
+  }
+}
+
+const toggleCohost = async () => {
+  if (cohostState.value === "idle") {
+    await requestCohost()
+    return
+  }
+  endCohost()
+}
+
+const requestCohost = async () => {
+  if (!props.cohostEnabled) {
+    emit("require-login")
+    return
+  }
+  if (!broadcasterSessionId) {
+    $modal.msgWarning("主播信令尚未连接，稍后再申请连麦")
+    return
+  }
+  if (!ensureCohostMediaAvailable()) {
+    return
+  }
+  updateCohostState("requesting", "等待主播同意")
+  sendSignal({
+    type: "cohost-request",
+    roomId: Number(props.roomId),
+    targetSessionId: broadcasterSessionId,
+    applicantName: props.applicantName,
+    applicantAvatar: props.applicantAvatar,
+  })
+}
+
+const endCohost = () => {
+  if (broadcasterSessionId && cohostState.value !== "idle") {
+    sendSignal({
+      type: "cohost-ended",
+      roomId: Number(props.roomId),
+      targetSessionId: broadcasterSessionId,
+    })
+  }
+  closeCohostPeer()
+  releaseCohostStream()
+  updateCohostState("idle", "")
+}
+
+const answerCohostOffer = async (data) => {
+  if (!data?.fromSessionId || !data?.sdp) {
+    return
+  }
+  broadcasterSessionId = data.fromSessionId
+  updateCohostState("connecting", "主播已同意，正在接入")
+  closeCohostPeer()
+  const stream = cohostLocalStream || (await createCohostStream())
+  cohostPeer = createPeerConnection()
+  stream.getTracks().forEach((track) => cohostPeer.addTrack(track, stream))
+
+  cohostPeer.onicecandidate = (event) => {
+    if (!event.candidate) return
+    sendSignal({
+      type: "cohost-ice-candidate",
+      roomId: Number(props.roomId),
+      targetSessionId: broadcasterSessionId,
+      candidate: event.candidate,
+    })
+  }
+
+  cohostPeer.onconnectionstatechange = () => {
+    if (cohostPeer?.connectionState === "connected") {
+      updateCohostState("active", "连麦中")
+    }
+    if (["failed", "disconnected", "closed"].includes(cohostPeer?.connectionState)) {
+      closeCohostPeer()
+      releaseCohostStream()
+      updateCohostState("idle", "")
+    }
+  }
+
+  await cohostPeer.setRemoteDescription(new RTCSessionDescription(data.sdp))
+  const answer = await cohostPeer.createAnswer()
+  await cohostPeer.setLocalDescription(answer)
+  sendSignal({
+    type: "cohost-answer",
+    roomId: Number(props.roomId),
+    targetSessionId: broadcasterSessionId,
+    sdp: answer,
+  })
 }
 
 const resumePlayback = async () => {
@@ -274,10 +499,46 @@ onBeforeUnmount(() => {
 
 defineExpose({ setVolume, toggleMute })
 
+const handlePullPlaybackError = () => {
+  pullPlaybackFailed = true
+  if (props.browserLive && props.roomId) {
+    connectBrowserLiveViewer()
+    return true
+  }
+  return false
+}
+
+const playPullStream = () => {
+  if (!playablePullUrl.value || pullPlaybackFailed) {
+    return false
+  }
+  if (isRecordingUrl.value) {
+    playRecording()
+    return true
+  }
+  if (isHlsUrl.value) {
+    playHls().catch(handlePullPlaybackError)
+    return true
+  }
+  if (isFlvUrl.value) {
+    playFlv().catch(handlePullPlaybackError)
+    return true
+  }
+  return false
+}
+
 const playLive = () => {
   destroy()
+  pullPlaybackFailed = false
+  if (shouldPreferPullStream.value && playPullStream()) {
+    return
+  }
   if (props.roomId) {
     connectBrowserLiveViewer()
+    return
+  }
+  if (!playPullStream()) {
+    fallbackToPullStream()
   }
 }
 
@@ -345,7 +606,6 @@ const handleSignal = async (data) => {
     return
   }
   if (data.type === "broadcaster-offline") {
-    subtitleText.value = ""
     closePeer()
     fallbackToPullStream("主播暂未开播")
     return
@@ -357,7 +617,6 @@ const handleSignal = async (data) => {
   }
   if (data.type === "guard-violation") {
     const reason = formatGuardReason(data)
-    subtitleText.value = ""
     statusText.value = reason
     $modal.msgError(reason)
     closeSignalOnly()
@@ -374,12 +633,35 @@ const handleSignal = async (data) => {
     await peer.addIceCandidate(new RTCIceCandidate(data.candidate))
     return
   }
-  if (data.type === "subtitle") {
-    subtitleText.value = data.text || ""
+  if (data.type === "cohost-accepted") {
+    updateCohostState("connecting", "主播已同意，正在接入")
     return
   }
-  if (data.type === "subtitle-clear") {
-    subtitleText.value = ""
+  if (data.type === "cohost-rejected") {
+    $modal.msgWarning(data.reason || "主播暂时无法连麦")
+    closeCohostPeer()
+    releaseCohostStream()
+    updateCohostState("idle", "")
+    return
+  }
+  if (data.type === "cohost-offer") {
+    try {
+      await answerCohostOffer(data)
+    } catch (error) {
+      $modal.msgError("连麦接入失败，请检查摄像头和麦克风权限")
+      endCohost()
+    }
+    return
+  }
+  if (data.type === "cohost-ice-candidate" && data.candidate && cohostPeer) {
+    await cohostPeer.addIceCandidate(new RTCIceCandidate(data.candidate))
+    return
+  }
+  if (data.type === "cohost-ended") {
+    closeCohostPeer()
+    releaseCohostStream()
+    updateCohostState("idle", "")
+    return
   }
 }
 
@@ -402,7 +684,7 @@ const answerOffer = async (sdp) => {
   remoteStream = new MediaStream()
   if (videoElementRef.value) {
     videoElementRef.value.srcObject = remoteStream
-    videoElementRef.value.muted = true
+    prepareAudiblePlayback()
     syncVolumeState()
   }
 
@@ -462,16 +744,22 @@ const answerOffer = async (sdp) => {
   )
 }
 
-const playHls = () => {
+const playHls = async () => {
   const video = videoElementRef.value
   if (!video) {
     return
   }
   statusText.value = "正在加载直播画面"
+  const pullUrl = playablePullUrl.value
+  prepareAudiblePlayback()
   if (video.canPlayType("application/vnd.apple.mpegurl")) {
-    video.src = props.pullUrl
+    video.src = pullUrl
     syncVolumeState()
     ensureVideoPlayback("正在播放直播")
+    return
+  }
+  const Hls = await loadHls()
+  if (!videoElementRef.value || videoElementRef.value !== video) {
     return
   }
   if (!Hls.isSupported()) {
@@ -485,26 +773,36 @@ const playHls = () => {
     liveMaxLatencyDuration: LIVE_SYNC_LATENCY_SECONDS + 1,
     maxLiveSyncPlaybackRate: 1,
   })
-  hlsPlayer.value.loadSource(props.pullUrl)
+  hlsPlayer.value.loadSource(pullUrl)
   hlsPlayer.value.attachMedia(video)
   hlsPlayer.value.on(Hls.Events.MANIFEST_PARSED, () => {
     ensureVideoPlayback("正在播放直播")
   })
   hlsPlayer.value.on(Hls.Events.ERROR, () => {
+    hlsPlayer.value?.destroy()
+    hlsPlayer.value = null
+    if (handlePullPlaybackError()) {
+      return
+    }
     statusText.value = "直播画面加载失败"
   })
 }
 
-const playFlv = () => {
+const playFlv = async () => {
+  const flvjs = await loadFlv()
+  if (!videoElementRef.value) {
+    return
+  }
   if (!flvjs.isSupported()) {
     $modal.msgError("当前浏览器暂不支持播放直播")
     return
   }
   statusText.value = "正在加载直播画面"
+  prepareAudiblePlayback()
   flvPlayer.value = flvjs.createPlayer(
     {
       type: "flv",
-      url: props.pullUrl,
+      url: playablePullUrl.value,
       isLive: true,
     },
     {
@@ -516,27 +814,66 @@ const playFlv = () => {
     }
   )
   flvPlayer.value.attachMediaElement(videoElementRef.value)
+  flvPlayer.value.on(flvjs.Events.ERROR, () => {
+    flvPlayer.value?.destroy()
+    flvPlayer.value = null
+    if (handlePullPlaybackError()) {
+      return
+    }
+    statusText.value = "直播画面加载失败"
+  })
   flvPlayer.value.load()
   syncVolumeState()
   ensureVideoPlayback("正在播放直播")
 }
 
+const playRecording = () => {
+  const video = videoElementRef.value
+  const pullUrl = playablePullUrl.value
+  if (!video || !pullUrl) {
+    return
+  }
+  statusText.value = "正在加载录播画面"
+  video.srcObject = null
+  video.src = pullUrl
+  video.loop = true
+  video.controls = false
+  prepareAudiblePlayback()
+  video.playsInline = true
+  video.oncanplay = () => {
+    ensureVideoPlayback("正在播放演示录播")
+  }
+  video.onerror = () => {
+    statusText.value = "录播画面加载失败"
+  }
+  syncVolumeState()
+  video.load()
+}
+
 const fallbackToPullStream = (fallbackMessage = "") => {
   clearFallbackTimer()
-  subtitleText.value = ""
-  if (!props.pullUrl || !videoElementRef.value) {
+  const pullUrl = playablePullUrl.value
+  if (!pullUrl || !videoElementRef.value) {
     statusText.value = fallbackMessage || "暂时没有可观看的直播画面"
+    return
+  }
+  if (pullPlaybackFailed) {
+    statusText.value = fallbackMessage || "直播画面暂时无法加载"
     return
   }
   statusText.value = fallbackMessage || "正在重新加载直播画面..."
   closeSignalOnly()
   closePeer()
-  if (props.pullUrl.endsWith(".m3u8")) {
+  if (isHlsUrl.value) {
     playHls()
     return
   }
-  if (props.pullUrl.endsWith(".flv")) {
+  if (isFlvUrl.value) {
     playFlv()
+    return
+  }
+  if (isRecordingUrl.value) {
+    playRecording()
   }
 }
 const startHeartbeat = () => {
@@ -592,10 +929,17 @@ const closePeer = () => {
   }
 }
 
+const closeCohostPeer = () => {
+  if (cohostPeer) {
+    cohostPeer.close()
+    cohostPeer = null
+  }
+}
+
 const destroy = () => {
   stopLatencySync()
   clearFallbackTimer()
-  subtitleText.value = ""
+  endCohost()
   if (signalSocket?.readyState === WebSocket.OPEN) {
     signalSocket.send(
       JSON.stringify({
@@ -619,6 +963,9 @@ const destroy = () => {
     flvPlayer.value = null
   }
   if (videoElementRef.value) {
+    videoElementRef.value.oncanplay = null
+    videoElementRef.value.onerror = null
+    videoElementRef.value.loop = false
     videoElementRef.value.removeAttribute("src")
     videoElementRef.value.load()
     videoElementRef.value.volume = 1
@@ -665,7 +1012,7 @@ const destroy = () => {
 }
 
 .status-chip,
-.caption-btn {
+.cohost-btn {
   pointer-events: auto;
 }
 
@@ -683,28 +1030,69 @@ const destroy = () => {
   font-weight: 800;
 }
 
-.caption-btn {
-  border: 1px solid rgba(255, 255, 255, 0.12);
+.player-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.cohost-btn {
+  border: 1px solid rgba(255, 159, 26, 0.45);
   border-radius: 4px;
   color: #fff;
-  background: rgba(5, 6, 9, 0.52);
+  background: rgba(255, 159, 26, 0.26);
   backdrop-filter: blur(10px);
 }
 
-.subtitle-overlay {
+.cohost-self-card {
   position: absolute;
-  left: 50%;
-  bottom: 18px;
-  transform: translateX(-50%);
-  max-width: calc(100% - 60px);
-  padding: 10px 18px;
-  border-radius: 4px;
-  background: rgba(5, 6, 9, 0.76);
-  backdrop-filter: blur(10px);
+  right: 14px;
+  bottom: 82px;
+  z-index: 8;
+  width: min(230px, 34%);
+  min-width: 172px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(5, 6, 9, 0.82);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
+}
+
+.cohost-self-card video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #050609;
+  object-fit: cover;
+}
+
+.cohost-self-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 9px;
   color: #fff;
-  font-size: 18px;
-  line-height: 1.6;
-  text-align: center;
+  background: rgba(5, 6, 9, 0.72);
+}
+
+.cohost-self-card__head span {
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cohost-self-card__head button {
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  color: #ffb4b4;
+  background: transparent;
+  font-size: 12px;
+  cursor: pointer;
 }
 
 .playback-overlay {

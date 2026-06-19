@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -19,7 +20,7 @@ public class ChatMsgReq {
     @ApiModelProperty(value = "房间id")
     private Integer roomId;
 
-    @NotNull(message = "聊天内容text不能为空")
+    @NotBlank(message = "聊天内容不能为空")
     @Length(max = 100, message = "文字内容不能超过100")
     @ApiModelProperty(value = "文字内容")
     private String text;

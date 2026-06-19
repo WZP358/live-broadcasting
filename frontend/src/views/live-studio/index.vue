@@ -37,7 +37,7 @@ const roomLiveInfo = ref({})
 const isLiving = computed(() => Number(roomLiveInfo.value?.liveStatus || 0) === 1)
 const liveStatusText = computed(() => (isLiving.value ? "直播中" : "未开播"))
 const headSubtitle = computed(() =>
-  isLiving.value ? "直播正在进行，可以在这里管理画面、字幕、声音和互动。" : "选择屏幕或摄像头，准备好后即可开始直播。"
+  isLiving.value ? "直播正在进行，可以在这里管理画面、声音和互动。" : "选择屏幕或摄像头，准备好后即可开始直播。"
 )
 
 const getRoomInfo = async () => {

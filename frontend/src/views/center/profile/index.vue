@@ -10,7 +10,7 @@
             class="avatar-uploader"
             :show-upload-list="false"
             action="/api/v1/upload/avatar"
-            :headers="userToken"
+            :headers="uploadHeaders"
             :before-upload="beforeUpload"
             @change="handleChange"
           >
@@ -25,7 +25,7 @@
           <div class="anchor-title">
             <h1>{{ displayName }}</h1>
             <span class="level-badge">{{ accountLevel }}</span>
-            <button class="link-action" type="button" @click="goTo('/center/personnel/profile')">编辑</button>
+            <button class="link-action" type="button" @click="openProfileEditor">编辑</button>
           </div>
           <p class="room-id">账号：{{ accountIdentity }}</p>
           <div class="anchor-badges">
@@ -49,7 +49,7 @@
               <div class="overview-meta">
                 <span>账号 {{ accountIdentity }}</span>
                 <span>{{ userStore.isAdmin ? "运营账号" : "普通用户" }}</span>
-                <span>{{ userInfo.hasAuth ? "已实名认证" : "未实名认证" }}</span>
+                <span>{{ userInfo.mobile || userInfo.email ? "联系方式已完善" : "联系方式待完善" }}</span>
               </div>
             </div>
 
@@ -80,7 +80,7 @@
           <section class="section-block">
             <div class="section-title">
               <h2>基础信息</h2>
-              <button class="edit-profile-btn" type="button" @click="goTo('/center/personnel/profile')">编辑资料</button>
+              <button class="edit-profile-btn" type="button" @click="openProfileEditor">编辑资料</button>
             </div>
             <div class="basic-grid">
               <div v-for="item in basicInfoItems" :key="item.label">
@@ -124,7 +124,7 @@
           <div class="side-tabs">
             <span class="active">互动</span>
             <span>账户</span>
-            <span>认证</span>
+            <span>安全</span>
           </div>
           <section class="side-panel">
             <div class="panel-title">
@@ -133,37 +133,47 @@
             </div>
             <SecurityItem />
           </section>
-          <section class="side-panel">
-            <div class="panel-title">
-              <strong>信息认证</strong>
-              <em>{{ userInfo.hasAuth ? "已完成" : "待完善" }}</em>
-            </div>
-            <Authentication />
-          </section>
         </aside>
       </div>
     </section>
+
+    <a-modal
+      v-model:open="profileEditorVisible"
+      title="编辑个人资料"
+      :confirm-loading="profileSaving"
+      width="560px"
+      ok-text="保存"
+      cancel-text="取消"
+      @ok="saveProfileInfo"
+      @cancel="closeProfileEditor"
+    >
+      <a-form ref="profileFormRef" :model="profileForm" :rules="profileRules" layout="vertical" class="profile-edit-form">
+        <a-form-item label="昵称" name="nickName">
+          <a-input v-model:value="profileForm.nickName" :maxlength="16" placeholder="请输入昵称" show-count />
+        </a-form-item>
+        <a-form-item label="个性签名" name="signature">
+          <a-textarea v-model:value="profileForm.signature" :maxlength="64" :rows="4" placeholder="用一句话介绍自己" show-count />
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
 <script setup>
 import SecurityItem from "./SecurityItem.vue"
-import Authentication from "./Authentication.vue"
 import {
   AccountBookOutlined,
   AreaChartOutlined,
   CustomerServiceOutlined,
-  FileTextOutlined,
-  HistoryOutlined,
   LoadingOutlined,
-  SafetyCertificateOutlined,
   VideoCameraOutlined,
   WalletOutlined,
 } from "@ant-design/icons-vue"
 import { useStore } from "@/stores"
-import { FALLBACK_AVATAR, onImgError } from "@/utils/fallback"
+import userApi from "@/api/user"
+import { FALLBACK_AVATAR, onImgError, resolveSafeImageUrl } from "@/utils/fallback"
 import $modal from "@/utils/message"
-import { computed, onMounted, ref } from "vue"
+import { computed, onMounted, reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { storeToRefs } from "pinia"
 
@@ -174,8 +184,22 @@ const { userInfo } = storeToRefs(userStore)
 const fileList = ref([])
 const loading = ref(false)
 const imageUrl = ref("")
+const profileFormRef = ref()
+const profileEditorVisible = ref(false)
+const profileSaving = ref(false)
+const profileForm = reactive({
+  nickName: "",
+  signature: "",
+})
+const profileRules = {
+  nickName: [
+    { required: true, message: "请输入昵称", trigger: "blur" },
+    { min: 1, max: 16, message: "昵称长度为 1 到 16 个字符", trigger: "blur" },
+  ],
+  signature: [{ max: 64, message: "个性签名最多 64 个字符", trigger: "blur" }],
+}
 
-const displayAvatar = computed(() => imageUrl.value || FALLBACK_AVATAR)
+const displayAvatar = computed(() => resolveSafeImageUrl(imageUrl.value || userInfo.value.avatar, FALLBACK_AVATAR))
 const displayName = computed(() => userInfo.value.nickName || userInfo.value.nickname || userInfo.value.username || "直播用户")
 const accountIdentity = computed(() => userInfo.value.username || userInfo.value.userId || userInfo.value.id || "-")
 const accountLevel = computed(() => {
@@ -197,7 +221,6 @@ const profileCompletion = computed(() => {
 })
 const profileBadges = computed(() => {
   const badges = [userStore.isAdmin ? "运营账号" : "直播用户"]
-  badges.push(userInfo.value.hasAuth ? "已实名认证" : "未实名认证")
   if (userInfo.value.mobile) badges.push("手机已绑定")
   if (userInfo.value.email) badges.push("邮箱已绑定")
   if (!userInfo.value.mobile && !userInfo.value.email) badges.push("资料待完善")
@@ -219,18 +242,16 @@ const basicInfoItems = computed(() => [
   { label: "用户ID", value: userInfo.value.userId || userInfo.value.id || "-" },
   { label: "手机", value: maskPhone(userInfo.value.mobile) },
   { label: "邮箱", value: maskEmail(userInfo.value.email) },
-  { label: "认证状态", value: userInfo.value.hasAuth ? "已实名认证" : "未实名认证" },
   { label: "账号类型", value: userStore.isAdmin ? "运营账号" : "普通用户" },
   { label: "个性签名", value: userInfo.value.signature || "你还没编辑个性签名。" },
 ])
 const accountSummary = computed(() => [
   { label: "资料", value: `${profileCompletion.value}%` },
   { label: "安全", value: `${securityReadyCount.value}/3` },
-  { label: "认证", value: userInfo.value.hasAuth ? "已完成" : "待完善" },
+  { label: "联系", value: userInfo.value.mobile || userInfo.value.email ? "已完善" : "待完善" },
 ])
 const playItems = [
   { icon: VideoCameraOutlined, title: "开播准备", desc: "配置封面、分类和直播方式", action: "去设置", path: "/center/live/live-settings" },
-  { icon: SafetyCertificateOutlined, title: "实名认证", desc: "完成认证后可使用主播服务", action: "去认证", path: "/center/identify" },
   { icon: CustomerServiceOutlined, title: "联系客服", desc: "充值、开播或账号问题可提交工单", action: "去反馈", path: "/center/messages/customer-service" },
 ]
 const toolbox = [
@@ -246,31 +267,77 @@ const goTo = (path) => {
   router.push(path)
 }
 
-const userToken = computed(() => ({
-  Authorization: `${store.user().userToken}`,
+const openProfileEditor = () => {
+  profileForm.nickName = userInfo.value.nickName || userInfo.value.nickname || userInfo.value.username || ""
+  profileForm.signature = userInfo.value.signature || ""
+  profileEditorVisible.value = true
+}
+
+const closeProfileEditor = () => {
+  profileEditorVisible.value = false
+  profileFormRef.value?.clearValidate?.()
+}
+
+const saveProfileInfo = async () => {
+  try {
+    await profileFormRef.value?.validate?.()
+    profileSaving.value = true
+    const response = await userApi.updateUserInfo({
+      nickName: profileForm.nickName.trim(),
+      signature: profileForm.signature.trim(),
+    })
+    if (response?.data !== true) {
+      throw new Error(response?.msg || "个人资料保存失败")
+    }
+    userStore.updateSecurityInfo({
+      nickName: profileForm.nickName.trim(),
+      nickname: profileForm.nickName.trim(),
+      signature: profileForm.signature.trim(),
+    })
+    $modal.msgSuccess("个人资料已保存")
+    closeProfileEditor()
+  } catch (error) {
+    if (!error?.errorFields) {
+      $modal.msgError(error?.message || "保存失败，请稍后重试")
+    }
+  } finally {
+    profileSaving.value = false
+  }
+}
+
+const uploadHeaders = computed(() => ({
+  Authorization: store.user().userToken || "",
 }))
 
 onMounted(() => {
   imageUrl.value = userInfo.value.avatar
 })
 
-const handleChange = (info) => {
+const legacyHandleChange = (info) => {
   if (info.file.status === "uploading") {
     loading.value = true
     return
   }
   if (info.file.status === "done") {
-    imageUrl.value = info.file.response.data
-    store.user().updateAvatar(imageUrl.value)
+    const response = info.file.response || {}
+    if (response.code !== 0 || !response.data) {
+      loading.value = false
+      $modal.msgError(response.msg || "头像上传失败，请检查后端上传服务")
+      return
+    }
+    imageUrl.value = response.data
+    userStore.updateAvatar(imageUrl.value)
     loading.value = false
+    $modal.msgSuccess("头像已更新")
   }
   if (info.file.status === "error") {
     loading.value = false
-    $modal.msgError("头像上传失败")
+    const response = info.file.response || {}
+    $modal.msgError(response.msg || info.file.error?.message || "头像上传失败，请稍后重试")
   }
 }
 
-const beforeUpload = (file) => {
+const legacyBeforeUpload = (file) => {
   const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png"
   if (!isJpgOrPng) {
     $modal.msgError("只能上传 JPG 或 PNG 图片")
@@ -280,6 +347,53 @@ const beforeUpload = (file) => {
     $modal.msgError("上传文件大小不能超过 2MB")
   }
   return isJpgOrPng && isLt2M
+}
+const getUploadErrorMessage = (file) => {
+  const response = file?.response || file?.xhr?.response
+  if (typeof response === "string") {
+    try {
+      const parsed = JSON.parse(response)
+      return parsed?.msg || parsed?.message
+    } catch (error) {
+      return response
+    }
+  }
+  return response?.msg || response?.message || file?.error?.message
+}
+
+const handleChange = (info) => {
+  if (info.file.status === "uploading") {
+    loading.value = true
+    return
+  }
+  if (info.file.status === "done") {
+    const response = info.file.response || {}
+    loading.value = false
+    if (response.code !== 0 || !response.data) {
+      $modal.msgError(response.msg || "头像上传失败，请检查后端上传服务")
+      return
+    }
+    imageUrl.value = response.data
+    userStore.updateAvatar(imageUrl.value)
+    $modal.msgSuccess("头像已更新")
+  }
+  if (info.file.status === "error") {
+    loading.value = false
+    $modal.msgError(getUploadErrorMessage(info.file) || "头像上传失败，请稍后重试")
+  }
+}
+
+const beforeUpload = (file) => {
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"]
+  const isSupportedImage = allowedTypes.includes(file.type)
+  if (!isSupportedImage) {
+    $modal.msgError("只能上传 JPG、PNG 或 WEBP 图片")
+  }
+  const isLt2M = file.size / 1024 / 1024 < 2
+  if (!isLt2M) {
+    $modal.msgError("头像图片不能超过 2MB")
+  }
+  return isSupportedImage && isLt2M
 }
 </script>
 

@@ -17,4 +17,10 @@ public class GiftMsgRespDTO {
 
     private String giftName;
 
+    private Integer number;
+
+    private String senderName;
+
+    private Integer senderId;
+
 }

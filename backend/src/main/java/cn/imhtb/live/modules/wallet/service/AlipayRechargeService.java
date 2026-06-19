@@ -36,7 +36,10 @@ public class AlipayRechargeService {
             );
 
             AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
-            request.setNotifyUrl(properties.getNotifyUrl());
+            String notifyUrl = normalizeOptionalUrl(properties.getNotifyUrl(), "支付宝异步通知地址 notifyUrl");
+            if (StringUtils.hasText(notifyUrl)) {
+                request.setNotifyUrl(notifyUrl);
+            }
             request.setReturnUrl(resolveSyncReturnUrl());
             request.setBizContent(JSON.toJSONString(buildBizContent(outTradeNo, amount, subject)));
             return alipayClient.pageExecute(request).getBody();
@@ -73,12 +76,15 @@ public class AlipayRechargeService {
 
     private String resolveSyncReturnUrl() {
         if (StringUtils.hasText(properties.getSyncReturnUrl())) {
-            return properties.getSyncReturnUrl();
+            return normalizeRequiredUrl(properties.getSyncReturnUrl(), "支付宝同步回跳地址 syncReturnUrl");
         }
         if (StringUtils.hasText(properties.getNotifyUrl()) && properties.getNotifyUrl().endsWith("/notify")) {
-            return properties.getNotifyUrl().substring(0, properties.getNotifyUrl().length() - "/notify".length()) + "/return";
+            return normalizeRequiredUrl(
+                    properties.getNotifyUrl().substring(0, properties.getNotifyUrl().length() - "/notify".length()) + "/return",
+                    "支付宝同步回跳地址"
+            );
         }
-        return properties.getReturnUrl();
+        return normalizeRequiredUrl(properties.getReturnUrl(), "支付宝同步回跳地址 returnUrl");
     }
 
     private void ensureConfigured() {
@@ -86,12 +92,32 @@ public class AlipayRechargeService {
             throw new BusinessException("支付宝沙箱支付未启用，请先配置 alipay.enabled=true");
         }
         if (!StringUtils.hasText(properties.getAppId())
-                || !StringUtils.hasText(properties.getAppPrivateKey())
-                || !StringUtils.hasText(properties.getNotifyUrl())) {
-            throw new BusinessException("支付宝沙箱配置未完整，请填写 appId、应用私钥和 notifyUrl");
+                || !StringUtils.hasText(properties.getAppPrivateKey())) {
+            throw new BusinessException("支付宝沙箱配置未完整，请填写 appId 和应用私钥");
         }
         if (properties.isVerifySign() && !StringUtils.hasText(properties.getAlipayPublicKey())) {
             throw new BusinessException("支付宝验签已启用，请填写支付宝公钥");
         }
+        normalizeRequiredUrl(properties.getGatewayUrl(), "支付宝网关地址 gatewayUrl");
+        resolveSyncReturnUrl();
+    }
+
+    private String normalizeRequiredUrl(String value, String name) {
+        String url = normalizeOptionalUrl(value, name);
+        if (!StringUtils.hasText(url)) {
+            throw new BusinessException(name + "不能为空");
+        }
+        return url;
+    }
+
+    private String normalizeOptionalUrl(String value, String name) {
+        if (!StringUtils.hasText(value)) {
+            return "";
+        }
+        String url = value.trim();
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            throw new BusinessException(name + "必须以 http:// 或 https:// 开头");
+        }
+        return url;
     }
 }

@@ -37,7 +37,7 @@
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'name'">
               <div class="admin-avatar-cell">
-                <a-avatar shape="square" :src="record.icon">
+                <a-avatar shape="square" :src="safeGiftIcon(record)">
                   {{ (record.name || "礼").slice(0, 1) }}
                 </a-avatar>
                 <div class="admin-avatar-meta">
@@ -84,6 +84,7 @@ import AdminToolbar from "@/components/admin/AdminToolbar.vue"
 import AdminPagination from "@/components/admin/AdminPagination.vue"
 import { createGiftColumns } from "./columns"
 import GiftDialog from "./GiftDialog.vue"
+import { FALLBACK_GIFT_ICON, resolveSafeImageUrl } from "@/utils/fallback"
 
 const formRef = ref()
 const formState = reactive({
@@ -98,6 +99,8 @@ const dialogVisible = ref(false)
 const dialogTitle = ref("新增礼物")
 const editData = ref({})
 const { containerRef, tableScrollY } = useTableScroll()
+
+const safeGiftIcon = (record = {}) => resolveSafeImageUrl(record.icon, FALLBACK_GIFT_ICON)
 
 const getData = async () => {
   const res = await systemGiftApi.getPageGifts({

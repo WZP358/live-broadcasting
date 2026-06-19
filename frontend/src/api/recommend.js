@@ -15,6 +15,6 @@ export default {
    * @param {number} limit 返回数量
    */
   getSimilarRooms(roomId, limit = 6) {
-    return request({ url: `/api/v1/recommend/similar-rooms/${roomId}`, method: 'get', params: { limit } })
+    return request({ url: `/api/v1/recommend/similar-rooms/${roomId}`, method: 'get', params: { limit }, silentError: true })
   },
 }
