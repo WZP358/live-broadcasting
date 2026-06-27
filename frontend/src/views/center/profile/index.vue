@@ -25,17 +25,17 @@
           <div class="anchor-title">
             <h1>{{ displayName }}</h1>
             <span class="level-badge">{{ accountLevel }}</span>
-            <button class="link-action" type="button" @click="openProfileEditor">编辑</button>
+            <button class="link-action" type="button" @click="openProfileEditor">&#32534;&#36753;</button>
           </div>
-          <p class="room-id">账号：{{ accountIdentity }}</p>
+          <p class="room-id">&#36134;&#21495;&#65306;{{ accountIdentity }}</p>
           <div class="anchor-badges">
             <span v-for="badge in profileBadges" :key="badge">{{ badge }}</span>
           </div>
         </div>
 
         <div class="header-actions">
-          <button class="recharge-btn" type="button" @click="goTo('/center/dollar/recharge')">充值</button>
-          <button class="plain-btn" type="button" @click="goTo('/center/dollar/wallet')">明细</button>
+          <button class="recharge-btn" type="button" @click="goTo('/center/dollar/recharge')">&#20805;&#20540;</button>
+          <button class="plain-btn" type="button" @click="goTo('/center/dollar/wallet')">&#26126;&#32454;</button>
         </div>
       </header>
 
@@ -43,27 +43,27 @@
         <main class="room-stage">
           <section class="profile-overview">
             <div class="overview-copy">
-              <span class="overview-kicker">个人资料</span>
+              <span class="overview-kicker">&#20010;&#20154;&#36164;&#26009;</span>
               <h2>{{ displayName }}</h2>
-              <p>{{ userInfo.signature || "还没有编辑个性签名，完善后会展示在个人主页和直播间资料中。" }}</p>
+              <p>{{ userInfo.signature || "\u8fd8\u6ca1\u6709\u7f16\u8f91\u4e2a\u6027\u7b7e\u540d\uff0c\u5b8c\u5584\u540e\u4f1a\u5c55\u793a\u5728\u4e2a\u4eba\u4e3b\u9875\u548c\u76f4\u64ad\u95f4\u8d44\u6599\u4e2d\u3002" }}</p>
               <div class="overview-meta">
-                <span>账号 {{ accountIdentity }}</span>
-                <span>{{ userStore.isAdmin ? "运营账号" : "普通用户" }}</span>
-                <span>{{ userInfo.mobile || userInfo.email ? "联系方式已完善" : "联系方式待完善" }}</span>
+                <span>&#36134;&#21495; {{ accountIdentity }}</span>
+                <span>{{ userStore.isAdmin ? "\u8fd0\u8425\u8d26\u53f7" : "\u666e\u901a\u7528\u6237" }}</span>
+                <span>{{ userInfo.mobile || userInfo.email ? "\u8054\u7cfb\u65b9\u5f0f\u5df2\u5b8c\u5584" : "\u8054\u7cfb\u65b9\u5f0f\u5f85\u5b8c\u5584" }}</span>
               </div>
             </div>
 
             <div class="overview-metrics">
               <article class="metric-card metric-card--primary">
                 <div class="metric-head">
-                  <span>资料完善度</span>
+                  <span>&#36164;&#26009;&#23436;&#21892;&#24230;</span>
                   <strong>{{ profileCompletion }}%</strong>
                 </div>
                 <a-progress :percent="profileCompletion" :show-info="false" />
               </article>
               <article class="metric-card">
                 <div class="metric-head">
-                  <span>账号安全</span>
+                  <span>&#36134;&#21495;&#23433;&#20840;</span>
                   <strong>{{ securityReadyCount }}/3</strong>
                 </div>
                 <a-progress :percent="securityPercent" :show-info="false" status="active" />
@@ -79,8 +79,8 @@
 
           <section class="section-block">
             <div class="section-title">
-              <h2>基础信息</h2>
-              <button class="edit-profile-btn" type="button" @click="openProfileEditor">编辑资料</button>
+              <h2>&#22522;&#30784;&#20449;&#24687;</h2>
+              <button class="edit-profile-btn" type="button" @click="openProfileEditor">&#32534;&#36753;&#36164;&#26009;</button>
             </div>
             <div class="basic-grid">
               <div v-for="item in basicInfoItems" :key="item.label">
@@ -92,7 +92,7 @@
 
           <section class="section-block">
             <div class="section-title">
-              <h2>账号服务</h2>
+              <h2>&#36134;&#21495;&#26381;&#21153;</h2>
             </div>
             <div class="play-grid">
               <article v-for="item in playItems" :key="item.title" class="play-card">
@@ -118,20 +118,40 @@
 
         <aside class="room-side">
           <div class="side-ad">
-            <strong>2026全新体验</strong>
-            <span>完善资料，解锁更多直播能力</span>
+            <strong>&#36134;&#21495;&#31649;&#29702;</strong>
+            <span>&#23436;&#21892;&#36164;&#26009;&#65292;&#31649;&#29702;&#30452;&#25773;&#12289;&#38065;&#21253;&#21644;&#36134;&#21495;&#23433;&#20840;&#12290;</span>
           </div>
           <div class="side-tabs">
-            <span class="active">互动</span>
-            <span>账户</span>
-            <span>安全</span>
+            <button
+              v-for="tab in sideTabOptions"
+              :key="tab.key"
+              type="button"
+              :class="{ active: activeSideTab === tab.key }"
+              @click="activeSideTab = tab.key"
+            >
+              {{ tab.label }}
+            </button>
           </div>
           <section class="side-panel">
             <div class="panel-title">
-              <strong>账号设置</strong>
-              <em>{{ securityReadyCount }}/3</em>
+              <strong>{{ activeSideTitle }}</strong>
+              <em v-if="activeSideTab === 'security'">{{ securityReadyCount }}/3</em>
+              <em v-else-if="activeSideTab === 'account'">{{ profileCompletion }}%</em>
+              <em v-else>&#24555;&#25463;</em>
             </div>
-            <SecurityItem />
+            <div v-if="activeSideTab === 'interaction'" class="side-action-list">
+              <button v-for="item in playItems" :key="item.title" type="button" @click="goTo(item.path)">
+                <span>{{ item.title }}</span>
+                <em>{{ item.action }}</em>
+              </button>
+            </div>
+            <div v-else-if="activeSideTab === 'account'" class="side-info-list">
+              <span v-for="item in basicInfoItems.slice(0, 5)" :key="item.label">
+                <em>{{ item.label }}</em>
+                <strong>{{ item.value }}</strong>
+              </span>
+            </div>
+            <SecurityItem v-else />
           </section>
         </aside>
       </div>
@@ -139,20 +159,20 @@
 
     <a-modal
       v-model:open="profileEditorVisible"
-      title="编辑个人资料"
+      title="&#32534;&#36753;&#20010;&#20154;&#36164;&#26009;"
       :confirm-loading="profileSaving"
       width="560px"
-      ok-text="保存"
-      cancel-text="取消"
+      ok-text="&#20445;&#23384;"
+      cancel-text="&#21462;&#28040;"
       @ok="saveProfileInfo"
       @cancel="closeProfileEditor"
     >
       <a-form ref="profileFormRef" :model="profileForm" :rules="profileRules" layout="vertical" class="profile-edit-form">
-        <a-form-item label="昵称" name="nickName">
-          <a-input v-model:value="profileForm.nickName" :maxlength="16" placeholder="请输入昵称" show-count />
+        <a-form-item label="&#26165;&#31216;" name="nickName">
+          <a-input v-model:value="profileForm.nickName" :maxlength="16" placeholder="&#35831;&#36755;&#20837;&#26165;&#31216;" show-count />
         </a-form-item>
-        <a-form-item label="个性签名" name="signature">
-          <a-textarea v-model:value="profileForm.signature" :maxlength="64" :rows="4" placeholder="用一句话介绍自己" show-count />
+        <a-form-item label="&#20010;&#24615;&#31614;&#21517;" name="signature">
+          <a-textarea v-model:value="profileForm.signature" :maxlength="64" :rows="4" placeholder="&#29992;&#19968;&#21477;&#35805;&#20171;&#32461;&#33258;&#24049;" show-count />
         </a-form-item>
       </a-form>
     </a-modal>
@@ -191,16 +211,23 @@ const profileForm = reactive({
   nickName: "",
   signature: "",
 })
+const activeSideTab = ref("interaction")
+const sideTabOptions = [
+  { key: "interaction", label: "\u4e92\u52a8" },
+  { key: "account", label: "\u8d26\u6237" },
+  { key: "security", label: "\u5b89\u5168" },
+]
+const activeSideTitle = computed(() => sideTabOptions.find((item) => item.key === activeSideTab.value)?.label || "\u4e92\u52a8")
 const profileRules = {
   nickName: [
-    { required: true, message: "请输入昵称", trigger: "blur" },
-    { min: 1, max: 16, message: "昵称长度为 1 到 16 个字符", trigger: "blur" },
+    { required: true, message: "\u8bf7\u8f93\u5165\u6635\u79f0", trigger: "blur" },
+    { min: 1, max: 16, message: "\u6635\u79f0\u957f\u5ea6\u4e3a 1 \u5230 16 \u4e2a\u5b57\u7b26", trigger: "blur" },
   ],
-  signature: [{ max: 64, message: "个性签名最多 64 个字符", trigger: "blur" }],
+  signature: [{ max: 64, message: "\u4e2a\u6027\u7b7e\u540d\u6700\u591a 64 \u4e2a\u5b57\u7b26", trigger: "blur" }],
 }
 
 const displayAvatar = computed(() => resolveSafeImageUrl(imageUrl.value || userInfo.value.avatar, FALLBACK_AVATAR))
-const displayName = computed(() => userInfo.value.nickName || userInfo.value.nickname || userInfo.value.username || "直播用户")
+const displayName = computed(() => userInfo.value.nickName || userInfo.value.nickname || userInfo.value.username || "\u76f4\u64ad\u7528\u6237")
 const accountIdentity = computed(() => userInfo.value.username || userInfo.value.userId || userInfo.value.id || "-")
 const accountLevel = computed(() => {
   const level = userInfo.value.level || userInfo.value.userLevel || userInfo.value.levelName
@@ -220,10 +247,10 @@ const profileCompletion = computed(() => {
   return Math.round((fields.filter(Boolean).length / fields.length) * 100)
 })
 const profileBadges = computed(() => {
-  const badges = [userStore.isAdmin ? "运营账号" : "直播用户"]
-  if (userInfo.value.mobile) badges.push("手机已绑定")
-  if (userInfo.value.email) badges.push("邮箱已绑定")
-  if (!userInfo.value.mobile && !userInfo.value.email) badges.push("资料待完善")
+  const badges = [userStore.isAdmin ? "\u8fd0\u8425\u8d26\u53f7" : "\u76f4\u64ad\u7528\u6237"]
+  if (userInfo.value.mobile) badges.push("\u624b\u673a\u5df2\u7ed1\u5b9a")
+  if (userInfo.value.email) badges.push("\u90ae\u7bb1\u5df2\u7ed1\u5b9a")
+  if (!userInfo.value.mobile && !userInfo.value.email) badges.push("\u8d44\u6599\u5f85\u5b8c\u5584")
   return badges
 })
 const maskPhone = (value) => {
@@ -237,29 +264,29 @@ const maskEmail = (value) => {
   return `${name.slice(0, 2)}***@${domain}`
 }
 const basicInfoItems = computed(() => [
-  { label: "账号", value: userInfo.value.username || "-" },
-  { label: "昵称", value: displayName.value },
-  { label: "用户ID", value: userInfo.value.userId || userInfo.value.id || "-" },
-  { label: "手机", value: maskPhone(userInfo.value.mobile) },
-  { label: "邮箱", value: maskEmail(userInfo.value.email) },
-  { label: "账号类型", value: userStore.isAdmin ? "运营账号" : "普通用户" },
-  { label: "个性签名", value: userInfo.value.signature || "你还没编辑个性签名。" },
+  { label: "\u8d26\u53f7", value: userInfo.value.username || "-" },
+  { label: "\u6635\u79f0", value: displayName.value },
+  { label: "\u7528\u6237ID", value: userInfo.value.userId || userInfo.value.id || "-" },
+  { label: "\u624b\u673a", value: maskPhone(userInfo.value.mobile) },
+  { label: "\u90ae\u7bb1", value: maskEmail(userInfo.value.email) },
+  { label: "\u8d26\u53f7\u7c7b\u578b", value: userStore.isAdmin ? "\u8fd0\u8425\u8d26\u53f7" : "\u666e\u901a\u7528\u6237" },
+  { label: "\u4e2a\u6027\u7b7e\u540d", value: userInfo.value.signature || "\u4f60\u8fd8\u6ca1\u6709\u7f16\u8f91\u4e2a\u6027\u7b7e\u540d\u3002" },
 ])
 const accountSummary = computed(() => [
-  { label: "资料", value: `${profileCompletion.value}%` },
-  { label: "安全", value: `${securityReadyCount.value}/3` },
-  { label: "联系", value: userInfo.value.mobile || userInfo.value.email ? "已完善" : "待完善" },
+  { label: "\u8d44\u6599", value: `${profileCompletion.value}%` },
+  { label: "\u5b89\u5168", value: `${securityReadyCount.value}/3` },
+  { label: "\u8054\u7cfb", value: userInfo.value.mobile || userInfo.value.email ? "\u5df2\u5b8c\u5584" : "\u5f85\u5b8c\u5584" },
 ])
 const playItems = [
-  { icon: VideoCameraOutlined, title: "开播准备", desc: "配置封面、分类和直播方式", action: "去设置", path: "/center/live/live-settings" },
-  { icon: CustomerServiceOutlined, title: "联系客服", desc: "充值、开播或账号问题可提交工单", action: "去反馈", path: "/center/messages/customer-service" },
+  { icon: VideoCameraOutlined, title: "\u5f00\u64ad\u51c6\u5907", desc: "\u914d\u7f6e\u5c01\u9762\u3001\u5206\u7c7b\u548c\u76f4\u64ad\u65b9\u5f0f", action: "\u53bb\u8bbe\u7f6e", path: "/center/live/live-settings" },
+  { icon: CustomerServiceOutlined, title: "\u8054\u7cfb\u5ba2\u670d", desc: "\u5145\u503c\u3001\u5f00\u64ad\u6216\u8d26\u53f7\u95ee\u9898\u53ef\u63d0\u4ea4\u5de5\u5355", action: "\u53bb\u53cd\u9988", path: "/center/messages/customer-service" },
 ]
 const toolbox = [
-  { icon: VideoCameraOutlined, label: "开播", path: "/center/live/live-settings" },
-  { icon: AreaChartOutlined, label: "数据", path: "/center/statistic/overview" },
-  { icon: WalletOutlined, label: "钱包", path: "/center/dollar/wallet" },
-  { icon: AccountBookOutlined, label: "账单", path: "/center/dollar/bill" },
-  { icon: CustomerServiceOutlined, label: "客服", path: "/center/messages/customer-service" },
+  { icon: VideoCameraOutlined, label: "\u5f00\u64ad", path: "/center/live/live-settings" },
+  { icon: AreaChartOutlined, label: "\u6570\u636e", path: "/center/statistic/overview" },
+  { icon: WalletOutlined, label: "\u94b1\u5305", path: "/center/dollar/wallet" },
+  { icon: AccountBookOutlined, label: "\u8d26\u5355", path: "/center/dollar/bill" },
+  { icon: CustomerServiceOutlined, label: "\u5ba2\u670d", path: "/center/messages/customer-service" },
 ]
 
 const goTo = (path) => {
@@ -287,18 +314,18 @@ const saveProfileInfo = async () => {
       signature: profileForm.signature.trim(),
     })
     if (response?.data !== true) {
-      throw new Error(response?.msg || "个人资料保存失败")
+      throw new Error(response?.msg || "\u4e2a\u4eba\u8d44\u6599\u4fdd\u5b58\u5931\u8d25")
     }
     userStore.updateSecurityInfo({
       nickName: profileForm.nickName.trim(),
       nickname: profileForm.nickName.trim(),
       signature: profileForm.signature.trim(),
     })
-    $modal.msgSuccess("个人资料已保存")
+    $modal.msgSuccess("\u4e2a\u4eba\u8d44\u6599\u5df2\u4fdd\u5b58")
     closeProfileEditor()
   } catch (error) {
     if (!error?.errorFields) {
-      $modal.msgError(error?.message || "保存失败，请稍后重试")
+      $modal.msgError(error?.message || "\u4fdd\u5b58\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5")
     }
   } finally {
     profileSaving.value = false
@@ -322,29 +349,29 @@ const legacyHandleChange = (info) => {
     const response = info.file.response || {}
     if (response.code !== 0 || !response.data) {
       loading.value = false
-      $modal.msgError(response.msg || "头像上传失败，请检查后端上传服务")
+      $modal.msgError(response.msg || "\u5934\u50cf\u4e0a\u4f20\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5")
       return
     }
     imageUrl.value = response.data
     userStore.updateAvatar(imageUrl.value)
     loading.value = false
-    $modal.msgSuccess("头像已更新")
+    $modal.msgSuccess("\u5934\u50cf\u4e0a\u4f20\u6210\u529f")
   }
   if (info.file.status === "error") {
     loading.value = false
     const response = info.file.response || {}
-    $modal.msgError(response.msg || info.file.error?.message || "头像上传失败，请稍后重试")
+    $modal.msgError(response.msg || info.file.error?.message || "\u5934\u50cf\u4e0a\u4f20\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5")
   }
 }
 
 const legacyBeforeUpload = (file) => {
   const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png"
   if (!isJpgOrPng) {
-    $modal.msgError("只能上传 JPG 或 PNG 图片")
+    $modal.msgError("\u53ea\u80fd\u4e0a\u4f20 JPG \u6216 PNG \u56fe\u7247")
   }
   const isLt2M = file.size / 1024 / 1024 < 2
   if (!isLt2M) {
-    $modal.msgError("上传文件大小不能超过 2MB")
+    $modal.msgError("图片大小不能超过 2MB")
   }
   return isJpgOrPng && isLt2M
 }
@@ -370,16 +397,16 @@ const handleChange = (info) => {
     const response = info.file.response || {}
     loading.value = false
     if (response.code !== 0 || !response.data) {
-      $modal.msgError(response.msg || "头像上传失败，请检查后端上传服务")
+      $modal.msgError(response.msg || "\u5934\u50cf\u4e0a\u4f20\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5")
       return
     }
     imageUrl.value = response.data
     userStore.updateAvatar(imageUrl.value)
-    $modal.msgSuccess("头像已更新")
+    $modal.msgSuccess("\u5934\u50cf\u4e0a\u4f20\u6210\u529f")
   }
   if (info.file.status === "error") {
     loading.value = false
-    $modal.msgError(getUploadErrorMessage(info.file) || "头像上传失败，请稍后重试")
+    $modal.msgError(getUploadErrorMessage(info.file) || "\u5934\u50cf\u4e0a\u4f20\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5")
   }
 }
 
@@ -387,11 +414,11 @@ const beforeUpload = (file) => {
   const allowedTypes = ["image/jpeg", "image/png", "image/webp"]
   const isSupportedImage = allowedTypes.includes(file.type)
   if (!isSupportedImage) {
-    $modal.msgError("只能上传 JPG、PNG 或 WEBP 图片")
+    $modal.msgError("\u53ea\u80fd\u4e0a\u4f20 JPG\u3001PNG \u6216 WEBP \u56fe\u7247")
   }
   const isLt2M = file.size / 1024 / 1024 < 2
   if (!isLt2M) {
-    $modal.msgError("头像图片不能超过 2MB")
+    $modal.msgError("图片大小不能超过 2MB")
   }
   return isSupportedImage && isLt2M
 }
@@ -952,17 +979,28 @@ const beforeUpload = (file) => {
   border-bottom: 1px solid var(--border);
 }
 
-.side-tabs span {
+.side-tabs button {
   height: 34px;
+  border: 0;
   border-radius: 999px;
   color: var(--text-secondary);
   background: var(--bg-secondary);
   text-align: center;
   font-weight: 800;
   line-height: 34px;
+  cursor: pointer;
+  transition:
+    color 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease;
 }
 
-.side-tabs .active {
+.side-tabs button:hover {
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
+.side-tabs button.active {
   color: var(--accent);
   background: var(--accent-light);
   font-weight: 900;
@@ -971,6 +1009,65 @@ const beforeUpload = (file) => {
 .side-panel {
   padding: 16px 18px;
   border-bottom: 1px solid var(--border);
+}
+
+.side-action-list,
+.side-info-list {
+  display: grid;
+  gap: 10px;
+}
+
+.side-action-list button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.side-action-list button:hover {
+  border-color: color-mix(in srgb, var(--accent) 36%, var(--border));
+  background: var(--accent-light);
+}
+
+.side-action-list span {
+  font-weight: 800;
+}
+
+.side-action-list em {
+  flex: 0 0 auto;
+  color: var(--accent);
+  font-style: normal;
+  font-weight: 800;
+}
+
+.side-info-list span {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+}
+
+.side-info-list em {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-style: normal;
+}
+
+.side-info-list strong {
+  overflow: hidden;
+  color: var(--text-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .panel-title {

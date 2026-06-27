@@ -30,6 +30,9 @@ public class WalletLogResp {
     @ApiModelProperty("操作类型名称")
     private String actionTypeName;
 
+    @ApiModelProperty("备注")
+    private String remark;
+
     @ApiModelProperty("源id")
     private String sourceUuid;
 

@@ -42,11 +42,15 @@ export default defineConfig((mode) => {
       // open: true,
       proxy: {
         [env.VITE_APP_BASE_API]: {
-          target: env.VITE_BACKEND_URL || 'http://localhost:9000',
+          target: env.VITE_BACKEND_URL || 'http://localhost:8088',
           changeOrigin: true
         },
         '/uploads': {
-          target: env.VITE_BACKEND_URL || 'http://localhost:9000',
+          target: env.VITE_BACKEND_URL || 'http://localhost:8088',
+          changeOrigin: true
+        },
+        '/live.file.bucket': {
+          target: env.VITE_MINIO_URL || 'http://localhost:9000',
           changeOrigin: true
         },
         '/ws-netty': {
@@ -56,7 +60,7 @@ export default defineConfig((mode) => {
           rewrite: (path) => path.replace(/^\/ws-netty/, '/')
         },
         '/ws/browser-live': {
-          target: env.VITE_BACKEND_URL || 'http://localhost:9000',
+          target: env.VITE_BACKEND_URL || 'http://localhost:8088',
           ws: true,
           changeOrigin: true
         },

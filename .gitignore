@@ -58,3 +58,4 @@ ai-services/deepfilternet3/engine/.pip-user/
 # Local dependency/download caches
 .pythonlibs/
 .pip-cache/
+local-services/minio/

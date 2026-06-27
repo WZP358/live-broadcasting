@@ -83,6 +83,14 @@ const readBalance = async () => {
   return Number(res.data?.balance || 0)
 }
 
+const notifyWalletUpdated = (balance) => {
+  window.dispatchEvent(new CustomEvent("pulselive:wallet-updated", {
+    detail: {
+      balance,
+    },
+  }))
+}
+
 const escapeHtml = (value = "") => String(value)
   .replace(/&/g, "&amp;")
   .replace(/</g, "&lt;")
@@ -148,22 +156,41 @@ const stopPayWatcher = () => {
   }
 }
 
-const watchPaymentResult = (cashierWindow, beforeBalance) => {
+const queryPaymentResult = async (outTradeNo) => {
+  if (!outTradeNo) {
+    return null
+  }
+  const res = await WalletApi.getRechargeStatus({ outTradeNo })
+  return res?.data || null
+}
+
+const watchPaymentResult = (cashierWindow, beforeBalance, outTradeNo) => {
   stopPayWatcher()
   const startedAt = Date.now()
+  let closedHintShown = false
   payWatcher = window.setInterval(async () => {
     try {
-      const currentBalance = await readBalance()
-      if (currentBalance > beforeBalance) {
+      const status = await queryPaymentResult(outTradeNo)
+      if (status?.paid) {
         stopPayWatcher()
+        notifyWalletUpdated(Number(status.balance || 0))
         $modal.msgSuccess("充值已到账")
         router.push("/center/dollar/wallet")
         return
       }
 
-      if (cashierWindow.closed && Date.now() - startedAt > 15000) {
+      const currentBalance = await readBalance()
+      if (currentBalance > beforeBalance) {
         stopPayWatcher()
-        $modal.msg("收银台已关闭，若已完成支付请返回钱包页刷新查看")
+        notifyWalletUpdated(currentBalance)
+        $modal.msgSuccess("充值已到账")
+        router.push("/center/dollar/wallet")
+        return
+      }
+
+      if (cashierWindow.closed && !closedHintShown && Date.now() - startedAt > 15000) {
+        closedHintShown = true
+        $modal.msg("收银台已关闭，若已完成支付系统会继续尝试同步，请稍后刷新钱包")
       }
       if (Date.now() - startedAt > 180000) {
         stopPayWatcher()
@@ -202,7 +229,7 @@ const recharge = async () => {
     cashierWindow.document.write(buildCashierHtml(res.data.payHtml))
     cashierWindow.document.close()
     $modal.msgSuccess("已打开收银台，支付完成后余额会自动入账")
-    watchPaymentResult(cashierWindow, beforeBalance)
+    watchPaymentResult(cashierWindow, beforeBalance, res.data.outTradeNo)
   } catch (error) {
     cashierWindow.close()
     $modal.msgError(error?.message || "支付宝沙箱收银台打开失败")

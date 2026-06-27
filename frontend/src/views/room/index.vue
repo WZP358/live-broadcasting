@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="room-page">
     <section class="room-shell">
       <main class="player-column">
@@ -62,6 +62,10 @@
               :applicant-avatar="viewerAvatar"
               @require-login="goLogin"
             />
+            <div v-else-if="roomLoadFailed" class="player-empty player-empty--error">
+              <strong>直播加载失败</strong>
+              <span>请检查直播源或稍后重试。</span>
+            </div>
             <div
               v-else-if="roomInfo.status === 1"
               class="room-entry-preview"
@@ -79,12 +83,12 @@
                 </div>
                 <div class="preview-team preview-team--right">
                   <strong>{{ anchorName }}</strong>
-                  <span>{{ roomInfo.browserLive ? "蓝光观看" : "高清观看" }}</span>
+                  <span>{{ roomInfo.browserLive ? "浏览器直播" : "推流直播" }}</span>
                 </div>
               </div>
 
               <div class="preview-rank-panel">
-                <span>直播数据</span>
+                <span>直播热度</span>
                 <strong>{{ formatCount(roomInfo.popularity || 0) }}</strong>
                 <i></i>
                 <i></i>
@@ -94,7 +98,6 @@
               <button class="entry-main-btn" type="button" @click="enterRoom">
                 进入直播间
               </button>
-
               <div class="preview-mini-card">
                 <img :src="safeAnchorAvatar" alt="" @error="onImgError" />
                 <div>
@@ -105,20 +108,20 @@
 
               <div class="preview-control-bar">
                 <div class="preview-left-controls">
-                  <button type="button">Ⅱ</button>
-                  <button type="button">↻</button>
+                  <button type="button">弹幕</button>
+                  <button type="button">音量</button>
                   <span>{{ roomInfo.title || "直播间" }}</span>
                 </div>
                 <div class="preview-right-controls">
-                  <span>弹幕</span>
+                  <span>音量</span>
                   <span class="volume-track"><i></i></span>
-                  <button type="button" @click="enterRoom">进入直播间 ›</button>
+                  <button type="button" @click="enterRoom">进入直播间</button>
                 </div>
               </div>
             </div>
             <div v-else class="player-empty">
-              <strong>{{ roomInfo.status === 1 ? "直播画面准备中" : "主播暂未开播" }}</strong>
-              <span>{{ roomInfo.status === 1 ? "稍等片刻，直播画面马上出现。" : "可以先关注主播，开播后再回来观看。" }}</span>
+              <strong>{{ roomInfo.status === 1 ? "直播加载中" : "主播暂未开播" }}</strong>
+              <span>{{ roomInfo.status === 1 ? "正在连接直播流，请稍候。" : "可以先浏览推荐直播间。" }}</span>
             </div>
             <DanmakuOverlay ref="danmakuOverlayRef" :enabled="danmakuEnabled" />
             <div id="svga-wrap"></div>
@@ -137,7 +140,7 @@
 
           <div class="watch-underbar">
             <div class="watch-tags">
-              <span v-if="!roomTags.length">弹幕互动</span>
+              <span v-if="!roomTags.length">暂无标签</span>
               <span v-for="tag in roomTags" :key="tag.id || tag.tagName">{{ tag.tagName }}</span>
             </div>
             <p>{{ roomInfo.notice || "文明发言，理性消费，享受直播。" }}</p>
@@ -146,13 +149,13 @@
 
         <section class="gift-section">
           <div class="section-head">
-            <h2>礼物与互动</h2>
-            <span>{{ isLogin ? "送礼会扣除开心果并进入亲密榜" : "登录后可送礼" }}</span>
+            <h2>礼物与打赏</h2>
+            <span>{{ isLogin ? "选择礼物支持主播" : "登录后可送礼物" }}</span>
           </div>
           <GiftList
             :room-id="roomId"
             :disabled="roomInfo.status !== 1 || isOwnRoom"
-            :disabled-reason="isOwnRoom ? '不能给自己的直播间送礼' : roomInfo.status === 1 ? '' : '主播暂未开播，无法送礼'"
+            :disabled-reason="isOwnRoom ? '主播不能给自己送礼物' : roomInfo.status === 1 ? '' : '主播暂未开播，无法送礼'"
             @require-login="goLogin"
             @gift-sent="handleLocalGiftSent"
           />
@@ -160,7 +163,7 @@
 
         <section class="detail-section">
           <div class="section-head">
-            <h2>主播资料</h2>
+            <h2>主播简介</h2>
             <span>{{ anchorName }}</span>
           </div>
           <p>{{ roomInfo.introduce || "主播暂时还没有填写简介。" }}</p>
@@ -168,52 +171,39 @@
       </main>
 
       <aside class="chat-column">
-        <div class="chat-tabs">
-          <button :class="{ active: chatMode === 'chat' }" @click="chatMode = 'chat'">弹幕</button>
-          <button :class="{ active: chatMode === 'agent' }" @click="chatMode = 'agent'">互动助手</button>
-        </div>
         <ChatList
-          v-show="chatMode === 'chat'"
           :room-id="roomId"
           :is-moderator="isModerator"
           @sendGift="handleSendGift"
           @reportMessage="openMessageReport"
           @messagesChange="handleChatMessagesChange"
         />
-        <AgentPanel
-          v-show="chatMode === 'agent'"
-          :chat-messages="chatMessages"
-          :room-title="roomInfo.title"
-          :category-name="roomInfo.categoryInfo?.name"
-          :anchor-name="anchorName"
-          @send-welcome="handleSendWelcome"
-        />
       </aside>
     </section>
 
     <section class="recommend-section" v-if="recommendRooms.length">
       <div class="section-head">
-        <h2>相关推荐</h2>
-        <span>为你挑选相似内容</span>
+        <h2>推荐直播</h2>
+        <span>看看其他精彩直播间</span>
       </div>
       <div class="recommend-grid">
         <LiveRoom v-for="item in recommendRooms" :key="item.id" :room="item" />
       </div>
     </section>
 
-    <!-- 开通守护弹窗 -->
+    <!-- 开通守护 -->
     <a-modal v-model:open="showGuardianModal" title="开通守护" :footer="null" width="420px">
       <div class="guardian-modal">
-        <p class="guardian-tip">开通守护支持主播，获得专属徽章和特权</p>
+        <p class="guardian-tip">开通守护后可获得直播间专属身份标识。</p>
         <a-radio-group v-model:value="guardianLevel" direction="vertical">
           <a-radio :value="1">
-            <span>青铜守护 <a-tag color="brown">¥3/月</a-tag></span>
+            <span>青铜守护 <a-tag color="brown">6/月</a-tag></span>
           </a-radio>
           <a-radio :value="2">
-            <span>白银守护 <a-tag color="grey">¥6/月</a-tag></span>
+            <span>白银守护 <a-tag color="grey">18/月</a-tag></span>
           </a-radio>
           <a-radio :value="3">
-            <span>黄金守护 <a-tag color="gold">¥12/月</a-tag></span>
+            <span>黄金守护 <a-tag color="gold">52/月</a-tag></span>
           </a-radio>
         </a-radio-group>
         <a-checkbox v-model:checked="guardianAutoRenew" style="margin-top:12px">自动续费</a-checkbox>
@@ -228,28 +218,57 @@
     <a-modal v-model:open="showReportModal" :title="reportDialogTitle" :footer="null" width="520px">
       <a-form layout="vertical" class="report-form">
         <a-form-item label="举报原因">
-          <a-select v-model:value="reportReason" placeholder="选择举报原因">
-            <a-select-option value="违规内容">违规内容</a-select-option>
-            <a-select-option value="色情低俗">色情低俗</a-select-option>
-            <a-select-option value="欺诈诈骗">欺诈诈骗</a-select-option>
-            <a-select-option value="侵权投诉">侵权投诉</a-select-option>
-            <a-select-option value="暴力血腥">暴力血腥</a-select-option>
-            <a-select-option value="其他">其他</a-select-option>
+          <a-select v-model:value="reportReason" placeholder="请选择举报原因">
+            <a-select-option value="违法违规">违法违规</a-select-option>
+            <a-select-option value="低俗内容">低俗内容</a-select-option>
+            <a-select-option value="恶意攻击">恶意攻击</a-select-option>
+            <a-select-option value="其他问题">其他问题</a-select-option>
+            <a-select-option value="暴力行为">暴力行为</a-select-option>
+            <a-select-option value="诈骗引导">诈骗引导</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item v-if="reportTargetSummary" label="举报对象">
           <a-input :value="reportTargetSummary" disabled />
         </a-form-item>
-        <a-form-item label="详细描述">
-          <a-textarea v-model:value="reportDesc" placeholder="请描述具体情况（选填）" :maxlength="200" :rows="3" />
+        <a-form-item label="补充说明">
+          <a-textarea v-model:value="reportDesc" placeholder="请补充描述具体问题，方便管理员复核" :maxlength="200" :rows="3" />
         </a-form-item>
-        <a-alert v-if="reportTargetType === 'message'" type="warning" show-icon message="该弹幕将提交给管理员审核，不会立即影响当前直播。" />
+        <a-alert v-if="reportTargetType === 'message'" type="warning" show-icon message="该弹幕将提交给管理员审核，不会立刻影响当前直播。" />
         <div style="text-align:right">
           <a-button @click="showReportModal = false" style="margin-right:8px">取消</a-button>
           <a-button type="primary" :loading="reportLoading" @click="submitReport">提交举报</a-button>
         </div>
       </a-form>
     </a-modal>
+
+    <div v-if="satisfactionVisible" class="satisfaction-mask" @click.self="closeSatisfactionSurvey">
+      <section class="satisfaction-card">
+        <button class="satisfaction-close" type="button" @click="closeSatisfactionSurvey">×</button>
+        <span class="satisfaction-kicker">观看反馈</span>
+        <h3>你对这个直播间满意吗？</h3>
+        <p>给本场直播打个分，帮助平台优化推荐与直播体验。</p>
+        <div class="satisfaction-stars" role="radiogroup" aria-label="直播间满意度评分">
+          <button
+            v-for="star in satisfactionStars"
+            :key="star"
+            type="button"
+            :class="{ active: star <= satisfactionScore }"
+            :aria-label="`${star} 星`"
+            @click="satisfactionScore = star"
+          >
+            ★
+          </button>
+        </div>
+        <div class="satisfaction-scale">
+          <span>1 星</span>
+          <strong>{{ satisfactionScore }} / 5</strong>
+          <span>5 星</span>
+        </div>
+        <button class="satisfaction-submit" type="button" @click="submitSatisfactionSurvey">
+          提交反馈
+        </button>
+      </section>
+    </div>
 
     <GiftEffects ref="giftEffectsRef" />
   </div>
@@ -266,7 +285,6 @@ import PlayerToolbar from "@/components/live/PlayerToolbar.vue"
 import ChatList from "./ChatList.vue"
 import GiftList from "./GiftList.vue"
 import LiveRoom from "@/components/LiveRoom.vue"
-import AgentPanel from "@/components/live/AgentPanel.vue"
 import roomApi from "@/api/room"
 import watchApi from "@/api/watch"
 import liveApi from "@/api/live"
@@ -289,19 +307,20 @@ const roomInfo = ref({})
 const roomExtraInfo = ref({})
 const roomTags = ref([])
 const recommendRooms = ref([])
+const roomLoadFailed = ref(false)
 const myUserId = computed(() => store.user().userInfo?.userId || 0)
 const isOwnRoom = computed(() => Boolean(myUserId.value && roomInfo.value?.userId === myUserId.value))
 const followLoading = ref(false)
 
-// 守护相关
+// 守护弹窗状态
 const showGuardianModal = ref(false)
 const guardianLevel = ref(1)
 const guardianAutoRenew = ref(false)
 const guardianLoading = ref(false)
 
-// 举报相关
+// 举报弹窗状态
 const showReportModal = ref(false)
-const reportReason = ref('违规内容')
+const reportReason = ref("低俗内容")
 const reportDesc = ref('')
 const reportLoading = ref(false)
 const reportTargetType = ref("room")
@@ -322,11 +341,13 @@ import { FALLBACK_AVATAR, FALLBACK_COVER, onImgError, resolveSafeImageUrl } from
 const fallbackAvatar = FALLBACK_AVATAR
 const fallbackCover = FALLBACK_COVER
 
-const chatMode = ref("chat")
 const hasEnteredRoom = ref(false)
-const chatMessages = ref([])
 const danmakuEnabled = ref(true)
 const danmakuOverlayRef = ref(null)
+const satisfactionVisible = ref(false)
+const satisfactionScore = ref(5)
+const satisfactionStars = [1, 2, 3, 4, 5]
+let satisfactionTimer = null
 
 const anchorName = computed(() => roomInfo.value?.userInfo?.name || roomInfo.value?.userInfo?.nickName || "主播")
 const safeAnchorAvatar = computed(() => resolveSafeImageUrl(roomInfo.value?.userInfo?.avatar, FALLBACK_AVATAR))
@@ -356,11 +377,14 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   svgaPlayer.value?.stopAnimation?.(true)
+  clearSatisfactionTimer()
 })
 
 watch(roomId, async () => {
   hasEnteredRoom.value = false
-  chatMessages.value = []
+  satisfactionVisible.value = false
+  satisfactionScore.value = 5
+  clearSatisfactionTimer()
   danmakuSeenMessages = new WeakSet()
   danmakuOverlayRef.value?.clear?.()
   await refreshRoom()
@@ -375,9 +399,9 @@ const loadRoomTags = async () => {
 
 const refreshRoom = async () => {
   await getRoomInfo()
-  await Promise.all([getRecommendRooms(), loadRoomTags(), checkModerator()])
+  await Promise.allSettled([getRecommendRooms(), loadRoomTags(), checkModerator()])
   if (isLogin.value) {
-    await Promise.all([getRoomExtraInfo(), saveHistory()])
+    await Promise.allSettled([getRoomExtraInfo(), saveHistory()])
   } else {
     await getRoomExtraInfo()
   }
@@ -391,10 +415,10 @@ const subscribeGuardian = async () => {
       level: guardianLevel.value,
       autoRenew: guardianAutoRenew.value
     })
-    $modal.msgSuccess('守护开通成功')
+    $modal.msgSuccess("守护开通成功")
     showGuardianModal.value = false
   } catch (e) {
-    $modal.msgError(e?.message || '开通失败，请确认余额充足')
+    $modal.msgError(e?.message || "开通守护失败，请稍后重试")
   } finally {
     guardianLoading.value = false
   }
@@ -404,8 +428,8 @@ const handleReportRoom = () => {
   reportTargetType.value = "room"
   reportTargetId.value = String(roomId.value)
   reportTargetUserId.value = roomInfo.value.userId || 0
-  reportTargetSummary.value = `${roomInfo.value.title || "直播间"} · ${anchorName.value}`
-  reportReason.value = "违规内容"
+  reportTargetSummary.value = `${roomInfo.value.title || "直播间"} - ${anchorName.value}`
+  reportReason.value = "低俗内容"
   reportDesc.value = ""
   showReportModal.value = true
 }
@@ -414,14 +438,14 @@ const openMessageReport = (message) => {
   reportTargetType.value = "message"
   reportTargetId.value = String(message?.id || `${roomId.value}-${Date.now()}`)
   reportTargetUserId.value = message?.fromUserId || 0
-  reportTargetSummary.value = `${message?.nickname || "观众"}：${message?.text || "弹幕内容"}`
-  reportReason.value = "违规内容"
+  reportTargetSummary.value = `${message?.nickname || "观众"}: ${message?.text || "弹幕消息"}`
+  reportReason.value = "低俗内容"
   reportDesc.value = message?.text ? `弹幕内容：${message.text}` : ""
   showReportModal.value = true
 }
 
 const submitReport = async () => {
-  if (!reportReason.value) { $modal.msgWarning('请选择举报原因'); return }
+  if (!reportReason.value) { $modal.msgWarning("请选择举报原因"); return }
   reportLoading.value = true
   try {
     const evidence = {
@@ -440,12 +464,12 @@ const submitReport = async () => {
       reason: reportReason.value,
       description: JSON.stringify(evidence)
     })
-    $modal.msgSuccess('举报已提交')
+    $modal.msgSuccess("举报已提交")
     showReportModal.value = false
     reportDesc.value = ''
     reportTargetSummary.value = ''
   } catch (e) {
-    $modal.msgError('提交失败')
+    $modal.msgError(e?.message || "举报提交失败，请稍后重试")
   } finally {
     reportLoading.value = false
   }
@@ -466,19 +490,19 @@ const handleFollowBtnClick = async () => {
       if (res?.data) {
         $modal.msgSuccess("已取消关注")
       } else {
-        $modal.msgWarning("当前没有关注该直播间")
+        $modal.msgWarning("取消关注失败，请稍后重试")
       }
     } else {
       const res = await watchApi.follow({ roomId: roomId.value })
       if (res?.data) {
         $modal.msgSuccess("关注成功")
       } else {
-        $modal.msgWarning("暂时无法关注该直播间")
+        $modal.msgWarning("关注失败，请稍后重试")
       }
     }
     await getRoomExtraInfo()
   } catch (error) {
-    $modal.msgError(error?.message || "操作失败，请稍后重试")
+    $modal.msgError(error?.message || "关注操作失败，请稍后重试")
   } finally {
     followLoading.value = false
   }
@@ -552,17 +576,18 @@ const playSvga = async (url) => {
 
 const getRoomInfo = async () => {
   try {
-    const res = await roomApi.getRoomInfo({ roomId: roomId.value })
+    roomLoadFailed.value = false
+    const res = await roomApi.getRoomInfo({ roomId: roomId.value }, { silentError: true })
     roomInfo.value = res.data || {}
   } catch (error) {
     roomInfo.value = {}
-    $modal.msgError(error?.message || "直播间加载失败，请稍后重试")
+    roomLoadFailed.value = true
   }
 }
 
 const getRoomExtraInfo = async () => {
   try {
-    const res = await roomApi.getRoomExtraInfo({ roomId: roomId.value })
+    const res = await roomApi.getRoomExtraInfo({ roomId: roomId.value }, { silentError: true })
     roomExtraInfo.value = res.data || {}
   } catch (error) {
     roomExtraInfo.value = {}
@@ -576,7 +601,7 @@ const getRecommendRooms = async () => {
     recommendRooms.value = Array.isArray(data) ? data : (data?.list || [])
   } catch (error) {
     try {
-      const res = await liveApi.listLivingRooms({})
+      const res = await liveApi.listLivingRooms({}, { silentError: true })
       const categoryId = roomInfo.value?.categoryInfo?.id || roomInfo.value?.categoryId
       recommendRooms.value = (res?.data?.list || [])
         .filter((item) => Number(item.id) !== roomId.value)
@@ -594,22 +619,20 @@ const getRecommendRooms = async () => {
 
 const extractGiftName = (text = "") => {
   const normalized = String(text || "").trim()
-  const sentMatch = normalized.match(/送出了?\s*(.+?)(?:\s*x\s*\d+|\s*\*\s*\d+|$)/)
-  if (sentMatch?.[1]) return sentMatch[1].trim()
-  const rewardMatch = normalized.match(/赠送了\s*(.+?)(?:\s*x\s*\d+|\s*\*\s*\d+|$)/)
-  return rewardMatch?.[1]?.trim() || ""
+  const match = normalized.match(/(?:送出|送出了|赠送|赠送了|打赏)\s*(.+?)(?:\s*[x*]\s*\d+|\s+\d+\s*个?|$)/)
+  return match?.[1]?.trim() || ""
 }
 
 const extractGiftCount = (text = "") => {
   const normalized = String(text || "").trim()
-  const sentMatch = normalized.match(/(?:送出了?|赠送了)\s*.+?(?:\s*x\s*(\d+)|\s*\*\s*(\d+)|\s+(\d+)\s*个?|$)/)
-  const matched = sentMatch?.slice(1).find(Boolean)
+  const match = normalized.match(/(?:\s*[x*]\s*(\d+)|\s+(\d+)\s*个?)\s*$/)
+  const matched = match?.slice(1).find(Boolean)
   return Number.parseInt(matched || "1", 10) || 1
 }
 
 const extractSenderName = (text = "") => {
   const normalized = String(text || "").trim()
-  const match = normalized.match(/^(.+?)(?:\s*送出了?|\s*赠送了)/)
+  const match = normalized.match(/^(.+?)\s*(?:送出|送出了|赠送|赠送了|打赏)/)
   return match?.[1]?.trim() || ""
 }
 
@@ -617,7 +640,7 @@ const resolveGiftPayload = (payload, fallbackSender = "") => {
   if (payload && typeof payload === "object") {
     const text = payload.text || payload.content || ""
     return {
-      giftName: payload.giftName || extractGiftName(text) || "小心心",
+      giftName: payload.giftName || extractGiftName(text) || "礼物",
       senderName: payload.senderName || payload.nickname || extractSenderName(text) || fallbackSender || "",
       count: Number(payload.count || payload.number || extractGiftCount(text) || 1),
       giftId: payload.giftId || payload.presentId || payload.id || 0,
@@ -627,7 +650,7 @@ const resolveGiftPayload = (payload, fallbackSender = "") => {
     }
   }
   return {
-    giftName: payload || "小心心",
+    giftName: payload || "礼物",
     senderName: fallbackSender || "",
     count: 1,
     giftId: 0,
@@ -698,7 +721,6 @@ const handleChatMessagesChange = (messages) => {
     danmakuSeenMessages.add(item)
     return true
   })
-  chatMessages.value = nextMessages
   incomingMessages.forEach((message) => {
     danmakuOverlayRef.value?.push?.({
       ...message,
@@ -712,17 +734,65 @@ const copyRoomLink = async () => {
     await navigator.clipboard.writeText(window.location.href)
     $modal.msgSuccess("直播间链接已复制")
   } catch (error) {
-    $modal.msgWarning("复制失败，请手动复制浏览器地址")
+    $modal.msgWarning("复制失败，请手动复制地址栏链接")
   }
 }
 
-const handleSendWelcome = (msg) => {
-  navigator.clipboard.writeText(msg)
-  $modal.msgSuccess("欢迎语已复制，请在弹幕框粘贴发送")
+
+const satisfactionStorageKey = computed(() => `pulselive:room-satisfaction:${roomId.value}`)
+
+const clearSatisfactionTimer = () => {
+  if (satisfactionTimer) {
+    clearTimeout(satisfactionTimer)
+    satisfactionTimer = null
+  }
+}
+
+const hasCompletedSatisfactionSurvey = () => {
+  return window.localStorage.getItem(satisfactionStorageKey.value) === "1"
+}
+
+const markSatisfactionSurveyDone = () => {
+  window.localStorage.setItem(satisfactionStorageKey.value, "1")
+}
+
+const scheduleSatisfactionSurvey = () => {
+  clearSatisfactionTimer()
+  if (!roomId.value || hasCompletedSatisfactionSurvey()) {
+    return
+  }
+  satisfactionTimer = setTimeout(() => {
+    if (hasEnteredRoom.value && !hasCompletedSatisfactionSurvey()) {
+      satisfactionVisible.value = true
+    }
+  }, 30000)
+}
+
+const closeSatisfactionSurvey = () => {
+  satisfactionVisible.value = false
+  markSatisfactionSurveyDone()
+  clearSatisfactionTimer()
+}
+
+const submitSatisfactionSurvey = async () => {
+  try {
+    await roomApi.submitSatisfaction({
+      roomId: roomId.value,
+      score: satisfactionScore.value,
+    })
+    $modal.msgSuccess("感谢反馈")
+  } catch (error) {
+    $modal.msgWarning(error.message || "评分提交失败")
+  } finally {
+    markSatisfactionSurveyDone()
+    satisfactionVisible.value = false
+    clearSatisfactionTimer()
+  }
 }
 
 const enterRoom = () => {
   hasEnteredRoom.value = true
+  scheduleSatisfactionSurvey()
 }
 
 const goLogin = () => {
@@ -947,6 +1017,12 @@ const goLogin = () => {
 
 .player-empty span {
   color: #9ca3af;
+}
+
+.player-empty--error {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--danger) 12%, transparent), transparent 34%),
+    #050609;
 }
 
 .room-entry-preview {
@@ -1305,30 +1381,136 @@ const goLogin = () => {
   box-shadow: var(--shadow-hover);
 }
 
-.chat-tabs {
+.satisfaction-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
-  padding: 8px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-card);
+  place-items: center;
+  padding: 20px;
+  background: rgba(10, 12, 18, 0.42);
+  backdrop-filter: blur(8px);
 }
 
-.chat-tabs button {
-  height: 34px;
+.satisfaction-card {
+  position: relative;
+  width: min(440px, 100%);
+  overflow: hidden;
+  padding: 28px 28px 24px;
+  border: 1px solid color-mix(in srgb, var(--accent) 34%, var(--border));
+  border-radius: 8px;
+  color: var(--text-primary);
+  background:
+    radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 34%),
+    var(--bg-card);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+}
+
+.satisfaction-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 50%;
   color: var(--text-secondary);
-  background: transparent;
-  font-size: 13px;
-  font-weight: 800;
+  background: var(--bg-secondary);
+  font-size: 20px;
+  line-height: 1;
   cursor: pointer;
 }
 
-.chat-tabs button.active {
+.satisfaction-close:hover {
   color: var(--accent);
   background: var(--accent-light);
 }
+
+.satisfaction-kicker {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 4px;
+  color: var(--accent);
+  background: var(--accent-light);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.satisfaction-card h3 {
+  margin: 14px 0 8px;
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.satisfaction-card p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.satisfaction-stars {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin: 22px 0 12px;
+}
+
+.satisfaction-stars button {
+  height: 52px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: color-mix(in srgb, var(--text-muted) 70%, transparent);
+  background: var(--bg-secondary);
+  font-size: 31px;
+  cursor: pointer;
+  transition: transform 0.16s ease, color 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+}
+
+.satisfaction-stars button:hover,
+.satisfaction-stars button.active {
+  color: #ffb020;
+  border-color: color-mix(in srgb, #ffb020 70%, var(--border));
+  background: color-mix(in srgb, #ffb020 14%, var(--bg-card));
+  transform: translateY(-2px);
+}
+
+.satisfaction-scale {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.satisfaction-scale strong {
+  color: var(--text-primary);
+  font-size: 16px;
+}
+
+.satisfaction-submit {
+  width: 100%;
+  height: 44px;
+  margin-top: 20px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--accent-text);
+  background: var(--accent);
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+.satisfaction-submit:hover {
+  filter: brightness(1.04);
+}
+
+
+
 
 .recommend-grid {
   display: grid;

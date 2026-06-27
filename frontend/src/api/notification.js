@@ -8,10 +8,11 @@ export default {
             params,
         })
     },
-    getUnreadCount() {
+    getUnreadCount(options = {}) {
         return request({
             url: '/api/v1/notification/unread/count',
             method: 'get',
+            silentError: Boolean(options.silentError),
         })
     },
     markRead(data) {

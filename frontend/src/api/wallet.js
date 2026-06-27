@@ -5,10 +5,11 @@ export default {
      * 获取钱包信息
      * @returns 
      */
-    getBalance() {
+    getBalance(options = {}) {
         return request({
             url: '/api/v1/wallet/getBalance',
-            method: 'get'
+            method: 'get',
+            silentError: Boolean(options.silentError),
         })
     },
     /**
@@ -51,6 +52,18 @@ export default {
             url: '/api/v1/wallet/recharge',
             method: 'post',
             data
+        })
+    },
+    /**
+     * 查询充值订单状态，支付成功后后端会确认入账
+     * @param {*} params
+     * @returns
+     */
+    getRechargeStatus(params) {
+        return request({
+            url: '/api/v1/wallet/recharge/status',
+            method: 'get',
+            params
         })
     }
 }

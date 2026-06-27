@@ -19,6 +19,7 @@
     </div>
     <EmailBindModal ref="emailBindModalRef" :bind="false" />
     <PhoneBindModal ref="phoneBindModalRef" :bind="false" />
+    <PasswordChangeModal ref="passwordChangeModalRef" />
   </div>
 </template>
 
@@ -28,11 +29,12 @@ import { useStore } from "@/stores"
 import { CheckCircleFilled } from "@ant-design/icons-vue"
 import EmailBindModal from "./EmailBindModal.vue"
 import PhoneBindModal from "./PhoneBindModal.vue"
-import $modal from "@/utils/message"
+import PasswordChangeModal from "./PasswordChangeModal.vue"
 
 const userInfo = computed(() => useStore().user().userInfo)
 const emailBindModalRef = ref(null)
 const phoneBindModalRef = ref(null)
+const passwordChangeModalRef = ref(null)
 
 const handleClick = (item) => {
   if (item.type === "email") {
@@ -40,7 +42,7 @@ const handleClick = (item) => {
   } else if (item.type === "phone") {
     phoneBindModalRef.value.show()
   } else if (item.type === "password") {
-    $modal.msgWarning("密码修改需要验证原密码，当前课程演示版本暂未开放")
+    passwordChangeModalRef.value.show()
   }
 }
 
@@ -76,7 +78,6 @@ const itemList = computed(() => [
     status: !!userInfo.value.password,
     statusString: "已设置",
     actionText: userInfo.value.password ? "修改" : "设置",
-    disabled: true,
   },
 ])
 </script>

@@ -9,7 +9,7 @@ export const useNotificationStore = defineStore("notification", () => {
 
     const fetchUnreadCount = async () => {
         try {
-            const res = await notificationApi.getUnreadCount()
+            const res = await notificationApi.getUnreadCount({ silentError: true })
             if (res && res.code === 0) {
                 unreadCount.value = res.data || 0
             }

@@ -5,6 +5,7 @@ import cn.imhtb.live.pojo.database.User;
 import cn.imhtb.live.modules.user.model.req.UserExtraReq;
 import cn.imhtb.live.modules.user.model.req.UserRegisterReq;
 import cn.imhtb.live.modules.user.model.req.UserInfoUpdateReq;
+import cn.imhtb.live.modules.user.model.req.UserPasswordUpdateReq;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -45,6 +46,14 @@ public interface IUserService extends IService<User> {
      * @return boolean
      */
     boolean updateUserInfo(UserInfoUpdateReq request);
+
+    /**
+     * 修改当前登录用户密码
+     *
+     * @param request 请求
+     * @return boolean
+     */
+    boolean updatePassword(UserPasswordUpdateReq request);
 
     /**
      * 获取用户信息

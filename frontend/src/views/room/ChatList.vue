@@ -248,7 +248,7 @@ const handleMessageSend = () => {
 
 const getIntimacyRank = async () => {
   try {
-    const res = await roomApi.getIntimacyRank({ roomId: roomId.value })
+    const res = await roomApi.getIntimacyRank({ roomId: roomId.value }, { silentError: true })
     rankList.value = (res.data || []).map((item, index) => ({
       ...item,
       rankNo: item.rankNo || index + 1,
@@ -278,7 +278,7 @@ const formatIntimacy = (value) => {
  */
 const getPopularity = async () => {
   try {
-    const res = await ChatApi.getPopularity({ roomId: roomId.value })
+    const res = await ChatApi.getPopularity({ roomId: roomId.value }, { silentError: true })
     popularity.value = res?.data ?? 0
   } catch (error) {
     popularity.value = popularity.value || 0

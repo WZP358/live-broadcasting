@@ -110,7 +110,10 @@ public class LiveGiftServiceImpl implements ILiveGiftService {
         if (!decreased) {
             throw new BusinessException("余额发生变动，请重试");
         }
-        walletService.increase(room.getUserId(), totalPrice);
+        boolean increased = walletService.increase(room.getUserId(), totalPrice);
+        if (!increased) {
+            throw new BusinessException("主播钱包入账失败，请稍后重试");
+        }
 
         PresentReward presentReward = new PresentReward();
         presentReward.setFromId(userId);

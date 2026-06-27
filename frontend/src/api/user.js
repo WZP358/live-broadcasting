@@ -72,6 +72,18 @@ export default {
         })
     },
     /**
+     * 修改登录密码
+     * @param {*} data
+     * @returns
+     */
+    updatePassword(data) {
+        return request({
+            url: '/api/v1/user/password/update',
+            method: 'post',
+            data,
+        })
+    },
+    /**
      * 获取当前用户信息
      */
     getUserInfo() {

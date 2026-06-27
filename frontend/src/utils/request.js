@@ -33,6 +33,9 @@ service.interceptors.response.use((response) => {
     }
 
     if (code === 401) {
+        if (response.config?.silentError) {
+            return Promise.reject(new Error(msg || 'Unauthorized'))
+        }
         handleUnauthorized(msg)
         return Promise.reject(new Error(msg || 'Unauthorized'))
     }
@@ -43,6 +46,9 @@ service.interceptors.response.use((response) => {
     const msg = error?.response?.data?.msg
 
     if (error?.response?.status === 401) {
+        if (error?.config?.silentError) {
+            return Promise.reject(new Error(msg || 'Unauthorized'))
+        }
         handleUnauthorized(msg)
         return Promise.reject(new Error(msg || 'Unauthorized'))
     }

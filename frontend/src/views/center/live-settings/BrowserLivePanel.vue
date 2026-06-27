@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <section class="browser-live-panel">
     <header class="studio-topbar">
       <div class="studio-brand">
@@ -21,11 +21,11 @@
     <div class="studio-workspace">
       <aside class="studio-left">
         <div class="section-tabs">
-          <button class="active" type="button">直播源</button>
-          <button type="button">工具</button>
+          <button :class="{ active: activeLeftPanel === 'source' }" type="button" @click="activeLeftPanel = 'source'">直播源</button>
+          <button :class="{ active: activeLeftPanel === 'tools' }" type="button" @click="activeLeftPanel = 'tools'">工具</button>
         </div>
 
-        <section class="studio-panel source-panel">
+        <section v-show="activeLeftPanel === 'source'" class="studio-panel source-panel">
           <h4>开播方式</h4>
           <button
             class="source-item"
@@ -37,7 +37,7 @@
             <span class="source-icon"><DesktopOutlined /></span>
             <span>
               <strong>屏幕直播</strong>
-              <small>{{ state.liveActive && state.isScreenSharing ? "正在使用" : state.selectedLiveMode === 'screen' ? "已选中" : "点击选择" }}</small>
+              <small>{{ state.liveActive && state.isScreenSharing ? "正在使用" : state.selectedLiveMode === "screen" ? "已选中" : "点击选择" }}</small>
             </span>
           </button>
           <button
@@ -50,12 +50,12 @@
             <span class="source-icon"><VideoCameraOutlined /></span>
             <span>
               <strong>摄像头直播</strong>
-              <small>{{ state.liveActive && !state.isScreenSharing ? "正在使用" : state.selectedLiveMode === 'camera' ? "已选中" : "点击选择" }}</small>
+              <small>{{ state.liveActive && !state.isScreenSharing ? "正在使用" : state.selectedLiveMode === "camera" ? "已选中" : "点击选择" }}</small>
             </span>
           </button>
         </section>
 
-        <section class="studio-panel tool-panel">
+        <section v-show="activeLeftPanel === 'tools'" class="studio-panel tool-panel">
           <h4>直播工具</h4>
           <div class="tool-row">
             <span>
@@ -277,7 +277,7 @@
                 </div>
               </div>
             </div>
-            <p v-else class="interaction-empty">观众发起申请后会出现在这里，主播同意后才会建立音视频连麦。</p>
+            <p v-else class="interaction-empty">观众发起申请后会显示在这里，主播同意后建立音视频连麦。</p>
           </div>
 
           <div class="interaction-section">
@@ -372,7 +372,7 @@ import { useStore } from "@/stores"
 import { createBrowserLiveFallbackUrls, createPeerConnection } from "@/utils/browserLive"
 import { appendChatMessages, createChatWebSocketUrl } from "@/utils/chatRoom"
 import { createLiveDenoiseEngine } from "@/utils/liveDenoise"
-import { createAlignedLatencyStream } from "@/utils/mediaLatency"
+import { createDelayedVideoStream } from "@/utils/videoDelay"
 import { runBroadcastPreflight } from "@/utils/demoDiagnostics"
 import { resolveSafeImageUrl } from "@/utils/fallback"
 
@@ -383,7 +383,10 @@ const CHAT_HEARTBEAT_INTERVAL = 9500
 const GUARD_CHECK_INTERVAL = 2000
 const DENOISE_STORAGE_KEY = "live.browser.denoise.enabled"
 const ANCHOR_GIFT_EFFECT_STORAGE_KEY = "live.browser.anchorGiftEffect.enabled"
-const LIVE_SYNC_LATENCY_MS = 1000
+const DENOISE_VIDEO_SYNC_DELAY_MS = Math.max(
+  0,
+  Number(window.localStorage.getItem("live.browser.denoiseVideoDelayMs") || 240),
+)
 
 const props = defineProps({
   roomId: {
@@ -406,6 +409,7 @@ const giftEffectsRef = ref(null)
 const previewFullscreen = ref(false)
 const resolvedRoomId = ref(null)
 const activeRoomId = computed(() => props.roomId || resolvedRoomId.value)
+const activeLeftPanel = ref("source")
 const anchorChatText = ref("")
 const anchorChatSending = ref(false)
 const anchorChatMessages = ref([])
@@ -453,8 +457,10 @@ let chatReconnectCount = 0
 let guardTimer = null
 let guardChecking = false
 let denoiseEngine = null
-let latencyAlignedStream = null
 let auxiliaryStreams = []
+let liveRecorder = null
+let liveRecordChunks = []
+let liveRecordStartedAt = 0
 const peerMap = new Map()
 const defaultInteractionAvatar =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' rx='16' fill='%23ff9f1a'/%3E%3Ccircle cx='48' cy='36' r='18' fill='%23fff7df'/%3E%3Cpath d='M18 82c5-18 17-28 30-28s25 10 30 28' fill='%23fff7df'/%3E%3C/svg%3E"
@@ -891,9 +897,10 @@ const describeAudioProcessingState = (stream = captureStream) => {
   const lines = [
     audioTrack.label ? `当前麦克风：${audioTrack.label}` : "麦克风已连接",
     state.denoiseEnabled ? "降噪已启用" : "",
+    stream?.stopVideoSyncDelay ? `视频已补偿约 ${DENOISE_VIDEO_SYNC_DELAY_MS}ms` : "",
   ].filter(Boolean)
 
-  state.denoiseRuntimeInfo = lines.join("，")
+  state.denoiseRuntimeInfo = lines.join("；")
 }
 
 const createScreenStream = async () => {
@@ -910,7 +917,7 @@ const createScreenStream = async () => {
     auxiliaryStreams = [displayStream]
     auxiliaryStreams.push(microphoneStream)
 
-    // 尝试获取摄像头用于浮窗
+    // 尝试获取摄像头用于浮窗。
     if (state.cameraPipEnabled) {
       try {
         cameraStream = await navigator.mediaDevices.getUserMedia({
@@ -1158,18 +1165,18 @@ const toggleCameraPip = async (enabled) => {
     }
   } catch (error) {
     state.cameraPipEnabled = !enabled
-    $modal.msgWarning("摄像头浮窗切换失败: " + (error.message || "未知错误"))
+    $modal.msgWarning("摄像头浮窗切换失败：" + (error.message || "未知错误"))
   } finally {
     state.pipSwitching = false
   }
 }
 
 /**
- * 切换直播画面：更新所有观众连接的画面与声音，并刷新预览
+ * 切换直播画面：更新所有观众连接的画面与声音，并刷新预览。
  */
 const replacePublishingStream = async (newStream) => {
   const oldStream = publishingStream
-  publishingStream = await alignPublishingLatency(newStream)
+  publishingStream = await preparePublishingStreamForSend(newStream)
   attachPreview()
 
   // 更新所有已连接观众的画面与声音
@@ -1187,11 +1194,8 @@ const replacePublishingStream = async (newStream) => {
   }
 
   // 清理旧画面（但保留原始采集内容）
-  if (oldStream) {
-    const captureIds = new Set(captureStream?.getTracks().map((t) => t.id) || [])
-    oldStream.getTracks().forEach((track) => {
-      if (!captureIds.has(track.id)) track.stop()
-    })
+  if (oldStream && oldStream !== captureStream && oldStream !== publishingStream) {
+    stopUnprotectedTracks(oldStream, [captureStream, newStream, publishingStream])
   }
 }
 
@@ -1214,6 +1218,7 @@ const startBrowserLive = async (streamFactory) => {
     attachPreview()
     await connectSignal()
     state.liveActive = true
+    startLiveRecording()
     startGuardLoop()
     setMessage("直播已开始，观众可以进入房间观看")
     emit("status-change")
@@ -1234,7 +1239,8 @@ const buildPublishingStream = async (stream) => {
   if (!state.denoiseEnabled) {
     resetDenoiseState()
     describeAudioProcessingState(stream)
-    return alignPublishingLatency(stream)
+    setMessage("画面和声音已准备就绪")
+    return stream
   }
 
   denoiseEngine = createLiveDenoiseEngine({
@@ -1256,9 +1262,10 @@ const buildPublishingStream = async (stream) => {
     state.denoiseModelName = result.modelName || ""
     state.denoiseDetail = "降噪已准备就绪"
     state.denoiseUsingEnhanced = false
-    baseStream = result.stream
+    baseStream = await applyDenoiseVideoSync(result.stream)
     describeAudioProcessingState(baseStream)
-    return alignPublishingLatency(baseStream)
+    setMessage("画面和声音已准备就绪")
+    return baseStream
   } catch (error) {
     state.denoiseStatus = "error"
     state.denoiseDetail = "降噪暂不可用，已继续使用原始麦克风声音"
@@ -1268,15 +1275,28 @@ const buildPublishingStream = async (stream) => {
     state.denoiseRuntimeInfo = ""
     await denoiseEngine.stop()
     denoiseEngine = null
-    return alignPublishingLatency(stream)
+    setMessage("画面和声音已准备就绪")
+    return stream
   }
 }
 
-const alignPublishingLatency = async (stream) => {
-  await stopLatencyAlignment({ stopDerivedTracks: true, protectedStreams: [captureStream, stream] })
-  latencyAlignedStream = await createAlignedLatencyStream(stream, LIVE_SYNC_LATENCY_MS)
-  setMessage("画面和声音已准备就绪")
-  return latencyAlignedStream
+const applyDenoiseVideoSync = async (stream) => {
+  if (!stream?.getVideoTracks?.().length || !DENOISE_VIDEO_SYNC_DELAY_MS) {
+    return stream
+  }
+  try {
+    return await createDelayedVideoStream(stream, DENOISE_VIDEO_SYNC_DELAY_MS)
+  } catch (error) {
+    console.warn("denoise video sync delay unavailable", error)
+    return stream
+  }
+}
+
+const preparePublishingStreamForSend = async (stream) => {
+  if (!state.denoiseEnabled || !denoiseEngine || stream?.stopVideoSyncDelay) {
+    return stream
+  }
+  return applyDenoiseVideoSync(stream)
 }
 
 const getProtectedTrackIds = (streams = []) => {
@@ -1289,23 +1309,12 @@ const getProtectedTrackIds = (streams = []) => {
 
 const stopUnprotectedTracks = (stream, protectedStreams = []) => {
   const protectedTrackIds = getProtectedTrackIds(protectedStreams)
+  stream?.stopVideoSyncDelay?.()
   stream?.getTracks?.().forEach((track) => {
     if (!protectedTrackIds.has(track.id)) {
       track.stop()
     }
   })
-}
-
-const stopLatencyAlignment = async ({ stopDerivedTracks = false, protectedStreams = [] } = {}) => {
-  if (!latencyAlignedStream) {
-    return
-  }
-  const stream = latencyAlignedStream
-  latencyAlignedStream = null
-  await stream.stopLatencyAlignment?.()
-  if (stopDerivedTracks) {
-    stopUnprotectedTracks(stream, protectedStreams)
-  }
 }
 
 const replacePeerTrack = async (kind, nextTrack) => {
@@ -1338,6 +1347,7 @@ const updatePreviewStream = () => {
 
 const switchPublishingStream = async (nextStream) => {
   const previousStream = publishingStream
+  nextStream = await preparePublishingStreamForSend(nextStream)
   const nextAudioTrack = nextStream?.getAudioTracks?.()[0] || null
   const nextVideoTrack = nextStream?.getVideoTracks?.()[0] || null
 
@@ -1378,14 +1388,14 @@ const enableDenoiseDuringLive = async () => {
 
   try {
     const result = await denoiseEngine.start(captureStream)
-    const alignedStream = await alignPublishingLatency(result.stream)
-    await switchPublishingStream(alignedStream)
+    const nextStream = await applyDenoiseVideoSync(result.stream)
+    await switchPublishingStream(nextStream)
     state.denoiseStatus = "warming"
     state.denoiseBackend = result.backend || ""
     state.denoiseModelName = result.modelName || ""
     state.denoiseDetail = "降噪已开启"
     state.denoiseUsingEnhanced = false
-    describeAudioProcessingState(result.stream)
+    describeAudioProcessingState(nextStream)
     setMessage("降噪已开启，直播不中断")
   } catch (error) {
     state.denoiseStatus = "error"
@@ -1405,8 +1415,7 @@ const enableDenoiseDuringLive = async () => {
 }
 
 const disableDenoiseDuringLive = async () => {
-  const alignedStream = await alignPublishingLatency(captureStream)
-  await switchPublishingStream(alignedStream)
+  await switchPublishingStream(captureStream)
   if (denoiseEngine) {
     await denoiseEngine.stop()
     denoiseEngine = null
@@ -2247,7 +2256,7 @@ const runGuardCheck = async () => {
     if (result.banned) {
       await forceStopByGuard(formatGuardReason(result))
     } else if (result.status === "REVIEW") {
-      const hint = result.reason || "风险内容已提交管理员审核，直播继续进行"
+      const hint = result.reason || "风险内容已提交给管理员审核，直播继续进行"
       $modal.msgWarning(hint)
       setMessage(hint)
     }
@@ -2285,6 +2294,89 @@ const sendSignal = (payload) => {
   }
 }
 
+const getSupportedRecordMimeType = () => {
+  if (typeof MediaRecorder === "undefined") {
+    return ""
+  }
+  const candidates = [
+    "video/webm;codecs=vp9,opus",
+    "video/webm;codecs=vp8,opus",
+    "video/webm",
+  ]
+  return candidates.find((type) => MediaRecorder.isTypeSupported(type)) || ""
+}
+
+const startLiveRecording = () => {
+  if (!publishingStream || typeof MediaRecorder === "undefined") {
+    return
+  }
+
+  const tracks = publishingStream.getTracks?.().filter((track) => track.readyState === "live") || []
+  if (!tracks.length) {
+    return
+  }
+
+  try {
+    const mimeType = getSupportedRecordMimeType()
+    liveRecordChunks = []
+    liveRecordStartedAt = Date.now()
+    liveRecorder = new MediaRecorder(new MediaStream(tracks), mimeType ? { mimeType } : undefined)
+    liveRecorder.ondataavailable = (event) => {
+      if (event.data && event.data.size > 0) {
+        liveRecordChunks.push(event.data)
+      }
+    }
+    liveRecorder.onerror = () => {
+      liveRecordChunks = []
+    }
+    liveRecorder.start(3000)
+  } catch (error) {
+    liveRecorder = null
+    liveRecordChunks = []
+    liveRecordStartedAt = 0
+  }
+}
+
+const stopLiveRecordingAndUpload = async () => {
+  const recorder = liveRecorder
+  if (!recorder) {
+    return
+  }
+
+  const mimeType = recorder.mimeType || getSupportedRecordMimeType() || "video/webm"
+  const duration = liveRecordStartedAt ? Math.max(1, Math.round((Date.now() - liveRecordStartedAt) / 1000)) : null
+  const chunks = await new Promise((resolve) => {
+    const done = () => resolve([...liveRecordChunks])
+    recorder.onstop = done
+    if (recorder.state === "inactive") {
+      done()
+      return
+    }
+    try {
+      recorder.requestData?.()
+      recorder.stop()
+    } catch (error) {
+      done()
+    }
+  })
+
+  liveRecorder = null
+  liveRecordChunks = []
+  liveRecordStartedAt = 0
+
+  if (!chunks.length || !activeRoomId.value) {
+    return
+  }
+
+  const extension = mimeType.includes("mp4") ? "mp4" : "webm"
+  const file = new File(chunks, `live-record-${activeRoomId.value}-${Date.now()}.${extension}`, { type: mimeType })
+  await liveAPI.uploadLiveRecord({
+    roomId: activeRoomId.value,
+    duration,
+    file,
+  })
+}
+
 const stopBrowserLive = async (options = {}) => {
   const lastMode = state.isScreenSharing ? "screen" : "camera"
   state.liveActive = false
@@ -2305,6 +2397,11 @@ const stopBrowserLive = async (options = {}) => {
   if (cameraStream) {
     cameraStream.getTracks().forEach((t) => t.stop())
     cameraStream = null
+  }
+  try {
+    await stopLiveRecordingAndUpload()
+  } catch (error) {
+    $modal.msgWarning(error.message || "直播录像上传失败，请确认 MinIO 服务状态")
   }
   sendSignal({
     type: "leave",
@@ -2332,9 +2429,8 @@ const stopBrowserLive = async (options = {}) => {
 const releaseMediaResources = async () => {
   const captureTrackIds = new Set(captureStream?.getTracks?.().map((track) => track.id) || [])
 
-  await stopLatencyAlignment({ stopDerivedTracks: true, protectedStreams: [captureStream] })
-
   if (publishingStream) {
+    publishingStream.stopVideoSyncDelay?.()
     publishingStream.getTracks().forEach((track) => {
       if (!captureTrackIds.has(track.id)) {
         track.stop()
@@ -2419,6 +2515,16 @@ onBeforeUnmount(async () => {
   closeAllPeers()
   resetCohost()
   resetPk()
+  if (liveRecorder && liveRecorder.state !== "inactive") {
+    try {
+      liveRecorder.stop()
+    } catch (error) {
+      // ignore recorder cleanup errors
+    }
+  }
+  liveRecorder = null
+  liveRecordChunks = []
+  liveRecordStartedAt = 0
   await releaseMediaResources()
 })
 </script>

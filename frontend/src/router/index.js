@@ -249,6 +249,12 @@ router.beforeEach((to, from, next) => {
     return
   }
 
+  const isSystemRoute = to.path.startsWith("/system")
+  if (loggedIn && admin && !isSystemRoute && to.path !== "/403") {
+    next("/system/dashboard")
+    return
+  }
+
   if (to.meta?.adminOnly && !admin) {
     next("/403")
     return

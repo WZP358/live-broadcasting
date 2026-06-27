@@ -2,12 +2,15 @@ package cn.imhtb.live.modules.wallet.service;
 
 import cn.imhtb.live.common.exception.BusinessException;
 import cn.imhtb.live.modules.wallet.config.AlipayProperties;
+import cn.imhtb.live.modules.wallet.model.RechargeStatusResp;
 import com.alibaba.fastjson.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.response.AlipayTradeQueryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -25,16 +28,6 @@ public class AlipayRechargeService {
     public String createPagePay(String outTradeNo, BigDecimal amount, String subject) {
         ensureConfigured();
         try {
-            AlipayClient alipayClient = new DefaultAlipayClient(
-                    properties.getGatewayUrl(),
-                    properties.getAppId(),
-                    properties.getAppPrivateKey(),
-                    properties.getFormat(),
-                    properties.getCharset(),
-                    properties.getAlipayPublicKey(),
-                    properties.getSignType()
-            );
-
             AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
             String notifyUrl = normalizeOptionalUrl(properties.getNotifyUrl(), "支付宝异步通知地址 notifyUrl");
             if (StringUtils.hasText(notifyUrl)) {
@@ -42,9 +35,42 @@ public class AlipayRechargeService {
             }
             request.setReturnUrl(resolveSyncReturnUrl());
             request.setBizContent(JSON.toJSONString(buildBizContent(outTradeNo, amount, subject)));
-            return alipayClient.pageExecute(request).getBody();
+            return createClient().pageExecute(request).getBody();
         } catch (AlipayApiException e) {
             throw new BusinessException("支付宝下单失败：" + e.getErrMsg(), e);
+        }
+    }
+
+    public RechargeStatusResp queryTrade(String outTradeNo) {
+        ensureConfigured();
+        if (!StringUtils.hasText(outTradeNo)) {
+            throw new BusinessException("支付宝订单号不能为空");
+        }
+
+        try {
+            AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
+            Map<String, Object> bizContent = new HashMap<>();
+            bizContent.put("out_trade_no", outTradeNo);
+            request.setBizContent(JSON.toJSONString(bizContent));
+
+            AlipayTradeQueryResponse response = createClient().execute(request);
+            String tradeStatus = response.getTradeStatus();
+            boolean paid = "TRADE_SUCCESS".equals(tradeStatus) || "TRADE_FINISHED".equals(tradeStatus);
+            BigDecimal amount = StringUtils.hasText(response.getTotalAmount())
+                    ? new BigDecimal(response.getTotalAmount())
+                    : BigDecimal.ZERO;
+
+            return RechargeStatusResp.builder()
+                    .outTradeNo(outTradeNo)
+                    .tradeStatus(tradeStatus)
+                    .paid(paid)
+                    .amount(amount)
+                    .message(response.isSuccess() ? "查询成功" : firstText(response.getSubMsg(), response.getMsg(), "支付宝订单未支付"))
+                    .build();
+        } catch (AlipayApiException e) {
+            return buildQueryPendingResp(outTradeNo, e);
+        } catch (RuntimeException e) {
+            return buildQueryPendingResp(outTradeNo, e);
         }
     }
 
@@ -72,6 +98,43 @@ public class AlipayRechargeService {
         bizContent.put("subject", subject);
         bizContent.put("product_code", properties.getProductCode());
         return bizContent;
+    }
+
+    private AlipayClient createClient() {
+        DefaultAlipayClient.Builder builder = DefaultAlipayClient.builder(
+                        properties.getGatewayUrl(),
+                        properties.getAppId(),
+                        properties.getAppPrivateKey()
+                )
+                .format(properties.getFormat())
+                .charset(properties.getCharset())
+                .signType(properties.getSignType());
+        if (properties.isVerifySign()) {
+            builder.alipayPublicKey(properties.getAlipayPublicKey());
+        }
+        return builder.build();
+    }
+
+    private String firstText(String... values) {
+        for (String value : values) {
+            if (StringUtils.hasText(value)) {
+                return value;
+            }
+        }
+        return "";
+    }
+
+    private RechargeStatusResp buildQueryPendingResp(String outTradeNo, Exception e) {
+        if (properties.isVerifySign()) {
+            throw new BusinessException("支付宝查单失败，请确认 alipay.alipay-public-key 填写的是支付宝公钥，不是应用公钥", e);
+        }
+        return RechargeStatusResp.builder()
+                .outTradeNo(outTradeNo)
+                .tradeStatus("QUERY_PENDING")
+                .paid(false)
+                .amount(BigDecimal.ZERO)
+                .message("支付宝暂未确认支付结果：" + firstText(e.getMessage(), "请稍后重试"))
+                .build();
     }
 
     private String resolveSyncReturnUrl() {

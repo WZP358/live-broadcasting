@@ -18,11 +18,12 @@ export default {
      * @param {*} params 
      * @returns 
      */
-    listLivingRooms(params) {
+    listLivingRooms(params, options = {}) {
         return request({
             url: '/api/v1/room/living',
             method: 'get',
-            params
+            params,
+            silentError: Boolean(options.silentError),
         })
     },
     /**
@@ -30,11 +31,12 @@ export default {
      * @param {*} params 
      * @returns 
      */
-    listHistory(params) {
+    listHistory(params, options = {}) {
         return request({
             url: '/api/v1/watch/list',
             method: 'get',
-            params
+            params,
+            silentError: Boolean(options.silentError),
         })
     },
     /**
@@ -85,6 +87,21 @@ export default {
             method: 'post',
             data,
             timeout: 30000,
+            headers: { 'Content-Type': 'multipart/form-data' },
+        })
+    },
+    uploadLiveRecord({ roomId, file, duration }) {
+        const data = new FormData()
+        data.append('roomId', roomId)
+        if (duration) {
+            data.append('duration', duration)
+        }
+        data.append('file', file, file?.name || 'live-record.webm')
+        return request({
+            url: '/api/v1/live/record/upload',
+            method: 'post',
+            data,
+            timeout: 120000,
             headers: { 'Content-Type': 'multipart/form-data' },
         })
     },

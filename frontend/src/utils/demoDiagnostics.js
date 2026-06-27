@@ -256,12 +256,12 @@ export const runPublicDemoDiagnostics = async ({
   items.push(
     await checkHttpEndpoint({
       key: "demo-api",
-      label: "演示数据接口",
+      label: "样例直播间接口",
       url: "/api/v1/system/demo/status",
       headers,
       timeoutMs,
       accept: (response) => response.ok,
-      describe: (response) => (response.ok ? "管理员演示数据接口可访问。" : `HTTP ${response.status}`),
+      describe: (response) => (response.ok ? "管理员样例直播间接口可访问。" : `HTTP ${response.status}`),
     })
   )
   items.push(
@@ -297,4 +297,3 @@ export const runPublicDemoDiagnostics = async ({
     ok: items.every((item) => item.status !== "error"),
   }
 }
-

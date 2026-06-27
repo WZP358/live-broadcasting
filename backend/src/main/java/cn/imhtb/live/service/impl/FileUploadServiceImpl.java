@@ -33,6 +33,16 @@ public class FileUploadServiceImpl implements IFileUploadService {
         }
     }
 
+    @Override
+    public String uploadFileToMinioStrict(InputStream inputStream, String newFilename, long size, String contentType) {
+        try {
+            return MinioUtil.uploadObjectWithInputStream(newFilename, inputStream, size, contentType);
+        } catch (Exception e) {
+            log.error("minio upload failed, file={}", newFilename, e);
+            throw new IllegalStateException("MinIO 上传失败", e);
+        }
+    }
+
     private byte[] readAllBytes(InputStream inputStream) {
         try {
             return inputStream.readAllBytes();

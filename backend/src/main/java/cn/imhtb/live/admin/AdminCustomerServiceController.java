@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/admin/customer-service")
+@RequestMapping({"/admin/customer-service", "/api/v1/admin/customer-service"})
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class AdminCustomerServiceController {
 

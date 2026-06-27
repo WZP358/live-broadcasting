@@ -7,6 +7,7 @@ import cn.imhtb.live.common.holder.UserHolder;
 import cn.imhtb.live.modules.wallet.config.AlipayProperties;
 import cn.imhtb.live.modules.wallet.model.RechargePayResp;
 import cn.imhtb.live.modules.wallet.model.RechargeReq;
+import cn.imhtb.live.modules.wallet.model.RechargeStatusResp;
 import cn.imhtb.live.modules.wallet.model.WalletLogResp;
 import cn.imhtb.live.modules.wallet.service.IWalletLogService;
 import cn.imhtb.live.modules.wallet.service.IWalletService;
@@ -67,6 +68,13 @@ public class WalletController {
     @PostMapping("/recharge")
     public ApiResponse<RechargePayResp> recharge(@RequestBody RechargeReq rechargeReq) {
         RechargePayResp resp = walletService.createAlipayRecharge(UserHolder.getUserId(), rechargeReq.getFee());
+        return ApiResponse.ofSuccess(resp);
+    }
+
+    @ApiOperation("查询支付宝充值订单并确认入账")
+    @GetMapping("/recharge/status")
+    public ApiResponse<RechargeStatusResp> rechargeStatus(@RequestParam String outTradeNo) {
+        RechargeStatusResp resp = walletService.queryAlipayRecharge(UserHolder.getUserId(), outTradeNo);
         return ApiResponse.ofSuccess(resp);
     }
 

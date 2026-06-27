@@ -44,8 +44,11 @@
             </template>
             <template v-else-if="column.key === 'target'">
               <div class="target-cell">
-                <strong>Room {{ record.roomId || '-' }}</strong>
-                <span>User {{ record.targetUserId || '-' }}</span>
+                <strong>{{ record.roomTitle || `Room ${record.roomId || '-'}` }}</strong>
+                <span>Room {{ record.roomId || '-' }} / User {{ record.targetUserId || '-' }}</span>
+                <a-tag v-if="hasRoomStatus(record)" :color="roomDisabled(record) ? 'error' : 'success'" class="room-status-tag">
+                  {{ roomDisabled(record) ? "已封禁" : "正常" }}
+                </a-tag>
               </div>
             </template>
             <template v-else-if="column.key === 'reason'">
@@ -67,6 +70,7 @@
                   <a v-else @click="handleReport(record, 1)">通过</a>
                   <a @click="handleReport(record, 2)">驳回</a>
                 </template>
+                <a v-if="canUnbanRoom(record)" class="success-link" @click="confirmUnban(record)">解封直播间</a>
               </a-space>
             </template>
           </template>
@@ -111,6 +115,7 @@ import { computed, createVNode, onMounted, reactive, ref } from "vue"
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue"
 import { message, Modal } from "ant-design-vue"
 import adminReportApi from "@/api/adminReport"
+import systemRoomApi from "@/api/systemRoom"
 import { useTableScroll } from "@/composables/useTableScroll"
 import AdminPageLayout from "@/components/admin/AdminPageLayout.vue"
 import AdminCard from "@/components/admin/AdminCard.vue"
@@ -139,12 +144,12 @@ const statCards = computed(() => [
 const columns = [
   { title: "ID", dataIndex: "id", key: "id", width: 90, fixed: "left" },
   { title: "来源", dataIndex: "targetType", key: "source", width: 130 },
-  { title: "对象", key: "target", width: 170 },
+  { title: "对象", key: "target", width: 220 },
   { title: "原因", dataIndex: "reason", key: "reason", width: 180 },
   { title: "状态", dataIndex: "status", key: "status", width: 110 },
   { title: "说明 / 证据", dataIndex: "description", key: "description", width: 420 },
   { title: "提交时间", dataIndex: "createTime", key: "createTime", width: 180 },
-  { title: "操作", key: "action", width: 220, fixed: "right", align: "center" },
+  { title: "操作", key: "action", width: 260, fixed: "right", align: "center" },
 ]
 
 const displayRows = computed(() => {
@@ -198,6 +203,21 @@ const confirmViolation = (record) => {
     okType: "danger",
     cancelText: "取消",
     onOk: () => handleReport(record, 1, "管理员确认直播内容违规，封禁直播间"),
+  })
+}
+
+const confirmUnban = (record) => {
+  Modal.confirm({
+    title: "确认解封直播间？",
+    icon: createVNode(ExclamationCircleOutlined),
+    content: `${record.roomTitle || `房间 ${record.roomId || "-"}`} 将恢复为正常状态，主播可重新开播。`,
+    okText: "确认解封",
+    cancelText: "取消",
+    onOk: async () => {
+      await systemRoomApi.toggleRoomStatus({ id: record.roomId, disabled: 0 })
+      message.success("解封成功")
+      getData()
+    },
   })
 }
 
@@ -263,6 +283,12 @@ const resolveEvidenceImage = (value) => {
     || payload.evidence?.screenshotUrl
   return url ? resolveSafeImageUrl(url, "") : ""
 }
+
+const hasRoomStatus = (record) => record && record.roomDisabled !== undefined && record.roomDisabled !== null
+
+const roomDisabled = (record) => hasRoomStatus(record) && Number(record.roomDisabled) !== 0
+
+const canUnbanRoom = (record) => Boolean(record?.roomId) && roomDisabled(record)
 </script>
 
 <style scoped lang="scss">
@@ -290,12 +316,21 @@ const resolveEvidenceImage = (value) => {
   }
 }
 
+.room-status-tag {
+  width: fit-content;
+  margin-inline-end: 0;
+}
+
 .desc {
   margin-bottom: 0;
 }
 
 .danger-link {
   color: var(--danger);
+}
+
+.success-link {
+  color: var(--success);
 }
 
 .evidence {

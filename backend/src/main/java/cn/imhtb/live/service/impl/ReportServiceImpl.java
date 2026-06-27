@@ -74,12 +74,7 @@ public class ReportServiceImpl extends ServiceImpl<ReportMapper, Report> impleme
 
     @Override
     public PageData<Report> listForAdmin(Integer page, Integer limit, Integer status, String targetType) {
-        LambdaQueryWrapper<Report> wrapper = new LambdaQueryWrapper<Report>()
-                .eq(status != null, Report::getStatus, status)
-                .eq(hasText(targetType), Report::getTargetType, targetType)
-                .orderByAsc(status != null && status == PENDING, Report::getCreateTime)
-                .orderByDesc(status == null || status != PENDING, Report::getCreateTime);
-        Page<Report> pg = page(new Page<>(page, limit), wrapper);
+        Page<Report> pg = baseMapper.pageForAdmin(new Page<>(page, limit), status, targetType);
         PageData<Report> result = new PageData<>();
         result.setTotal(pg.getTotal());
         result.setList(pg.getRecords());

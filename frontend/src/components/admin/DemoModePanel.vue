@@ -1,13 +1,13 @@
 <template>
-  <AdminCard title="演示模式" subtitle="一键开启多直播间录播演示，关闭后只下线演示房间，不影响真实主播。">
+  <AdminCard title="样例直播间" subtitle="一键启停多间精选录播直播间，关闭后只下线样例房间，不影响真实主播。">
     <div class="demo-mode-panel">
       <div class="demo-mode-panel__main">
         <div class="demo-mode-panel__state">
           <a-badge :status="demoStatus.enabled ? 'processing' : 'default'" />
           <div>
-            <strong>{{ demoStatus.enabled ? "演示数据运行中" : "演示数据已关闭" }}</strong>
+            <strong>{{ demoStatus.enabled ? "样例直播间运行中" : "样例直播间已关闭" }}</strong>
             <span>
-              {{ demoStatus.livingCount || 0 }} / {{ demoStatus.roomCount || 0 }} 个演示直播间在线
+              {{ demoStatus.livingCount || 0 }} / {{ demoStatus.roomCount || 0 }} 个样例直播间在线
             </span>
           </div>
         </div>
@@ -32,7 +32,7 @@
           </a-tag>
         </article>
         <div v-if="hiddenRoomCount > 0" class="demo-room-more">
-          还有 {{ hiddenRoomCount }} 个演示直播间，可在直播间管理中查看
+          还有 {{ hiddenRoomCount }} 个样例直播间，可在直播间管理中查看
         </div>
       </div>
     </div>
@@ -72,7 +72,7 @@ const handleToggle = async (checked) => {
   try {
     const res = checked ? await systemDemoApi.enable() : await systemDemoApi.disable()
     demoStatus.value = res?.data || demoStatus.value
-    message.success(checked ? "演示数据已启动" : "演示数据已关闭")
+    message.success(checked ? "样例直播间已启动" : "样例直播间已关闭")
     emit("changed", demoStatus.value)
   } finally {
     loading.value = false

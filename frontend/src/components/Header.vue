@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   BellOutlined,
@@ -47,7 +47,7 @@ const levelProgress = computed(() => `${Math.min(100, Math.max(0, Math.round(((u
 
 const loadLevel = async () => {
   try {
-    const res = await levelApi.getMyLevel();
+    const res = await levelApi.getMyLevel({ silentError: true });
     if (res.data) {
       userLevel.value = res.data.level || (res.data.userLevel && res.data.userLevel.level) || 0;
     }
@@ -58,7 +58,7 @@ const loadLevel = async () => {
 
 const loadWalletBalance = async () => {
   try {
-    const res = await walletApi.getBalance();
+    const res = await walletApi.getBalance({ silentError: true });
     walletBalance.value = Number(res?.data?.balance || 0);
   } catch (e) {
     walletBalance.value = 0;
@@ -69,10 +69,28 @@ watch(isLogin, (val) => {
   if (val) {
     connectNotificationWs();
     notificationStore.fetchUnreadCount();
+    loadWalletBalance();
   } else {
     disconnectNotificationWs();
+    walletBalance.value = 0;
   }
 });
+
+const handleWalletUpdated = (event) => {
+  const nextBalance = Number(event?.detail?.balance)
+  if (Number.isFinite(nextBalance)) {
+    walletBalance.value = nextBalance
+  }
+  if (isLogin.value) {
+    loadWalletBalance()
+  }
+}
+
+const handleWalletRefresh = () => {
+  if (isLogin.value) {
+    loadWalletBalance()
+  }
+}
 
 onMounted(() => {
   if (isLogin.value) {
@@ -81,6 +99,13 @@ onMounted(() => {
     loadLevel();
     loadWalletBalance();
   }
+  window.addEventListener('pulselive:wallet-updated', handleWalletUpdated);
+  window.addEventListener('focus', handleWalletRefresh);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('pulselive:wallet-updated', handleWalletUpdated);
+  window.removeEventListener('focus', handleWalletRefresh);
 });
 
 const handleSearch = () => {
@@ -142,7 +167,7 @@ const loadHeaderHistory = async () => {
   if (!isLogin.value || historyLoading.value) return;
   historyLoading.value = true;
   try {
-    const res = await liveApi.listHistory({ type: 0, page: 1, limit: 5 });
+    const res = await liveApi.listHistory({ type: 0, page: 1, limit: 5 }, { silentError: true });
     headerHistory.value = res?.data?.list || [];
   } catch (e) {
     headerHistory.value = [];
@@ -502,7 +527,7 @@ const getHistoryCategory = (item = {}) =>
   padding: 5px 7px 4px;
   border: 0;
   border-radius: 8px;
-  color: #6f737b;
+  color: var(--header-text);
   background: transparent;
   cursor: pointer;
   transition:
@@ -512,8 +537,8 @@ const getHistoryCategory = (item = {}) =>
 }
 
 .quick-entry:hover {
-  color: #ff8a00;
-  background: #fff5e6;
+  color: var(--accent);
+  background: var(--accent-light);
   transform: translateY(-1px);
 }
 
@@ -530,7 +555,7 @@ const getHistoryCategory = (item = {}) =>
 
 .quick-entry--history,
 .quick-entry--history.active {
-  color: #ff8a00;
+  color: var(--accent);
 }
 
 .quick-entry--history.active::after {
@@ -540,14 +565,16 @@ const getHistoryCategory = (item = {}) =>
   left: 13px;
   height: 12px;
   content: "";
-  border-top: 3px solid #ff8a00;
+  border-top: 3px solid var(--accent);
   border-radius: 12px 12px 0 0;
 }
 
 :deep(.history-popover .ant-popover-inner) {
   padding: 0;
   border-radius: 8px;
-  box-shadow: 0 10px 28px rgba(31, 35, 41, 0.18) !important;
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-hover) !important;
 }
 
 :deep(.history-popover .ant-popover-arrow) {
@@ -558,9 +585,10 @@ const getHistoryCategory = (item = {}) =>
   position: relative;
   width: 420px;
   padding: 18px 22px 18px;
-  border-top: 3px solid #ff8a00;
+  border-top: 3px solid var(--accent);
   border-radius: 8px;
-  background: #fff;
+  color: var(--text-primary);
+  background: var(--bg-card);
 }
 
 .history-panel::before {
@@ -570,9 +598,9 @@ const getHistoryCategory = (item = {}) =>
   width: 16px;
   height: 16px;
   content: "";
-  background: #fff;
-  border-top: 3px solid #ff8a00;
-  border-left: 3px solid #ff8a00;
+  background: var(--bg-card);
+  border-top: 3px solid var(--accent);
+  border-left: 3px solid var(--accent);
   transform: translateX(-50%) rotate(45deg);
 }
 
@@ -589,11 +617,11 @@ const getHistoryCategory = (item = {}) =>
   left: 0;
   width: 1px;
   content: "";
-  background: #d9d9d9;
+  background: var(--border);
 }
 
 .history-panel__head strong {
-  color: #555;
+  color: var(--text-primary);
   font-size: 17px;
   font-weight: 500;
 }
@@ -615,14 +643,14 @@ const getHistoryCategory = (item = {}) =>
   width: 100%;
   min-height: 44px;
   border: 0;
-  color: #4a4d52;
+  color: var(--text-primary);
   background: transparent;
   text-align: left;
   cursor: pointer;
 }
 
 .history-entry:hover .history-entry__copy strong {
-  color: #ff8a00;
+  color: var(--accent);
 }
 
 .history-entry__dot {
@@ -631,8 +659,8 @@ const getHistoryCategory = (item = {}) =>
   height: 26px;
   place-items: center;
   border-radius: 50%;
-  color: #fff;
-  background: #ff8a00;
+  color: var(--accent-text);
+  background: var(--accent);
   font-size: 15px;
 }
 
@@ -649,13 +677,13 @@ const getHistoryCategory = (item = {}) =>
 }
 
 .history-entry__copy strong {
-  color: #3f4248;
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 500;
 }
 
 .history-entry__room {
-  color: #8f9298;
+  color: var(--text-muted);
   font-size: 16px;
 }
 
@@ -666,8 +694,8 @@ const getHistoryCategory = (item = {}) =>
   margin: 12px auto 0;
   border: 0;
   border-radius: 22px;
-  color: #555;
-  background: #f0f1f3;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
   font-size: 16px;
   cursor: pointer;
   transition:
@@ -676,8 +704,8 @@ const getHistoryCategory = (item = {}) =>
 }
 
 .history-more:hover {
-  color: #ff8a00;
-  background: #fff1df;
+  color: var(--accent);
+  background: var(--accent-light);
 }
 
 .site-header__actions {
@@ -802,7 +830,9 @@ const getHistoryCategory = (item = {}) =>
 :deep(.user-card-popover .ant-popover-inner) {
   padding: 0;
   border-radius: 10px;
-  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.2) !important;
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-hover) !important;
 }
 
 :deep(.user-card-popover .ant-popover-arrow) {
@@ -813,9 +843,10 @@ const getHistoryCategory = (item = {}) =>
   position: relative;
   width: 420px;
   padding: 22px 18px 16px;
-  border-top: 4px solid #ff8a00;
+  border-top: 4px solid var(--accent);
   border-radius: 10px;
-  background: #fff;
+  color: var(--text-primary);
+  background: var(--bg-card);
 }
 
 .user-card-panel::before {
@@ -825,9 +856,9 @@ const getHistoryCategory = (item = {}) =>
   width: 18px;
   height: 18px;
   content: "";
-  background: #fff;
-  border-top: 4px solid #ff8a00;
-  border-left: 4px solid #ff8a00;
+  background: var(--bg-card);
+  border-top: 4px solid var(--accent);
+  border-left: 4px solid var(--accent);
   transform: rotate(45deg);
 }
 
@@ -839,7 +870,7 @@ const getHistoryCategory = (item = {}) =>
   align-items: center;
   gap: 4px;
   border: 0;
-  color: #444;
+  color: var(--text-secondary);
   background: transparent;
   font-size: 14px;
   cursor: pointer;
@@ -866,13 +897,13 @@ const getHistoryCategory = (item = {}) =>
 }
 
 .user-card-name strong {
-  color: #333;
+  color: var(--text-primary);
   font-size: 20px;
   font-weight: 800;
 }
 
 .user-card-name span {
-  color: #ff5b8f;
+  color: var(--danger);
   font-weight: 900;
 }
 
@@ -882,8 +913,8 @@ const getHistoryCategory = (item = {}) =>
   height: 20px;
   padding: 0 7px;
   border-radius: 4px;
-  color: #fff;
-  background: #5ac8fa;
+  color: var(--accent-text);
+  background: var(--accent);
   font-style: normal;
   font-size: 12px;
   font-weight: 900;
@@ -897,16 +928,16 @@ const getHistoryCategory = (item = {}) =>
   height: 22px;
   border: 1px solid transparent;
   border-radius: 4px;
-  color: #24b9ff;
+  color: var(--accent);
   background: transparent;
   cursor: pointer;
   transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
 
 .user-card-name button:hover {
-  color: #ff5b8f;
-  border-color: rgba(255, 91, 143, 0.38);
-  background: rgba(255, 91, 143, 0.08);
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border));
+  background: var(--accent-light);
 }
 
 .user-card-signature {
@@ -918,7 +949,7 @@ const getHistoryCategory = (item = {}) =>
   gap: 6px;
   margin: 8px 0 0;
   padding: 0;
-  color: #9aa1ad;
+  color: var(--text-muted);
   background: transparent;
   cursor: pointer;
   font-size: 14px;
@@ -927,7 +958,7 @@ const getHistoryCategory = (item = {}) =>
 }
 
 .user-card-signature:hover {
-  color: #ff7a00;
+  color: var(--accent);
 }
 
 .level-row {
@@ -936,21 +967,21 @@ const getHistoryCategory = (item = {}) =>
   gap: 10px;
   align-items: center;
   margin-top: 18px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .level-track {
   position: relative;
   height: 22px;
   border-radius: 11px;
-  background: #ececec;
+  background: var(--bg-secondary);
 }
 
 .level-track i {
   position: absolute;
   inset: 0 auto 0 0;
   border-radius: inherit;
-  background: linear-gradient(90deg, #ffd966, #ff9900);
+  background: var(--accent-gradient);
 }
 
 .level-track b {
@@ -958,7 +989,7 @@ const getHistoryCategory = (item = {}) =>
   inset: 0;
   display: grid;
   place-items: center;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
@@ -968,7 +999,7 @@ const getHistoryCategory = (item = {}) =>
   gap: 12px;
   align-items: center;
   margin-top: 18px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .asset-row span {
@@ -980,7 +1011,7 @@ const getHistoryCategory = (item = {}) =>
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: #333;
+  color: var(--text-primary);
   font-size: 15px;
   font-weight: 800;
 }
@@ -991,8 +1022,8 @@ const getHistoryCategory = (item = {}) =>
   padding: 0 18px;
   border: 0;
   border-radius: 17px;
-  color: #fff;
-  background: #ff8a00;
+  color: var(--accent-text);
+  background: var(--accent);
   font-weight: 900;
   cursor: pointer;
 }
@@ -1011,14 +1042,14 @@ const getHistoryCategory = (item = {}) =>
   padding: 10px 4px 6px;
   border: 0;
   border-radius: 8px;
-  color: #666;
-  background: #fff;
+  color: var(--text-secondary);
+  background: var(--bg-card);
   cursor: pointer;
 }
 
 .user-shortcuts button:hover {
-  background: #fff4e3;
-  color: #ff8a00;
+  background: var(--accent-light);
+  color: var(--accent);
 }
 
 .user-shortcuts button svg {
@@ -1034,10 +1065,10 @@ const getHistoryCategory = (item = {}) =>
   width: 100%;
   height: 36px;
   margin-top: 10px;
-  border: 1px solid #e8ebf0;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  color: #666;
-  background: #fafafa;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
   font-weight: 800;
   cursor: pointer;
 }

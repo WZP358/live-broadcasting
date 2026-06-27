@@ -60,7 +60,7 @@ const loadPopularity = async () => {
     return;
   }
   try {
-    const res = await ChatApi.getPopularity({ roomId: roomId.value });
+    const res = await ChatApi.getPopularity({ roomId: roomId.value }, { silentError: true });
     popularity.value = Number(res?.data || 0);
   } catch (error) {
     popularity.value = Number(props.room?.popularity || 0);

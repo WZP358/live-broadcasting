@@ -9,6 +9,7 @@ import cn.imhtb.live.modules.infra.config.RedisKey;
 import cn.imhtb.live.modules.infra.utils.RedisUtils;
 import cn.imhtb.live.modules.user.model.req.UserExtraReq;
 import cn.imhtb.live.modules.user.model.req.UserInfoUpdateReq;
+import cn.imhtb.live.modules.user.model.req.UserPasswordUpdateReq;
 import cn.imhtb.live.modules.user.model.req.UserRegisterReq;
 import cn.imhtb.live.modules.user.service.IUserService;
 import cn.imhtb.live.pojo.database.User;
@@ -136,6 +137,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             user.setSignature("");
         }
         return updateById(user);
+    }
+
+    @Override
+    public boolean updatePassword(UserPasswordUpdateReq request) {
+        User current = getById(UserHolder.getUserId());
+        if (current == null) {
+            throw new BusinessException("用户不存在，请重新登录");
+        }
+
+        String oldPassword = StringUtils.trimToEmpty(request.getOldPassword());
+        String newPassword = StringUtils.trimToEmpty(request.getNewPassword());
+        String confirmPassword = StringUtils.trimToEmpty(request.getConfirmPassword());
+        if (!StringUtils.equals(newPassword, confirmPassword)) {
+            throw new BusinessException("两次输入的新密码不一致");
+        }
+
+        boolean hasPassword = StringUtils.isNotBlank(current.getPassword());
+        if (hasPassword && !encoder.matches(oldPassword, current.getPassword())) {
+            throw new BusinessException("原密码不正确");
+        }
+        if (hasPassword && encoder.matches(newPassword, current.getPassword())) {
+            throw new BusinessException("新密码不能和原密码相同");
+        }
+
+        User update = new User();
+        update.setId(current.getId());
+        update.setPassword(encoder.encode(newPassword));
+        return updateById(update);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package cn.imhtb.live.pojo.database;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -24,4 +25,13 @@ public class Report {
     private Integer handlerId;       // 处理人
     private LocalDateTime createTime;
     private LocalDateTime handleTime;
+
+    @TableField(exist = false)
+    private String roomTitle;
+
+    @TableField(exist = false)
+    private Integer roomDisabled;
+
+    @TableField(exist = false)
+    private Integer roomStatus;
 }

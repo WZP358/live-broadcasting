@@ -1,10 +1,11 @@
 import request from '@/utils/request'
 
 export default {
-    getGiftList() {
+    getGiftList(options = {}) {
         return request({
             url: '/api/v1/present/list',
             method: 'get',
+            silentError: Boolean(options.silentError),
         })
     },
     rewardGift(data) {

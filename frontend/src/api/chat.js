@@ -8,11 +8,12 @@ export default {
             data,
         })
     },
-    getPopularity(params) {
+    getPopularity(params, options = {}) {
         return request({
             url: '/api/v1/chat/getPopularity',
             method: 'get',
             params,
+            silentError: Boolean(options.silentError),
         })
     },
 }

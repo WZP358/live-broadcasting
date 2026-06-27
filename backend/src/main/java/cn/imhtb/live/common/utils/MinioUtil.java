@@ -2,12 +2,10 @@ package cn.imhtb.live.common.utils;
 
 import cn.imhtb.live.common.config.MinioConfig;
 import io.minio.*;
-import io.minio.http.Method;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStream;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author pinteh
@@ -72,6 +70,19 @@ public class MinioUtil {
     }
 
     @SneakyThrows(Exception.class)
+    public static String uploadObjectWithInputStream(String object, InputStream stream, long size, String contentType) {
+        PutObjectArgs.Builder builder = PutObjectArgs.builder()
+                .bucket(DEFAULT_BUCKET)
+                .object(object)
+                .stream(stream, size, -1);
+        if (contentType != null && !contentType.isBlank()) {
+            builder.contentType(contentType);
+        }
+        minioClient.putObject(builder.build());
+        return getSplicingObjectUrl(DEFAULT_BUCKET, object);
+    }
+
+    @SneakyThrows(Exception.class)
     public static void createBucket(String bucket) {
         boolean exists = minioClient.bucketExists(BucketExistsArgs.builder()
                 .bucket(bucket)
@@ -98,22 +109,11 @@ public class MinioUtil {
      * @return 地址
      */
     public static String getSplicingObjectUrl(String bucket, String object) {
-        boolean relative = minioConfig.isRelative();
-        if (Boolean.TRUE.equals(relative)){
+        if (minioConfig == null || minioConfig.isRelative()) {
             return String.format("/%s/%s", bucket, object);
         }
-        try {
-            return minioClient.getPresignedObjectUrl(
-                    GetPresignedObjectUrlArgs.builder()
-                            .method(Method.GET)
-                            .bucket(bucket)
-                            .object(object)
-                            .expiry(7, TimeUnit.DAYS)
-                            .build());
-        } catch (Exception e) {
-            log.error("generate presigned url error", e);
-            return String.format("%s/%s/%s", ENDPOINT, bucket, object);
-        }
+        String endpoint = ENDPOINT == null ? "" : ENDPOINT.replaceAll("/+$", "");
+        return String.format("%s/%s/%s", endpoint, bucket, object);
     }
 
 }

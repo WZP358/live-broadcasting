@@ -248,6 +248,14 @@ const handleWalletClick = () => {
   emits("requireLogin")
 }
 
+const notifyWalletUpdated = () => {
+  window.dispatchEvent(new CustomEvent("pulselive:wallet-updated", {
+    detail: {
+      balance: walletBalance.value,
+    },
+  }))
+}
+
 const sendSelectedGift = async () => {
   if (!isLogin.value) {
     emits("requireLogin")
@@ -289,6 +297,7 @@ const sendSelectedGift = async () => {
     })
     $modal.msgSuccess(`已送出 ${gift.name} x ${count}`)
     await getWallet()
+    notifyWalletUpdated()
   } catch (error) {
     $modal.msgError(error?.message || "送礼失败，请稍后重试")
   } finally {
@@ -299,7 +308,7 @@ const sendSelectedGift = async () => {
 const getGiftList = async () => {
   loading.value = true
   try {
-    const res = await giftApi.getGiftList()
+    const res = await giftApi.getGiftList({ silentError: true })
     giftList.value = (res.data || []).map(normalizeGift)
     if (!selectedGiftId.value && giftList.value.length) {
       selectedGiftId.value = giftList.value[0].id
@@ -313,7 +322,7 @@ const getGiftList = async () => {
 
 const getWallet = async () => {
   try {
-    const res = await walletApi.getBalance()
+    const res = await walletApi.getBalance({ silentError: true })
     wallet.value = res.data || {}
   } catch (error) {
     wallet.value = {}

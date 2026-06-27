@@ -41,6 +41,8 @@ export function useHomeFeed() {
     try {
       const res = await liveApi.listLivingRooms({
         categoryId: currentSelectCategory.value?.id,
+        pageNo: 1,
+        pageSize: 100,
       });
       allLivingRooms.value = normalizeLivingRooms(res?.data?.list || []);
     } catch (error) {
@@ -59,7 +61,7 @@ export function useHomeFeed() {
 
   const loadRecommendations = async () => {
     try {
-      const res = await recommendApi.getRecommendedRooms(12);
+      const res = await recommendApi.getRecommendedRooms(100);
       recommendedRooms.value = normalizeLivingRooms(res?.data || []);
     } catch (error) {
       recommendedRooms.value = [];
@@ -101,9 +103,14 @@ export function useHomeFeed() {
   });
   const displayRooms = computed(() => {
     if (feedMode.value === "recommend" && !currentSelectCategory.value && !keyword.value.trim() && recommendedRooms.value.length > 0) {
-      const ids = new Set(allLivingRooms.value.map(r => r.id));
-      const freshRecommended = recommendedRooms.value.filter(r => ids.has(r.id));
-      if (freshRecommended.length > 0) return freshRecommended;
+      const recommendedOrder = new Map(recommendedRooms.value.map((room, index) => [Number(room.id), index]));
+      const recommendedCount = recommendedRooms.value.length;
+      return sortRoomsByMode(searchedRooms.value, "recommend", historyRooms.value)
+        .sort((a, b) => {
+          const aRank = recommendedOrder.has(Number(a.id)) ? recommendedOrder.get(Number(a.id)) : recommendedCount + a._order;
+          const bRank = recommendedOrder.has(Number(b.id)) ? recommendedOrder.get(Number(b.id)) : recommendedCount + b._order;
+          return aRank - bRank;
+        });
     }
     return sortRoomsByMode(searchedRooms.value, feedMode.value, historyRooms.value);
   });

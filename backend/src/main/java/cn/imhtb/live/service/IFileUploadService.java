@@ -17,4 +17,6 @@ public interface IFileUploadService {
      */
     String uploadFileToMinio(InputStream inputStream, String newFilename);
 
+    String uploadFileToMinioStrict(InputStream inputStream, String newFilename, long size, String contentType);
+
 }

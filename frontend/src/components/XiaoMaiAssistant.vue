@@ -107,8 +107,8 @@ const messages = ref([
 
 const quickQuestions = [
   { label: "当前页能做什么", question: "我当前页面有哪些功能，下一步建议做什么？" },
-  { label: "AI 加分点", question: "这个项目的 AI 智能体怎么体现？" },
-  { label: "答辩演示路线", question: "帮我规划一条适合课程答辩的演示路线。" },
+  { label: "AI 能做什么", question: "这个平台里的 AI 助手可以帮我做什么？" },
+  { label: "运营动线", question: "帮我规划一条从看直播到后台运营的体验路线。" },
 ]
 
 const statusText = computed(() => {
@@ -279,7 +279,7 @@ const refreshPageDetails = async ({ force = false } = {}) => {
 
   if (currentRoomId.value) {
     try {
-      const res = await roomApi.getRoomInfo({ roomId: currentRoomId.value })
+      const res = await roomApi.getRoomInfo({ roomId: currentRoomId.value }, { silentError: true })
       nextDetails.room = normalizeRoomInfo(res?.data || {})
     } catch (error) {
       nextDetails.room = {

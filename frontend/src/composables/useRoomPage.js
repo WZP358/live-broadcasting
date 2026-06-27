@@ -22,7 +22,7 @@ export function useRoomPage() {
 
   const loadRoomInfo = async () => {
     try {
-      const res = await roomApi.getRoomInfo({ roomId: roomId.value });
+      const res = await roomApi.getRoomInfo({ roomId: roomId.value }, { silentError: true });
       roomInfo.value = res.data || {};
     } catch (error) {
       roomInfo.value = {};
@@ -31,7 +31,7 @@ export function useRoomPage() {
 
   const loadRoomExtraInfo = async () => {
     try {
-      const res = await roomApi.getRoomExtraInfo({ roomId: roomId.value });
+      const res = await roomApi.getRoomExtraInfo({ roomId: roomId.value }, { silentError: true });
       roomExtraInfo.value = res.data || {};
     } catch (error) {
       roomExtraInfo.value = {};
@@ -42,7 +42,7 @@ export function useRoomPage() {
 
   const loadRecommendRooms = async () => {
     try {
-      const res = await liveApi.listLivingRooms({});
+      const res = await liveApi.listLivingRooms({}, { silentError: true });
       recommendRooms.value = buildRelatedRooms(res?.data?.list || [], roomInfo.value, 4);
     } catch (error) {
       recommendRooms.value = [];

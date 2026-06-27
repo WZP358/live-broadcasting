@@ -6,11 +6,12 @@ export default {
      * @param {*} params 
      * @returns 
      */
-    getRoomInfo(params) {
+    getRoomInfo(params, options = {}) {
         return request({
             url: '/api/v1/room/detail',
             method: 'get',
             params,
+            silentError: Boolean(options.silentError),
         })
     },
     /**
@@ -18,19 +19,27 @@ export default {
      * @param {*} params 
      * @returns 
      */
-    getRoomExtraInfo(params) {
+    getRoomExtraInfo(params, options = {}) {
         return request({
             url: '/api/v1/room/extra/info',
             method: 'get',
             params,
-            silentError: true,
+            silentError: options.silentError !== false,
         })
     },
-    getIntimacyRank(params) {
+    getIntimacyRank(params, options = {}) {
         return request({
             url: '/api/v1/room/intimacy/rank',
             method: 'get',
             params,
+            silentError: Boolean(options.silentError),
+        })
+    },
+    submitSatisfaction(data) {
+        return request({
+            url: '/api/v1/room/satisfaction/submit',
+            method: 'post',
+            data,
         })
     },
 }

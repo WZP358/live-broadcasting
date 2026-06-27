@@ -1,7 +1,7 @@
 <template>
   <AdminCard
-    title="演示环境自检"
-    subtitle="用于录屏或答辩前检查外网访问、聊天室、直播信令、AI 助手和录播代理是否可用。"
+    title="运行环境自检"
+    subtitle="检查外网访问、聊天室、直播信令、AI 助手和录播代理是否可用。"
   >
     <template #extra>
       <a-space>
@@ -162,4 +162,3 @@ onMounted(() => {
   }
 }
 </style>
-

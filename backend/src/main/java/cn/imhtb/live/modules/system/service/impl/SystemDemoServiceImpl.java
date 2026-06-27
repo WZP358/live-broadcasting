@@ -38,6 +38,10 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
 
     private static final String DEFAULT_PASSWORD = "$2a$10$puULYxVheVu/sJZk7rUbvujNheV9v7afPWETHv47sjS2KAXNptTEe";
 
+    private static final String DEFAULT_DEMO_SIGNATURE = "持续分享精选内容，欢迎来到直播间互动。";
+
+    private static final String DEFAULT_DEMO_NOTICE = "本场为精选内容，欢迎在聊天室互动交流。";
+
     private static final List<DemoRoomSeed> ROOM_SEEDS = List.of(
             new DemoRoomSeed(
                     "pulse-tech",
@@ -46,7 +50,7 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
                     "小脉实验室",
                     "/demo-covers/tech-lab.jpg",
                     "/demo-videos/tech-lab.mp4",
-                    "演示模式录播房间，展示 AI 助手、弹幕分析和内容审核链路。"
+                    "一起拆解 AI 工具链、编程效率和直播互动中的智能能力。"
             ),
             new DemoRoomSeed(
                     "pulse-game",
@@ -55,7 +59,7 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
                     "夜航电竞",
                     "/demo-covers/game-arena.jpg",
                     "/demo-videos/game-arena.mp4",
-                    "演示模式录播房间，适合展示分类推荐、聊天室和礼物动效。"
+                    "复盘关键团战、阵容选择和弹幕里的战术提问。"
             ),
             new DemoRoomSeed(
                     "pulse-music",
@@ -64,7 +68,7 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
                     "星河电台",
                     "/demo-covers/music-room.jpg",
                     "/demo-videos/music-room.mp4",
-                    "演示模式录播房间，适合展示观看页布局、送礼和关注能力。"
+                    "轻松点歌、聊天和分享夜间歌单。"
             ),
             new DemoRoomSeed(
                     "pulse-life",
@@ -73,16 +77,16 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
                     "城市观察员",
                     "/demo-covers/city-walk.jpg",
                     "/demo-videos/city-walk.mp4",
-                    "演示模式录播房间，适合展示多房间同时在线和搜索能力。"
+                    "跟着镜头看城市街角，边走边聊生活灵感。"
             ),
             new DemoRoomSeed(
                     "pulse-study",
                     "知识课堂",
-                    "课程答辩演示：直播平台业务闭环讲解",
-                    "答辩助教",
+                    "直播平台产品拆解：从观看到运营",
+                    "产品研究员",
                     "/demo-covers/study-room.jpg",
                     "/demo-videos/study-room.mp4",
-                    "演示模式录播房间，用于快速呈现项目亮点和课程加分点。"
+                    "用产品视角聊直播间互动、内容安全和运营管理。"
             ),
             new DemoRoomSeed(
                     "pulse-ai-news",
@@ -91,7 +95,7 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
                     "模型观察员",
                     "/demo-covers/tech-lab.jpg",
                     "/demo-videos/tech-lab.mp4",
-                    "演示模式录播房间，用于展示首页推荐、搜索和 AI 话题互动。"
+                    "追踪大模型应用、工具链新闻和开发者实践。"
             ),
             new DemoRoomSeed(
                     "pulse-code-review",
@@ -100,7 +104,7 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
                     "代码巡航员",
                     "/demo-covers/tech-lab.jpg",
                     "/demo-videos/tech-lab.mp4",
-                    "演示模式录播房间，适合讲解推荐算法和后台数据联动。"
+                    "一起走查推荐逻辑、数据指标和工程调优思路。"
             ),
             new DemoRoomSeed(
                     "pulse-mobile-game",
@@ -109,7 +113,7 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
                     "阿灯教练",
                     "/demo-covers/game-arena.jpg",
                     "/demo-videos/game-arena.mp4",
-                    "演示模式录播房间，展示游戏分区、实时聊天室和连麦入口。"
+                    "拆团战、看走位，顺手回答弹幕里的操作问题。"
             ),
             new DemoRoomSeed(
                     "pulse-vocal",
@@ -118,7 +122,7 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
                     "云间歌单",
                     "/demo-covers/music-room.jpg",
                     "/demo-videos/music-room.mp4",
-                    "演示模式录播房间，展示礼物打赏和直播间氛围能力。"
+                    "点歌、闲聊、分享适合夜晚循环的轻音乐。"
             ),
             new DemoRoomSeed(
                     "pulse-food",
@@ -127,7 +131,7 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
                     "小城厨房",
                     "/demo-covers/city-walk.jpg",
                     "/demo-videos/city-walk.mp4",
-                    "演示模式录播房间，用于展示生活分区和长时间在线场景。"
+                    "家常菜做法、厨房小技巧和深夜陪伴聊天。"
             ),
             new DemoRoomSeed(
                     "pulse-product",
@@ -136,16 +140,127 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
                     "数码圆桌",
                     "/demo-covers/tech-lab.jpg",
                     "/demo-videos/tech-lab.mp4",
-                    "演示模式录播房间，适合展示分类筛选、关注和相关推荐。"
+                    "聊手机、耳机和桌面设备，帮你做轻量选购参考。"
             ),
             new DemoRoomSeed(
                     "pulse-exam",
                     "知识课堂",
-                    "自习室陪伴：答辩材料最后检查",
+                    "自习室陪伴：专注学习与资料整理",
                     "自习室班长",
                     "/demo-covers/study-room.jpg",
                     "/demo-videos/study-room.mp4",
-                    "演示模式录播房间，适合展示课程项目答辩主线。"
+                    "安静陪伴学习，整理笔记、规划任务和保持专注。"
+            )
+    );
+
+    private static final List<DemoRoomSeed> ACTIVE_ROOM_SEEDS = List.of(
+            new DemoRoomSeed(
+                    "pulse-tech",
+                    "科技数码",
+                    "AI 编程助手实战：从提示词到工作流",
+                    "小脉实验室",
+                    "/demo-covers/tech-lab.jpg",
+                    "/demo-videos/tech-lab.mp4",
+                    "一起拆解 AI 工具链、编程效率和直播互动中的智能能力。"
+            ),
+            new DemoRoomSeed(
+                    "pulse-game",
+                    "游戏直播",
+                    "峡谷高光复盘：团队配合与实时弹幕互动",
+                    "夜航电竞",
+                    "/demo-covers/game-arena.jpg",
+                    "/demo-videos/game-arena.mp4",
+                    "复盘关键团战、阵容选择和弹幕里的战术提问。"
+            ),
+            new DemoRoomSeed(
+                    "pulse-music",
+                    "娱乐音乐",
+                    "晚间音乐会：轻松互动与礼物打赏",
+                    "星河电台",
+                    "/demo-covers/music-room.jpg",
+                    "/demo-videos/music-room.mp4",
+                    "轻松点歌、聊天和分享夜间歌单。"
+            ),
+            new DemoRoomSeed(
+                    "pulse-life",
+                    "生活分享",
+                    "城市漫游：边走边聊的沉浸式直播",
+                    "城市观察员",
+                    "/demo-covers/city-walk.jpg",
+                    "/demo-videos/city-walk.mp4",
+                    "跟着镜头看城市街角，边走边聊生活灵感。"
+            ),
+            new DemoRoomSeed(
+                    "pulse-study",
+                    "知识课堂",
+                    "直播平台产品拆解：从观看到运营",
+                    "产品研究员",
+                    "/demo-covers/study-room.jpg",
+                    "/demo-videos/study-room.mp4",
+                    "用产品视角聊直播间互动、内容安全和运营管理。"
+            ),
+            new DemoRoomSeed(
+                    "pulse-ai-news",
+                    "科技数码",
+                    "科技早报：大模型工具链速览",
+                    "模型观察员",
+                    "/demo-covers/tech-lab.jpg",
+                    "/demo-videos/tech-lab.mp4",
+                    "追踪大模型应用、工具链新闻和开发者实践。"
+            ),
+            new DemoRoomSeed(
+                    "pulse-code-review",
+                    "科技数码",
+                    "代码走查直播：推荐算法调优",
+                    "代码巡航员",
+                    "/demo-covers/tech-lab.jpg",
+                    "/demo-videos/tech-lab.mp4",
+                    "一起走查推荐逻辑、数据指标和工程调优思路。"
+            ),
+            new DemoRoomSeed(
+                    "pulse-mobile-game",
+                    "游戏直播",
+                    "手游战术板：团战复盘与弹幕提问",
+                    "阿烁教练",
+                    "/demo-covers/game-arena.jpg",
+                    "/demo-videos/game-arena.mp4",
+                    "拆团战、看走位，顺手回答弹幕里的操作问题。"
+            ),
+            new DemoRoomSeed(
+                    "pulse-vocal",
+                    "娱乐音乐",
+                    "轻音乐点歌台：弹幕点歌互动",
+                    "云间歌单",
+                    "/demo-covers/music-room.jpg",
+                    "/demo-videos/music-room.mp4",
+                    "点歌、闲聊，分享适合夜晚循环的轻音乐。"
+            ),
+            new DemoRoomSeed(
+                    "pulse-food",
+                    "生活分享",
+                    "深夜厨房：家常菜答疑和陪伴聊天",
+                    "小城厨房",
+                    "/demo-covers/city-walk.jpg",
+                    "/demo-videos/city-walk.mp4",
+                    "家常菜做法、厨房小技巧和深夜陪伴聊天。"
+            ),
+            new DemoRoomSeed(
+                    "pulse-product",
+                    "科技数码",
+                    "数码新品闲聊：手机与耳机怎么选",
+                    "数码圆桌",
+                    "/demo-covers/tech-lab.jpg",
+                    "/demo-videos/tech-lab.mp4",
+                    "聊手机、耳机和桌面设备，给你轻量选购参考。"
+            ),
+            new DemoRoomSeed(
+                    "pulse-exam",
+                    "知识课堂",
+                    "自习室陪伴：专注学习与资料整理",
+                    "自习室班长",
+                    "/demo-covers/study-room.jpg",
+                    "/demo-videos/study-room.mp4",
+                    "安静陪伴学习，整理笔记、规划任务和保持专注。"
             )
     );
 
@@ -163,7 +278,7 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
     @Transactional(rollbackFor = Exception.class)
     public SystemDemoStatus enable() {
         stopRooms(listLegacyDemoRooms());
-        for (DemoRoomSeed seed : ROOM_SEEDS) {
+        for (DemoRoomSeed seed : ACTIVE_ROOM_SEEDS) {
             Category category = ensureCategory(seed.getCategoryName());
             User user = ensureUser(seed);
             Room room = ensureRoom(seed, user, category);
@@ -234,7 +349,8 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
             update.setId(exists.getId());
             update.setNickname(seed.getAnchorName());
             update.setAvatar(seed.getCover());
-            update.setSignature("演示模式主播账号，可由管理员一键开启或关闭。");
+            update.setSignature("持续分享精选内容，欢迎来直播间互动。");
+            update.setSignature(DEFAULT_DEMO_SIGNATURE);
             update.setDisabled(StatusEnum.YES.getCode());
             userMapper.updateById(update);
             return userMapper.selectById(exists.getId());
@@ -247,7 +363,9 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
         user.setAvatar(seed.getCover());
         user.setNickname(seed.getAnchorName());
         user.setSex("保密");
-        user.setSignature("演示模式主播账号，可由管理员一键开启或关闭。");
+        user.setSignature("持续分享精选内容，欢迎来直播间互动。");
+        user.setSex("保密");
+        user.setSignature(DEFAULT_DEMO_SIGNATURE);
         user.setRoleId(100);
         user.setDisabled(StatusEnum.YES.getCode());
         user.setCreateTime(LocalDateTime.now());
@@ -268,7 +386,8 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
         room.setCover(seed.getCover());
         room.setSecret(DEMO_ROOM_SECRET);
         room.setIntroduce(seed.getIntroduce());
-        room.setNotice("当前为管理员演示模式录播房间，关闭演示模式后会自动下线。");
+        room.setNotice("本场为精选录播内容，欢迎在聊天室互动交流。");
+        room.setNotice(DEFAULT_DEMO_NOTICE);
         room.setRtmpUrl(seed.getPlayUrl());
         room.setDisabled(StatusEnum.YES.getCode());
         room.setStatus(LiveRoomStatusEnum.LIVING.getCode());
@@ -312,7 +431,7 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
         status.setLivingCount((int) rooms.stream()
                 .filter(room -> Objects.equals(room.getStatus(), LiveRoomStatusEnum.LIVING.getCode()))
                 .count());
-        status.setEnabled(status.getRoomCount() >= ROOM_SEEDS.size() && status.getRoomCount() == status.getLivingCount());
+        status.setEnabled(status.getRoomCount() >= ACTIVE_ROOM_SEEDS.size() && status.getRoomCount() == status.getLivingCount());
 
         List<SystemDemoStatus.DemoRoomItem> items = new ArrayList<>();
         for (Room room : rooms) {
@@ -324,6 +443,8 @@ public class SystemDemoServiceImpl implements ISystemDemoService {
             item.setTitle(room.getTitle());
             item.setAnchorName(user == null ? "演示主播" : user.getNickname());
             item.setCategoryName(category == null ? "演示分类" : category.getName());
+            item.setAnchorName(user == null ? "样例主播" : user.getNickname());
+            item.setCategoryName(category == null ? "样例分类" : category.getName());
             item.setCover(room.getCover());
             item.setPlayUrl(room.getRtmpUrl());
             item.setStatus(room.getStatus());

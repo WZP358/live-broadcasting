@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
         // 设置登录请求的 URL
-        super.setFilterProcessesUrl("/api/login");
+        super.setFilterProcessesUrl("/login");
     }
 
     @Override

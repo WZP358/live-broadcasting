@@ -52,8 +52,6 @@ import { createBrowserLiveFallbackUrls, createPeerConnection } from "@/utils/bro
 import { toPublicLiveUrl } from "@/utils/publicLiveUrl"
 
 const HEARTBEAT_INTERVAL = 15000
-const LIVE_SYNC_LATENCY_SECONDS = 1
-const LIVE_SYNC_DRIFT_TOLERANCE_SECONDS = 0.25
 const STALL_CHECK_INTERVAL = 2000
 const STALL_RECONNECT_THRESHOLD = 3
 const RECORDING_EXTENSIONS = [".mp4", ".webm", ".mov", ".ogg"]
@@ -108,7 +106,6 @@ let cohostLocalStream = null
 let broadcasterSessionId = null
 let signalUrlIndex = 0
 let heartbeatTimer = null
-let latencySyncTimer = null
 let playbackWatchTimer = null
 let lastVideoTime = 0
 let stalledTicks = 0
@@ -153,49 +150,6 @@ const loadFlv = () => {
     flvModulePromise = import("flv.js").then((module) => module.default || module)
   }
   return flvModulePromise
-}
-
-const getLiveLatency = (video) => {
-  const ranges = video?.buffered
-  if (!ranges?.length) {
-    return null
-  }
-  const liveEdge = ranges.end(ranges.length - 1)
-  return liveEdge - video.currentTime
-}
-
-const syncPlaybackToOneSecondLatency = () => {
-  const video = videoElementRef.value
-  if (!video || video.paused || video.seeking) {
-    return
-  }
-  const latency = getLiveLatency(video)
-  if (latency === null) {
-    return
-  }
-  const drift = latency - LIVE_SYNC_LATENCY_SECONDS
-  if (Math.abs(drift) > LIVE_SYNC_DRIFT_TOLERANCE_SECONDS) {
-    const targetTime = video.buffered.end(video.buffered.length - 1) - LIVE_SYNC_LATENCY_SECONDS
-    if (Number.isFinite(targetTime) && targetTime > 0) {
-      video.currentTime = targetTime
-    }
-  }
-  video.playbackRate = 1
-}
-
-const startLatencySync = () => {
-  if (isRecordingUrl.value) {
-    return
-  }
-  stopLatencySync()
-  latencySyncTimer = window.setInterval(syncPlaybackToOneSecondLatency, 500)
-}
-
-const stopLatencySync = () => {
-  if (latencySyncTimer) {
-    window.clearInterval(latencySyncTimer)
-    latencySyncTimer = null
-  }
 }
 
 const startPlaybackWatch = () => {
@@ -243,7 +197,6 @@ const ensureVideoPlayback = async (hintText = "正在播放直播") => {
 
   try {
     await video.play()
-    startLatencySync()
     if (video.muted || video.volume === 0) {
       playbackBlocked.value = true
       statusText.value = "正在播放直播，点击开启声音"
@@ -255,7 +208,6 @@ const ensureVideoPlayback = async (hintText = "正在播放直播") => {
     video.muted = true
     try {
       await video.play()
-      startLatencySync()
       playbackBlocked.value = true
       statusText.value = "正在播放直播，点击开启声音"
     } catch (mutedError) {
@@ -470,7 +422,6 @@ const doResumePlayback = async () => {
   syncVolumeState()
   try {
     await video.play()
-    startLatencySync()
     playbackBlocked.value = false
     statusText.value = "正在播放直播声音"
   } catch (error) {
@@ -768,10 +719,8 @@ const playHls = async () => {
   }
   hlsPlayer.value = new Hls({
     enableWorker: true,
-    lowLatencyMode: false,
-    liveSyncDuration: LIVE_SYNC_LATENCY_SECONDS,
-    liveMaxLatencyDuration: LIVE_SYNC_LATENCY_SECONDS + 1,
-    maxLiveSyncPlaybackRate: 1,
+    lowLatencyMode: true,
+    maxLiveSyncPlaybackRate: 1.05,
   })
   hlsPlayer.value.loadSource(pullUrl)
   hlsPlayer.value.attachMedia(video)
@@ -807,8 +756,8 @@ const playFlv = async () => {
     },
     {
       enableWorker: true,
-      enableStashBuffer: true,
-      stashInitialSize: 1024 * 1024,
+      enableStashBuffer: false,
+      stashInitialSize: 128 * 1024,
       lazyLoad: false,
       autoCleanupSourceBuffer: true,
     }
@@ -937,7 +886,6 @@ const closeCohostPeer = () => {
 }
 
 const destroy = () => {
-  stopLatencySync()
   clearFallbackTimer()
   endCohost()
   if (signalSocket?.readyState === WebSocket.OPEN) {

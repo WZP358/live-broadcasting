@@ -57,9 +57,27 @@ public class WalletLogServiceImpl extends ServiceImpl<WalletLogMapper, WalletLog
         PageData<WalletLogResp> ans = new PageData<>();
         ans.setTotal(page.getTotal());
         ans.setList(CovertBeanUtil.covertList(page.getRecords(), WalletLogResp.class, (s, t) -> {
-            t.setActionTypeName("充值");
+            String actionName = resolveActionTypeName(s);
+            t.setActionTypeName(actionName);
+            t.setRemark(actionName);
         }));
         return ans;
+    }
+
+    private String resolveActionTypeName(WalletLog log) {
+        if (log == null || log.getActionType() == null) {
+            return "钱包变动";
+        }
+        if (log.getActionType() == 1) {
+            return "充值到账";
+        }
+        if (log.getActionType() == 2) {
+            return "送礼消费";
+        }
+        if (log.getActionType() == 3) {
+            return "礼物收入";
+        }
+        return "钱包变动";
     }
 
     private boolean walletLogTableExists() {
