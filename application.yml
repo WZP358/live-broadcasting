@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     username: root
-    password: Kishi...015
+    password: ${DB_PASSWORD:}
     url: jdbc:mysql://localhost:3306/ant-live?characterEncoding=utf-8&serverTimezone=GMT%2b8
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
@@ -17,7 +17,7 @@ spring:
   mail:
     host: smtp.qq.com
     username: 2191684957@qq.com
-    password: jhdctzsmizxldhhb
+    password: ${MAIL_PASSWORD:}
     default-encoding: UTF-8
     port: 465
     protocol: smtps
@@ -81,8 +81,8 @@ tencent:
 aliyun:
   sms:
     enabled: true
-    accessKeyId: "${ALIYUN_SMS_ACCESS_KEY_ID:}"
-    accessKeySecret: "${ALIYUN_SMS_ACCESS_KEY_SECRET:}"
+    accessKeyId: ${ALIYUN_SMS_ACCESS_KEY_ID:}
+    accessKeySecret: ${ALIYUN_SMS_ACCESS_KEY_SECRET:}
     endpoint: dypnsapi.aliyuncs.com
     signName: "速通互联验证码"
     templateCode: "100001"
@@ -110,8 +110,8 @@ alipay:
   verifySign: false
   gatewayUrl: https://openapi-sandbox.dl.alipaydev.com/gateway.do
   appId: "9021000163606120"
-  appPrivateKey: "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDGaJALXh7diSlTzhgj6ypCvg51VB9OKWnUHsltu7brKKXXXi59bNUQOM7kA4fUGyKizHMP1UE6YxpN8n7u8k0TI1bla7SWOi12sZ7JUVF6Fh//VirYt8xj95/Qt/CKYHUBQtn2CRKMZoocpguFFdMPOAeltwkdJRZjghFTzQgqflQUP3KimPHqc/4ytIsi5VwH6x5kxD77pBv0y8PwXU41Wivgm4QV4vYTz7xuMAojOEHTZKgpyM9zu1tKK5dCCjALxdzJWfVEglwYoP2t/p23skelI0h/EYxnMhehjwcRcLPLmIrjPOThapCaB+a8mVIuV1q1z4ftCONNMZBG7i0XAgMBAAECggEBALfG4qWk6LIK+lzF6VZb3Sk1Ie9LnDOp6Hyyh6E83pGzdOmoMye6RyBffkN1gbrV558kAPAJeAG9CgBpPWnWxc2UTkjzGrKL8NCgdZPD3tRW6gx4o/dZR9jQ5RdPSV7jOX2RjpJ2lNe3ovYmV0VOkdDm9S5p++cjEznYoHQe1hGEj0hRI1cVzFGKprdwCVEjsSwttwBbxQu/O7kFTw6UBk170nKViS6WLb2DaTGKJoh2RHbh767fZVHa9lPFIXuZwoXfYaU8Vvs4xOfLvCdfBlpUFdu4gt3emfii6Ek0W6NJi3fMIdcYzrPDICWYr1+vJH7K88xjrLz5uJl+x5u7VgECgYEA9ANerR05sboqUd7lWMU2JqA7/1cVkgXQ6YlzDRY/FHccyZuztqrpKK/kQ6zXR+8C0wuTIc4KpIyATISiHZHo+QRp1vzphaKDMv6APKtARqVvEM+iEpL8bm0PTln6YeP1RfvZNn7VR1H0/CJGO2uq/bDT6sIgg6jVt0OOwf7to38CgYEA0Ceuynq9bnIL5hO/RPvtAYRu3ymsOUbG4o/HVtGabScWP6lGSQO95mhvjzQbhle2y5IU1lAS1LuBd5DKbnvsl6eJeBTqcl4M7MbtuempxRVjzca8DgSAkldDtcu19RpurnJlv+8FWPPr+2XWoglp7THgVuNBd2A+AxEYNSLg4mkCgYEA5CyehJy2jYX6+tHGfsrzBw2A7RUeu4wqvabk6dDqrZVwWun5FBAftQc9GTdvm/lZF8ZUECFefF5Rvrur6KC/TNQesIWRTIAZ1T585b5xfV5HTF4MPPgrior67BZhdtY2TfniNP5HK8jsoDTgncHhhBatI3Hh+5uONS+8N5XN27sCgYB8CbmZxMxPHTzD7K6EoA7aYZ1j9ERBmVB4v67MqHh6ZNlYNDnC1qz5uPAJiMaCJpCx/CnYj7y48cczhZ9reQNCV76ORQB0CGFxUxVkPL5Cx/1CKRP00m//RGr/0RVrqkWcRGUnm3o3SJstosDkq/FoO9lwTVm8lig90Zj4SQFzSQKBgH9Nx69/5fFHZScHJ5psEWNMH7bSG0geTJ880vRiKz4C/RrnpYX022ZvFmBNy1sueNpCxLGxrZCAKiremz/GkK9sokGxMubNadhxYFynaybzAFaqw6N95TPC2bJIdgj5Xg0iCERAkrzmb0WJuPmuu/O1EnBkcS2imshlt+AdAkMX"
-  alipayPublicKey: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxmiQC14e3YkpU84YI+sqQr4OdVQfTilp1B7Jbbu26yil114ufWzVEDjO5AOH1BsiosxzD9VBOmMaTfJ+7vJNEyNW5Wu0ljotdrGeyVFRehYf/1Yq2LfMY/ef0LfwimB1AULZ9gkSjGaKHKYLhRXTDzgHpbcJHSUWY4IRU80IKn5UFD9yopjx6nP+MrSLIuVcB+seZMQ++6Qb9MvD8F1ONVor4JuEFeL2E8+8bjAKIzhB02SoKcjPc7tbSiuXQgowC8XcyVn1RIJcGKD9rf6dt7JHpSNIfxGMZzIXoY8HEXCzy5iK4zzk4WqQmgfmvJlSLldatc+H7QjjTTGQRu4tFwIDAQAB"
+  appPrivateKey: ${ALIPAY_APP_PRIVATE_KEY:}
+  alipayPublicKey: ${ALIPAY_PUBLIC_KEY:}
   notifyUrl: "http://localhost:8088/api/v1/wallet/alipay/notify"
   returnUrl: http://localhost:5173/#/center/dollar/wallet
   syncReturnUrl: "http://localhost:8088/api/v1/wallet/alipay/return"
