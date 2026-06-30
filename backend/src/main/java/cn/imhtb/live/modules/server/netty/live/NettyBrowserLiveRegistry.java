@@ -74,6 +74,28 @@ public class NettyBrowserLiveRegistry {
                 .collect(Collectors.toSet());
     }
 
+    public int getViewerCount(Integer roomId) {
+        if (roomId == null) {
+            return 0;
+        }
+        return (int) sessionMetas.values().stream()
+                .filter(meta -> roomId.equals(meta.getRoomId()))
+                .filter(meta -> SessionRole.VIEWER.equals(meta.getRole()))
+                .filter(meta -> {
+                    Channel channel = channels.get(meta.getSessionId());
+                    return channel != null && channel.isActive();
+                })
+                .count();
+    }
+
+    public boolean hasBroadcaster(Integer roomId) {
+        return getBroadcasterSessionId(roomId) != null;
+    }
+
+    public int getParticipantCount(Integer roomId) {
+        return getViewerCount(roomId) + (hasBroadcaster(roomId) ? 1 : 0);
+    }
+
     public boolean isBrowserLive(Integer roomId) {
         return roomId != null && getBroadcasterSessionId(roomId) != null;
     }

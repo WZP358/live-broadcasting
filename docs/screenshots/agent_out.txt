@@ -1,0 +1,5 @@
+[AI Agent] starting. LLM=http://localhost:8000/v1, model=Qwen1.5-1.8B
+INFO:     Started server process [66304]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8100 (Press CTRL+C to quit)

@@ -32,6 +32,7 @@
         <aliyun-dypnsapi.version>2.0.0</aliyun-dypnsapi.version>
         <druid.version>1.2.11</druid.version>
         <fastjson.version>2.0.44</fastjson.version>
+        <langchain4j.version>1.17.0</langchain4j.version>
         <jjwt.version>0.9.1</jjwt.version>
         <encoding>UTF-8</encoding>
     </properties>
@@ -171,6 +172,16 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>${fastjson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+            <version>${langchain4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai</artifactId>
+            <version>${langchain4j.version}</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

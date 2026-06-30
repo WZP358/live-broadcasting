@@ -99,7 +99,7 @@ class LLMClient:
         if response_format:
             payload["response_format"] = response_format
 
-        async with httpx.AsyncClient(timeout=LLM_TIMEOUT) as client:
+        async with httpx.AsyncClient(timeout=LLM_TIMEOUT, trust_env=False) as client:
             try:
                 response = await client.post(
                     f"{self.base_url}/chat/completions",
@@ -128,7 +128,7 @@ class LLMClient:
             headers = {}
             if self.api_key:
                 headers["Authorization"] = f"Bearer {self.api_key}"
-            async with httpx.AsyncClient(timeout=5.0) as client:
+            async with httpx.AsyncClient(timeout=5.0, trust_env=False) as client:
                 response = await client.get(f"{self.base_url}/models", headers=headers)
                 if response.status_code != 200:
                     return {"status": "error", "message": f"HTTP {response.status_code}"}
